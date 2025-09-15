@@ -1,0 +1,12 @@
+# Ignore everything
+*
+
+# But keep the .gitignore file
+!.gitignore
+
+# Allow frontend folder
+!frontend/
+!frontend/**
+
+# (optional) nếu có file README.md thì giữ lại
+!README.md
