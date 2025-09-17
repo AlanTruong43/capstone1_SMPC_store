@@ -52,6 +52,17 @@ ul.info_shop li{
     cursor: pointer;
 }
 
+ul.info_shop li.sellnow a button{
+    padding: 5px 10px;
+    border: none;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: rgb(150, 61, 61);
+    background-color: #4CAF50;
+}
+
 .body1 {
     position: relative;
     width: 90%;
@@ -149,4 +160,40 @@ ul.info_shop li{
 
 .btn_search:hover {
     background: #ff5252;
+}
+
+.btn_startshopping, .btn_sellyouritem {
+    position: absolute;
+    left: 50%;
+    top: 75%;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.btn_startshopping {
+    background: #4CAF50;
+    transform: translateX(-110%);
+}
+
+.btn_startshopping:hover {
+    background: #45a049;
+    transform: translateX(-110%) scale(1.05);
+}
+
+.btn_sellyouritem {
+    background: #FF9800;
+    transform: translateX(10%);
+}
+
+.btn_sellyouritem:hover {
+    background: #e68a00;
+    transform: translateX(10%) scale(1.05);
 }
