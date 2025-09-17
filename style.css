@@ -28,6 +28,13 @@ nav{
     padding: 20px 0;
 }
 
+a.home_icon{
+    font-size: 30px;
+    font-weight: bold;
+    color: rgb(11, 142, 194);
+}
+
+
 ul.nav_menu{
     display: flex;
     justify-content: space-between;
@@ -45,29 +52,101 @@ ul.info_shop li{
     cursor: pointer;
 }
 
-section.body1{
-    display: flex;
+.body1 {
+    position: relative;
+    width: 90%;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.banner_body1 {
     width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
 }
 
-div.body1_left{
-    width: 35%;
-}
-
-div.body1_left h1{
+.title1, .title2, .content1, .content2, .search_bar {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
     text-align: center;
-    font-size: 50px;
-    margin-top: 20px;
+    width: 80%;
 }
 
-div.body1_left li{
-    margin: 30px 0;
+.title1 {
+    top: 15%;
+    font-size: 2.5rem;
+    font-weight: 300;
+    letter-spacing: 2px;
 }
 
-div.body1_right{
-    width: 65%;
+.title2 {
+    top: 25%;
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: rgb(11, 142, 194);
 }
 
-div.body1_right img{
-    width: 100%;
+.content1 {
+    top: 40%;
+    font-size: 1.2rem;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+.content2 {
+    top: 48%;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: green;
+}
+
+.search_bar {
+    top: 60%;
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 30px;
+    padding: 5px 15px;
+    width: 60%;
+    min-width: 300px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.search_bar img {
+    width: 20px;
+    height: 20px;
+    opacity: 0.7;
+    margin-right: 10px;
+}
+
+.search {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 12px 5px;
+    font-size: 16px;
+    color: #333;
+    background: transparent;
+}
+
+.btn_search {
+    background: #917575;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+
+.btn_search:hover {
+    background: #ff5252;
 }
