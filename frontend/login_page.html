@@ -7,6 +7,72 @@
     <link rel="stylesheet" href="login_page_style.css">
     <link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css" />
 </head>
+<!-- Firebase Auth for LOGIN page -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+  
+    const firebaseConfig = {
+  apiKey: "AIzaSyDI1V6BaKvdeLo2kbXAREWweZyiGAF4508",
+  authDomain: "smartshopai-45959.firebaseapp.com",
+  projectId: "smartshopai-45959",
+  storageBucket: "smartshopai-45959.firebasestorage.app",
+  messagingSenderId: "550339763780",
+  appId: "1:550339763780:web:b9b8957b1597ef09d5a611"
+};
+  
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+  
+    const form       = document.getElementById('loginForm');
+    const emailEl    = document.getElementById('email');
+    const passEl     = document.getElementById('password');
+    const emailErr   = document.getElementById('emailError');
+    const passErr    = document.getElementById('passwordError');
+    const successBox = document.getElementById('successMessage');
+  
+    /* Nút SHOW/HIDE mật khẩu nếu trang của bạn có #passwordToggle */
+    const toggleBtn = document.getElementById('passwordToggle');
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => {
+        passEl.type = passEl.type === 'password' ? 'text' : 'password';
+        const t = toggleBtn.querySelector('.toggle-text');
+        if (t) t.textContent = passEl.type === 'password' ? 'SHOW' : 'HIDE';
+      });
+    }
+  
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      emailErr.textContent = '';
+      passErr.textContent  = '';
+  
+      try {
+        const cred = await signInWithEmailAndPassword(auth, emailEl.value.trim(), passEl.value);
+        const idToken = await cred.user.getIdToken();
+  
+        await fetch('http://localhost:4000/auth/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idToken })
+        });
+  
+        if (successBox) successBox.style.display = 'block';
+        setTimeout(() => { window.location.href = '/'; }, 800);
+      } catch (err) {
+        const code = (err.code || '').toString();
+        if (code.includes('invalid-email'))     emailErr.textContent = 'Email không hợp lệ';
+        else if (code.includes('user-not-found')) emailErr.textContent = 'Email không tồn tại';
+        else if (code.includes('wrong-password')) passErr.textContent = 'Sai mật khẩu';
+        else passErr.textContent = 'Đăng nhập thất bại';
+        console.error(err);
+      }
+    });
+  
+    /* Link “Create one” → về trang đăng ký (route /) */
+    const createLink = document.querySelector('.signup-link a');
+    if (createLink) createLink.setAttribute('href', '/');
+  </script>
+  
 <body>
     <div class="login-container">
         <div class="login-card">
