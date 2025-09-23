@@ -1,0 +1,122 @@
+# Firestore Database Structure - SMPC Store
+
+## 1. Users Collection (`users`)
+- **Document ID**: `uid` (trùng với Firebase Auth UID)
+- **Fields**:
+  - `username` (string) – tên hiển thị
+  - `email` (string) – email người dùng
+  - `phone` (string, optional) – số điện thoại
+  - `role` (string: `"buyer" | "seller" | "admin"`)
+  - `address` (string, optional) – địa chỉ mặc định
+  - `registrationDate` (timestamp) – ngày tạo
+  - `lastLogin` (timestamp) – lần đăng nhập cuối
+  - `isActive` (boolean) – tài khoản còn hoạt động không
+
+---
+
+## 2. Categories Collection (`categories`)
+- **Fields**:
+  - `name` (string) – tên danh mục
+  - `description` (string, optional) – mô tả
+
+---
+
+## 3. Products Collection (`products`)
+- **Fields**:
+  - `name` (string) – tên sản phẩm
+  - `description` (string)
+  - `price` (number)
+  - `categoryId` (reference/string → `categories/{id}`)
+  - `sellerId` (string → `users/{uid}`)
+  - `postDate` (timestamp)
+  - `status` (string: `"available" | "sold"`)
+  - `condition` (string: `"new" | "used"`)
+  - `location` (string)
+  - `viewCount` (number)
+  - `isFeature` (boolean)
+
+---
+
+## 4. Orders Collection (`orders`)
+- **Fields**:
+  - `userId` (string → `users/{uid}`)
+  - `orderDate` (timestamp)
+  - `status` (string: `"pending" | "paid" | "shipped" | "completed"`)
+  - `totalAmount` (number)
+  - `shippingAddress` (string)
+  - `notes` (string, optional)
+  - `items` (array of objects):
+    ```json
+    [
+      {
+        "productId": "abc123",
+        "quantity": 2,
+        "unitPrice": 100.0
+      }
+    ]
+    ```
+
+---
+
+## 5. Transactions Collection (`transactions`)
+- **Fields**:
+  - `orderId` (string → `orders/{id}`)
+  - `payerId` (string → `users/{uid}`)
+  - `payeeId` (string → `users/{uid}`)
+  - `amount` (number)
+  - `currency` (string, e.g. "VND")
+  - `paymentMethod` (string: `"card" | "bank" | "cash"`)
+  - `status` (string: `"pending" | "success" | "failed"`)
+  - `txnDate` (timestamp)
+  - `externalTransactionId` (string, optional)
+
+---
+
+## 6. Reviews Collection (`reviews`)
+- **Fields**:
+  - `productId` (string → `products/{id}`)
+  - `reviewerId` (string → `users/{uid}`)
+  - `rating` (number 1–5)
+  - `comment` (string)
+  - `reviewDate` (timestamp)
+
+---
+
+## 7. Commission Policies Collection (`commission_policies`)
+- **Fields**:
+  - `name` (string)
+  - `rate` (number, e.g. 0.1 = 10%)
+  - `feeType` (string: `"percent" | "fixed"`)
+  - `startDate` (date)
+  - `endDate` (date)
+  - `description` (string)
+  - `isActive` (boolean)
+
+---
+
+## 8. Commissions Collection (`commissions`)
+- **Fields**:
+  - `transactionId` (string → `transactions/{id}`)
+  - `sellerId` (string → `users/{uid}`)
+  - `policyId` (string → `commission_policies/{id}`)
+  - `commissionAmount` (number)
+  - `calculationDate` (timestamp)
+  - `status` (string: `"pending" | "paid"`)
+
+---
+
+## 9. Chat Logs Collection (`chat_logs`)
+- **Fields**:
+  - `userId` (string → `users/{uid}`)
+  - `message` (string)
+  - `suggestedProductId` (string → `products/{id}`, optional)
+  - `senderType` (string: `"user" | "system"`)
+  - `timestamp` (timestamp)
+
+---
+
+## Notes
+- **References** có thể lưu dưới dạng `string id` hoặc **Firestore reference**.  
+- Thêm **indexes** khi query nhiều field (vd: `categoryId + status` trong products).  
+- Có thể gom một số collection phụ thành **subcollection** nếu cần (vd: `order_items` trong mỗi order), nhưng với Firestore lưu dạng array cũng ổn.
+
