@@ -115,8 +115,11 @@
 
 ---
 
+
 ## Notes
 - **References** có thể lưu dưới dạng `string id` hoặc **Firestore reference**.  
 - Thêm **indexes** khi query nhiều field (vd: `categoryId + status` trong products).  
 - Có thể gom một số collection phụ thành **subcollection** nếu cần (vd: `order_items` trong mỗi order), nhưng với Firestore lưu dạng array cũng ổn.
+- Kết hợp sử dụng database realtime cho notifications và những mục cần tức thì, đồng thời vẫn giữ nguyên cơ sở cứng bên Firestore database.
+- Sửa lại cấu trúc, thêm notifications và presence bên realtime để phục vụ mục đích sau này
 
