@@ -123,3 +123,7 @@
 - Kết hợp sử dụng database realtime cho notifications và những mục cần tức thì, đồng thời vẫn giữ nguyên cơ sở cứng bên Firestore database.
 - Sửa lại cấu trúc, thêm notifications và presence bên realtime để phục vụ mục đích sau này
 
+25/9 : 
+Tạo file json chứa root key value cho realtime, và set rule cho nó
+Không thể sử dụng firestore storage nên chuyển hướng dùng link cứng từ unsplash
+
