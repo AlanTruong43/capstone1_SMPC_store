@@ -17,12 +17,12 @@ app.use(express.static(FRONTEND_DIR));
 
 // ✅ route gốc: trả về login_page.html
 app.get('/', (_req, res) => {
-  res.sendFile(path.join(FRONTEND_DIR, 'register_page.html'));
+  res.sendFile(path.join(FRONTEND_DIR, 'pages/register_page.html'));
 });
 
 // ✅ route /register: trả về register_page.html
 app.get('/login', (_req, res) => {
-  res.sendFile(path.join(FRONTEND_DIR, 'login_page.html'));
+  res.sendFile(path.join(FRONTEND_DIR, 'pages/login_page.html'));
 });
 
 // (tuỳ chọn) route health
