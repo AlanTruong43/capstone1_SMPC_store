@@ -13,8 +13,10 @@
     /* 1) Import SDK từ CDN */
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+    /* 👇 THÊM Firestore để ghi users/{uid} */
+    import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
   
-    /* 2) DÁN firebaseConfig của bạn từ Firebase Console vào đây */
+    /* 2) Cấu hình firebaseConfig từ Firebase Console vào đây */
     const firebaseConfig = {
   apiKey: "AIzaSyDI1V6BaKvdeLo2kbXAREWweZyiGAF4508",
   authDomain: "smartshopai-45959.firebaseapp.com",
@@ -27,7 +29,8 @@
     /* 3) Khởi tạo */
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-  
+    const db   = getFirestore(app); // THÊM: khởi tạo Firestore
+
     /* 4) Lấy phần tử từ form của bạn (đúng với file bạn gửi) */
     const form       = document.getElementById('registerForm');
     const emailEl    = document.getElementById('email');
@@ -36,26 +39,46 @@
     const emailErr   = document.getElementById('emailError');
     const passErr    = document.getElementById('passwordError');
     const successBox = document.getElementById('successMessage');
+
+    /* 🚫 Ngăn script “fake submit” phía dưới chạy chồng: đặt cờ báo đã xử lý bằng Firebase */
+    window.__FIREBASE_REGISTER = true;
   
-    /* 5) Submit: tạo tài khoản */
+    /* 5) Submit: tạo tài khoản + ghi Firestore */
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       emailErr.textContent = '';
       passErr.textContent  = '';
   
       try {
+        // 5.1 Tạo user trên Authentication
         const cred = await createUserWithEmailAndPassword(auth, emailEl.value.trim(), passEl.value);
         if (nameEl && nameEl.value.trim()) {
           await updateProfile(cred.user, { displayName: nameEl.value.trim() });
         }
-  
-        const idToken = await cred.user.getIdToken();
-        await fetch('http://localhost:4000/auth/verify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ idToken })
+
+        // 5.2 Ghi hồ sơ vào Firestore: users/{uid}
+        await setDoc(doc(db, 'users', cred.user.uid), {
+          email: emailEl.value.trim(),
+          displayName: nameEl?.value?.trim() || "",
+          role: 'customer',
+          registrationDate: serverTimestamp(),
+          lastLogin: serverTimestamp(),
+          isActive: true
         });
+
+        // (Tuỳ chọn) phần cũ: verify token với backend nếu bạn vẫn dùng
+        try {
+          const idToken = await cred.user.getIdToken();
+          await fetch('http://localhost:4000/auth/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idToken })
+          });
+        } catch (_) {
+          // Bỏ qua nếu backend không chạy
+        }
   
+        // 5.3 Thông báo & điều hướng
         if (successBox) successBox.style.display = 'block';
         setTimeout(() => { window.location.href = '/login'; }, 800);
       } catch (err) {
@@ -171,6 +194,9 @@
 
     <script>
     (function(){
+        /* ⛔ Nếu đã dùng Firebase ở trên thì không chạy fake submit nữa */
+        if (window.__FIREBASE_REGISTER) return;
+
         const form = document.getElementById('registerForm');
         const toggle = document.getElementById('passwordToggle');
         const password = document.getElementById('password');
@@ -200,4 +226,3 @@
     </script>
 </body>
 </html>
-
