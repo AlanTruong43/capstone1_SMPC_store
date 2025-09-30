@@ -1,0 +1,81 @@
+*{
+    margin: 0;
+    list-style: none;
+    text-decoration: none;
+    font-optical-sizing: auto;
+    font-weight: weight;
+    font-style: normal;
+    font-family: "Roboto", sans-serif;
+}
+
+a{
+    text-decoration: none;
+    color: black;
+}
+header{
+    background-color: white;
+    border-bottom: 2px solid #6B7280;
+    width: 100%;
+    color: #4B5563;
+}
+
+nav{
+    display: flex;
+    width: calc(100% - 80px);
+    align-items: center;
+    margin: 0 auto;
+    padding: 20px 0;
+    justify-content: space-between;
+}
+
+a.home_icon{
+    display: flex;
+    align-items: center;
+}
+
+p.logo_1{
+    font-family: "Pacifico", cursive;
+    font-size: 30px;
+    font-weight: bold;
+    color: #2563EB;
+}
+
+p.logo_2{
+    padding-left: 10px;
+}
+
+
+ul.nav_menu{
+    display: flex;
+    justify-content: space-between;
+    width: 30%;
+    text-transform: uppercase;
+}
+
+ul.info_shop{
+    display: flex;
+    justify-content: space-between;
+    width: 15%;
+}
+
+ul.info_shop li{
+    cursor: pointer;
+}
+
+ul.info_shop li.sellnow a button{
+    padding: 5px 10px;
+    border: none;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    background-color: #16A34A;
+}
+
+body{
+  max-width: 1440px;  
+  width: 100%;        
+  margin: 0 auto;  
+}
+
