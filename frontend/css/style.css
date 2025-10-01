@@ -74,8 +74,8 @@ ul.info_shop li.sellnow a button{
 }
 
 body{
-  max-width: 1440px;  
-  width: 100%;        
+  max-width: 100%; 
+  /* width: 100%;         */
   margin: 0 auto;  
 }
 
@@ -214,4 +214,77 @@ div.product_page_1_1 h3{
     padding: 12px;
     background: #ffffff;
     color: #1f2937;
+}
+
+.product_list{
+    width: calc(100% - 80px);
+    /* align-items: center; */
+    margin: 0 auto;   
+}
+
+.product_list_info{
+    width: 100%;
+}
+
+.product_info_short{
+    width: 25%;
+    position: relative;
+
+}
+
+.product_info_short_head img{
+    width: 100%;
+}
+
+.product_status{
+    color: #15803D;
+    background-color: #DCFCE7;
+    padding: 8px 8px;
+    border-radius: 9999px;
+    position: absolute;
+    top: 8px;
+    left: 8px;
+}
+
+.product_like img{
+    width: 5%;
+    padding: 8px;
+    background-color: white;
+    border-radius: 9999px;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    /* border: 2px solid black; */
+}
+
+.product_info_long{
+    width: 100%;
+}
+
+.product_seller{
+    display: flex;
+    /* align-items: center; */
+    width: 100%;
+    justify-content: space-between;
+}
+
+.info_seller{
+    display: flex;
+    align-items: center;
+    /* float: left; */
+}
+
+.rate{
+    display: flex;
+    align-items: center;
+    /* float: right; */
+    margin-right: 20px;
+}
+
+.product_more{
+    width: 100%;
+}
+
+.location_more img{
+    width: 25px;
 }
