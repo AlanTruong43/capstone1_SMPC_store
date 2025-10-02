@@ -49,6 +49,9 @@
       try {
         const cred = await signInWithEmailAndPassword(auth, emailEl.value.trim(), passEl.value);
         const idToken = await cred.user.getIdToken();
+
+        localStorage.setItem('idToken', idToken);
+        console.log('ID TOKEN >>>', idToken);
   
         await fetch('http://localhost:4000/auth/verify', {
           method: 'POST',
