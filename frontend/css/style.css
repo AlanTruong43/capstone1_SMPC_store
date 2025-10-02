@@ -73,6 +73,35 @@ ul.info_shop li.sellnow a button{
     background-color: #16A34A;
 }
 
+footer{
+    background-color: #DBEAFE;
+    /* height: 500px; */
+    padding-bottom: 50px;
+    width: 100%;
+}
+
+.nav_foot1{
+    width: 40%;
+}
+
+.nav_foot2{
+    width: 30%;
+    margin-left: 10%;
+}
+
+.nav_foot2 li{
+    margin: 10px 0;
+}
+
+.nav_foot3{
+    width: 30%;
+}
+
+.nav_foot3 li{
+    margin: 10px 0;
+}
+
+
 body{
   max-width: 100%; 
   /* width: 100%;         */
