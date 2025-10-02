@@ -132,3 +132,7 @@ Không thể sử dụng firestore storage nên chuyển hướng dùng link c�
 cài thêm thư viện @faker-js/faker 
 tạo thêm scripts sinh dữ liệu
 chỉnh sửa lại collection 
+
+2/10 :
+chỉnh sửa document, thêm slug cho categories để query dễ hơn
+test backend với module products

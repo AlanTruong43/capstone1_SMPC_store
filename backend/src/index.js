@@ -34,6 +34,11 @@ app.get('/health', (_req, res) => {
 const authRouter = require('./modules/auth/auth_routes');
 app.use('/auth', authRouter);
 
+// routes products
+const productRoutes = require("./modules/products/products_route.js");
+app.use("/products", productRoutes);
+
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, async () => {
   console.log(`API listening on http://localhost:${PORT}`);
