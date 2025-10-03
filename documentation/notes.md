@@ -136,3 +136,6 @@ chỉnh sửa lại collection
 2/10 :
 chỉnh sửa document, thêm slug cho categories để query dễ hơn
 test backend với module products
+
+3//10 :
+Sửa lại file product_list.html và js để liên kết với datbase, tạo thêm 1 route metadata để fetch dữ liệu từ firestore về, sửa lại url trong firestore, chỉnh cho các nút tìm, lọc theo category, condition, location giống với document, không bị hardcode
