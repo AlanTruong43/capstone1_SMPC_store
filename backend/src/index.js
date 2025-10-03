@@ -38,6 +38,10 @@ app.use('/auth', authRouter);
 const productRoutes = require("./modules/products/products_route.js");
 app.use("/products", productRoutes);
 
+// routes metadata
+const metadataRoutes = require("./modules/metadata/metadata_routes.js");
+app.use("/metadata", metadataRoutes);
+
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, async () => {
