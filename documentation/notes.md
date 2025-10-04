@@ -94,7 +94,7 @@
 
 ---
 
-## 8. Commissions Collection (`commissions`)
+## 8. Commissions Collection (`commissions`) // optional ?
 - **Fields**:
   - `transactionId` (string → `transactions/{id}`)
   - `sellerId` (string → `users/{uid}`)
@@ -105,7 +105,7 @@
 
 ---
 
-## 9. Chat Logs Collection (`chat_logs`)
+## 9. Chat Logs Collection (`chat_logs`)   //optional ?
 - **Fields**:
   - `userId` (string → `users/{uid}`)
   - `message` (string)

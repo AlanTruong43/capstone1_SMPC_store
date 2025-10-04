@@ -60,7 +60,7 @@
         });
   
         if (successBox) successBox.style.display = 'block';
-        setTimeout(() => { window.location.href = '/'; }, 800);
+        setTimeout(() => { window.location.href = '/pages/index.html'; }, 800);
       } catch (err) {
         const code = (err.code || '').toString();
         if (code.includes('invalid-email'))     emailErr.textContent = 'Email không hợp lệ';
@@ -158,8 +158,5 @@
             </div>
         </div>
     </div>
-
-    <script src="../../shared/js/form-utils.js"></script>
-    <script src="script.js"></script>
-</body>
+</body> 
 </html>
