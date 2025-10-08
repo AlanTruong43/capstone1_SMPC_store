@@ -353,3 +353,132 @@ div.product_page_1_1 h3{
     border-radius: 8px;
     border: 0px;
 }
+
+.type_product{
+    width: 90%;
+    margin: 0 auto;
+}
+
+.address_product{
+    padding-inline-start: 0px;
+}
+
+.address_product{
+    width: 100%;
+    display: flex;
+    margin: 20px 0;
+    margin-bottom: 20px;
+}
+
+.address_product li{
+    margin-right: 15px;
+    color: #6B7280;
+}
+
+.address_product li:last-child{
+    color: black;
+}
+
+.product_contain1{
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    /* align-items: center; */
+}
+
+.product_contain1_left{
+    width: 50%;
+
+}
+
+.product_contain1_img_main{
+    width: 600px;
+    height: 584px;
+    background-color: red;
+}
+
+.product_contain1_img_main img{
+    width: 100%;
+    box-shadow: 0 10px 10px #6B7280;
+}
+
+.product_contain1_img_flex{
+    width: 600px;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.product_contain1_img_flex img{
+    width: 100%;
+    width: 137px;
+    height: 137px;
+    padding: 2px;
+    box-shadow: 0 10px 10px #6B7280;
+}
+
+.product_contain1_img_flex img:hover{
+    background-color: #2563EB;
+}
+
+.product_contain1_right{
+    /* float: right; */
+    width: 50;
+}
+
+.status_product_detail{
+    display: flex;
+}
+
+.status_product_detail span{
+    margin-right: 20px;
+    padding: 4px 12px;
+    background-color: #DCFCE7;
+    border-radius: 9999px;
+    color: #15803D;
+}
+
+.price_item_detail{
+    display: flex;
+}
+
+.price_item_detail p{
+    margin-top: 20px;
+    margin-right: 15px;
+}
+
+.product_old_price{
+    color: #6B7280;
+}
+
+.product_save_price{
+    color: #16A34A;
+    font-weight: 700;
+}
+
+.info_product_detail{
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    border: 2px solid #4B5563;
+    padding: 10px 10px;
+    border-radius: 12px;
+}
+
+.info_product_detail_1{
+    display: flex;
+}
+
+.info_product_detail_1 img{
+    border-radius: 9999px;
+    /* background-color: red; */
+    margin-right: 20px;
+}
+
+.info_product_detail_2{
+    padding: 8px 14px;
+    border-radius: 8px;
+    background-color: white;
+    border: 2px solid #2563EB;
+    color: #2563EB;
+}
