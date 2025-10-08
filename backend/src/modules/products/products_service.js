@@ -78,10 +78,49 @@ async function deleteProduct(uid, productId) {
   return { success: true };
 }
 
+
+//hàm này giúp chuyển từ 1 document trong firestore thành 1 object để dễ dàng trả về cho frontend sau này
+function serializeDoc(doc) {
+  const data = doc.data();
+  // normalize Firestore Timestamp -> ISO string for frontend
+  if (data?.postDate?.toDate) data.postDate = data.postDate.toDate().toISOString();
+  return { id: doc.id, ...data };
+}
+
+//hàm này giúp lấy 1 sản phẩm theo id
+async function getProductById(id) {
+  const snap = await db.collection('products').doc(id).get();
+  if (!snap.exists) {
+    const err = new Error('Product not found');
+    err.status = 404;
+    throw err;
+  }
+
+  const product = serializeDoc(snap);
+
+  // Lấy thêm thông tin category
+  if (product.categoryId) {
+    const catSnap = await db.collection('categories').doc(product.categoryId).get();
+    if (catSnap.exists) {
+      const cat = catSnap.data();
+      product.category = {
+        id: catSnap.id,
+        name: cat.name,
+        description: cat.description,
+        slug: cat.slug || null
+      };
+    }
+  }
+
+  return product;
+}
+
+
 module.exports = {
   createProduct,
   getAllProducts,
   getUserProducts,
   updateProduct,
   deleteProduct,
+  getProductById,
 };

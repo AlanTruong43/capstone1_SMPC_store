@@ -5,7 +5,8 @@ const { validateAndNormalizeProduct } = require("./products_validator.js");
 const { createProduct, getAllProducts, getUserProducts, updateProduct, deleteProduct } =
   require("./products_service.js");
 const requireAuth = require("../../middlewares/auth_middleware.js"); // nếu export default thì đổi cho đúng
-
+const svc = require('./products_service');
+const { validate, validateProductIdParam } = require('./products_validator'); 
 const router = express.Router();
 
 router.post("/", requireAuth, async (req, res) => {
@@ -52,6 +53,16 @@ router.delete("/:id", requireAuth, async (req, res) => {
     res.json(result);
   } catch (e) {
     res.status(403).json({ error: e.message });
+  }
+});
+
+// GET /products/:id  -> product detail
+router.get('/:id', async (req, res, next) => {
+  try {
+    const product = await svc.getProductById(req.params.id);
+    res.json(product);
+  } catch (err) {
+    next(err);
   }
 });
 

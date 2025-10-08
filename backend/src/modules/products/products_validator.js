@@ -1,6 +1,7 @@
 // CommonJS
 const ALLOWED_CONDITIONS = ["new", "used"];
 const ALLOWED_STATUS = ["available", "sold"];
+const { param } = require('express-validator');
 
 function isNonEmptyString(v) {
   return typeof v === "string" && v.trim() !== "";
@@ -73,5 +74,11 @@ function validateAndNormalizeProduct(input = {}) {
   if (Object.keys(errors).length) return { valid: false, errors };
   return { valid: true, data: out };
 }
+
+
+exports.validateProductIdParam = [
+  param('id').isString().trim().notEmpty().withMessage('product id is required'),
+];
+
 
 module.exports = { validateAndNormalizeProduct };
