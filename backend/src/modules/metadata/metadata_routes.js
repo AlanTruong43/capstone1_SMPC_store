@@ -1,6 +1,6 @@
 // backend/src/modules/metadata/metadata_routes.js
 const express = require("express");
-const admin = require("../../config/firebase"); // đã export admin từ firebase.js
+const { admin, db } = require("../../config/firebase"); // đã export admin từ firebase.js
 const router = express.Router();
 
 // GET categories từ Firestore

@@ -1,7 +1,6 @@
 //viết logic CRUD, kết nối Firestore.
 // CommonJS
-const admin = require("../../config/firebase.js");
-const db = admin.firestore();
+const { admin, db } = require('../../config/firebase');
 const productCol = db.collection("products");
 const categoryCol = db.collection("categories");
 

@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const path = require('path');           // ✅ thêm path
+const path = require('path');     
 
 require('./config/firebase');           // init Firebase Admin
 
@@ -9,18 +9,18 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ trỏ đúng tới thư mục frontend (src -> .. -> .. -> frontend)
+// trỏ đúng tới thư mục frontend (src -> .. -> .. -> frontend)
 const FRONTEND_DIR = path.resolve(__dirname, '../../frontend');
 
-// ✅ phục vụ file tĩnh (css/js/img) trong frontend/
+// phục vụ file tĩnh (css/js/img) trong frontend/
 app.use(express.static(FRONTEND_DIR));
 
-// ✅ route gốc: trả về login_page.html
+//  route gốc: trả về login_page.html
 app.get('/', (_req, res) => {
   res.sendFile(path.join(FRONTEND_DIR, 'pages/register_page.html'));
 });
 
-// ✅ route /register: trả về register_page.html
+// route /register: trả về register_page.html
 app.get('/login', (_req, res) => {
   res.sendFile(path.join(FRONTEND_DIR, 'pages/login_page.html'));
 });
@@ -41,6 +41,17 @@ app.use("/products", productRoutes);
 // routes metadata
 const metadataRoutes = require("./modules/metadata/metadata_routes.js");
 app.use("/metadata", metadataRoutes);
+
+const aiRoutes = require('./modules/ai/ai_routes'); // <— ROUTER AI
+
+// mount AI
+app.use('/ai', aiRoutes);
+
+// trang thử nhanh
+app.get('/', (req, res) => {
+  res.redirect('/pages/ai_chat.html');
+});
+
 
 
 const PORT = process.env.PORT || 4000;
