@@ -457,7 +457,7 @@ div.product_page_1_1 h3{
 }
 
 .info_product_detail{
-    margin-top: 20px;
+    margin-top: 60px;
     display: flex;
     justify-content: space-between;
     border: 2px solid #4B5563;
@@ -481,4 +481,129 @@ div.product_page_1_1 h3{
     background-color: white;
     border: 2px solid #2563EB;
     color: #2563EB;
+}
+
+.quantity{
+    display: flex;
+    margin-top: 30px;
+    align-items: center;
+}
+
+.quantity_btn{
+    margin-left: 10px;
+    border: 2px solid #4B5563;
+    padding: 10px 15px;
+    border-radius: 6px;
+    align-items: center;
+}
+
+.quantity_input{
+    margin: 0 15px;
+    /* border-left: 2px solid #4B5563;
+    border-right: 2px solid #4B5563; */
+    /* padding: 14px 15px; */
+}
+
+.quantity_input {
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 5px 5px;
+    border: 0;
+    outline: 0;
+    border-left: 2px solid #4B5563;
+    border-right: 2px solid #4B5563;
+}
+
+.quantity_input::-webkit-outer-spin-button,
+.quantity_input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.quantity_btn button{
+    background-color: white;
+    border: none;
+    font-size: larger;
+}
+
+.product_detail_btn{
+    display: flex;
+    justify-content: space-between;
+
+}
+
+.product_detail_btn button{
+    padding: 12px 65px;
+    color: white;
+    border-radius: 8px;
+    margin-top: 30px;
+    font-size: medium;
+}
+
+.product_contain2 {
+    width: 90%;
+    display: flex;
+    margin: 0 auto;
+    margin-top: 50px;
+    gap: 40px; 
+    border: 2px solid #4B5563;
+    border-radius: 8px;
+}
+
+.product_contain2 h3{
+    margin: 20px 0;
+}
+
+.product_detail_description {
+    width: 60%;
+    padding-left: 40px;
+    padding-right: 20px;
+    border-right: 2px solid #4B5563;
+}
+
+.specifications {
+    width: 40%;
+}
+
+.specifications_info {
+    display: flex;
+    gap: 20px; 
+    padding-bottom: 20px;
+}
+
+.specifications_info_1,
+.specifications_info_2 {
+    flex: 1; 
+    padding: 0; 
+    margin: 0;  
+}
+
+.specifications_info_1 {
+    min-width: 150px; 
+}
+
+.specifications_info_2 p {
+    width: auto; 
+    white-space: nowrap;
+    
+}
+
+.specifications_info_1 li,
+.specifications_info_2 li{
+    margin-bottom: 10px;
+}
+
+.related_product{
+    width: 90%;
+    margin: 0 auto;
+    margin-top: 60px;
+}
+
+.related_product_list{
+    justify-content: space-between;
+    display: flex;
+    margin-top: 20px;
 }
