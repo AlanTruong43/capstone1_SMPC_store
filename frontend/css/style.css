@@ -74,6 +74,8 @@ ul.info_shop li.sellnow a button{
 }
 
 footer{
+    margin-top: 50px;
+    border-top: 2px solid #6B7280;
     background-color: #DBEAFE;
     /* height: 500px; */
     padding-bottom: 50px;
@@ -106,6 +108,7 @@ body{
   max-width: 100%; 
   /* width: 100%;         */
   margin: 0 auto;  
+  /* background-color: #D1D5DB; */
 }
 
 section.product_page_1{
@@ -606,4 +609,289 @@ div.product_page_1_1 h3{
     justify-content: space-between;
     display: flex;
     margin-top: 20px;
+}
+
+.seller{
+    width: 90%;
+    margin: 0 auto;
+}
+
+.seller_1{
+    width: 100%;
+    text-align: center;
+}
+
+.seller_1 h1{
+    margin: 20px 0px;
+}
+.seller_1 p{
+    margin-bottom: 20px;
+}
+
+.seller_2{
+    width: 80%;
+    background-color: white;
+    margin: 0 auto;
+    padding: 20px 0;
+    border-radius: 12px;
+}
+
+.seller_2 div{
+    width: 90%;
+    margin: 0 auto;
+}
+
+.seller_2 img{
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+.seller_2_tips{
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.seller_2_tips_more{
+    width: 80%;
+    display: flex;
+    justify-content: space-between;
+    /* margin-top: 20px; */
+}
+
+.seller_2_tips_more div{
+    display: flex;
+    margin-top: 20px;
+}
+
+.seller_3 {
+    width: 80%;
+    margin: 0 auto;
+    background-color: white;
+    padding: 40px;
+    border-radius: 12px;
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.seller_3_1 {
+    display: flex;
+    width: 90%;
+    margin: 0 auto;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.seller_3_2 {
+    display: flex;
+    width: 90%;
+    margin: 0 auto;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.seller_3_3 {
+    display: inline-block;
+    width: 90%;
+    margin: 0 auto;
+    align-items: center;
+}
+
+.seller_3_must {
+    color: red;
+}
+
+.seller_3_1_1, .seller_3_1_2, .seller_3_2_1, .seller_3_2_2, .seller_3_3 {
+    flex: 1;
+}
+
+.seller_3_1_1 input, .seller_3_2_2 input, .seller_3_3 input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.seller_3_1_2 select, .seller_3_2_1 select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+    background-color: white;
+}
+
+.seller_3 h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.seller_3 p {
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #333;
+}
+
+.seller_3_3 textarea {
+    width: 100%;
+    height: 200px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+    text-align: left;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.seller_4 {
+    width: 100%;
+    margin: 0 auto;
+    background-color: white;
+    padding: 40px;
+    border-radius: 12px;
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 40vh;
+    box-sizing: border-box;
+}
+
+.seller_4_must {
+    color: red;
+}
+
+.seller_4 h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.seller_4_upload {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.upload_area {
+    border: 2px dashed #ddd;
+    border-radius: 12px;
+    padding: 60px 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #fafafa;
+}
+
+.upload_area:hover {
+    border-color: #007bff;
+    background-color: #f0f8ff;
+}
+
+.upload_icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.upload_area p {
+    margin-bottom: 10px;
+    color: #666;
+    font-size: 16px;
+}
+
+.upload_area strong {
+    color: #007bff;
+}
+
+.upload_note {
+    font-size: 14px !important;
+    color: #999 !important;
+    margin-top: 15px !important;
+}
+
+.seller_3_btn{
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+    margin: 0 auto;
+}
+
+.seller_3 button{
+    border-radius: 8px;
+    padding: 24px 20%;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.seller_3_btn_1{
+    background-color: #2563EB;
+    color: white;
+    font-size: medium;
+    transition: background-color 0.3s ease;
+}
+
+.seller_3_btn_2{
+    background-color: white;
+    font-size: medium;
+    color: #2563EB;
+    border: 2px solid #2563EB;
+    transition: background-color 0.3s ease;
+    /* margin-bottom: 30px; */
+}
+
+.seller_3_btn_2:hover{
+    background-color: red;
+    
+}
+
+.seller_3_btn_1:hover{
+    background-color: #16A34A;
+}
+
+.seller_5{
+    width: calc(80% - 20px);
+    margin: 0 auto;
+    background-color: #FEF08A;
+    padding: 20px;
+    margin-top: 30px;
+    border-radius: 12px;
+}
+
+.seller_5 img{
+    width: 20px;
+    height: 20px;
+}
+
+.seller_5_1{
+    display: flex;
+    width: 90%;
+    margin: 0 auto;
+    /* margin-top: 30px; */
+}
+
+.seller_5_2{
+    display: flex;
+    width: 90%;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+
+.seller_5_2_1 div{
+    display: flex;
+    margin-bottom: 20px;
+    margin-right: 600px;
+}
+
+.seller_5_2_2 div{
+    display: flex;
+    margin-bottom: 20px;
 }
