@@ -11,9 +11,12 @@ app.use(express.json());
 
 // trỏ đúng tới thư mục frontend (src -> .. -> .. -> frontend)
 const FRONTEND_DIR = path.resolve(__dirname, '../../frontend');
+const IMAGES_DIR = path.resolve(__dirname, '../../img');
 
 // phục vụ file tĩnh (css/js/img) trong frontend/
 app.use(express.static(FRONTEND_DIR));
+// phục vụ thư mục img gốc (ngoài frontend/)
+app.use('/img', express.static(IMAGES_DIR));
 
 //  route gốc: trả về login_page.html
 app.get('/', (_req, res) => {
@@ -43,9 +46,11 @@ const metadataRoutes = require("./modules/metadata/metadata_routes.js");
 app.use("/metadata", metadataRoutes);
 
 const aiRoutes = require('./modules/ai/ai_routes'); // <— ROUTER AI
+const usersRoutes = require('./modules/users/users_routes');
 
 // mount AI
 app.use('/ai', aiRoutes);
+app.use('/users', usersRoutes);
 
 // trang thử nhanh
 app.get('/', (req, res) => {
