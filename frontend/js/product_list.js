@@ -137,7 +137,7 @@ function renderProducts(products) {
     container.innerHTML = products.map(p => {
       const catName = state.categoryNameById[p.categoryId] || "Unknown";
       return `
-        <div class="product_item_card">
+        <div class="product_item_card" data-id="${p.id}">
           <div class="product-thumb">
             <img
               src="${p.imageUrl}"
@@ -157,7 +157,7 @@ function renderProducts(products) {
               <span class="meta_tag">${fmtDate(p.postDate)}</span>
             </div>
             <div class="product_item_actions">
-              <a class="btn_view" href="product_detail.html?id=${p.id}">View Details</a>
+              <a class="btn_view" href="product_details.html?id=${p.id}">View Details</a>
               <button class="product_like" aria-label="like" data-liked="false">
                 <img src="../img/icon/white%20heart.png" alt="like"/>
               </button>
@@ -166,16 +166,37 @@ function renderProducts(products) {
         </div>
       `;
     }).join("");
-  
-    // Toggle "thả tim"
+
+    // Click handling: navigate when clicking card OR like button; let anchor work normally
     container.addEventListener("click", (e) => {
-      const btn = e.target.closest(".product_like");
-      if (!btn) return;
-      const img = btn.querySelector("img");
-      const liked = btn.getAttribute("data-liked") === "true";
-      btn.setAttribute("data-liked", String(!liked));
-      img.src = liked ? "../img/icon/white%20heart.png" : "../img/icon/white%20heart%20(1).png";
-    }, { once: true });
+      try {
+        const card = e.target.closest('.product_item_card');
+        if (!card) return;
+        const id = card.getAttribute('data-id');
+        if (!id) {
+          console.error('[NAV] Missing product id on card', { card });
+          return;
+        }
+
+        const isLike = !!e.target.closest('.product_like');
+        const isAnchor = !!e.target.closest('.btn_view');
+        const url = `product_details.html?id=${encodeURIComponent(id)}`;
+
+        if (isLike) {
+          e.preventDefault();
+          e.stopPropagation();
+          window.location.href = url;
+          return;
+        }
+
+        // If click is not on the anchor itself, navigate programmatically
+        if (!isAnchor) {
+          window.location.href = url;
+        }
+      } catch (err) {
+        console.error('[NAV] Failed to handle product card click', err);
+      }
+    });
   }
   
   

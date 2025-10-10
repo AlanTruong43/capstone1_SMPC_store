@@ -139,3 +139,51 @@ test backend với module products
 
 3//10 :
 Sửa lại file product_list.html và js để liên kết với datbase, tạo thêm 1 route metadata để fetch dữ liệu từ firestore về, sửa lại url trong firestore, chỉnh cho các nút tìm, lọc theo category, condition, location giống với document, không bị hardcode
+
+10/10 :
+- Sửa link chi tiết sản phẩm ở `frontend/js/product_list.js` từ `product_detail.html` → `product_details.html`.
+- Thêm các ID hook vào `frontend/pages/product_details.html` để map dữ liệu động (không đổi CSS):
+  - Breadcrumb: `breadcrumbCategory`, `breadcrumbProduct`, `detailCategory`, `detailSubCategory`.
+  - Thông tin chính: `productTitle`, `mainImage` (giữ nguyên), `productCondition`, `productLocation`, `productShipping` (ẩn), `productPrice`, `productOldPrice` (ẩn), `productSave` (ẩn), `sellerName`, `productDescription`.
+  - Liên quan: `relatedProducts` (container render danh sách).
+- Cập nhật `frontend/js/product_detail.js` để:
+  - Đọc `id` từ query string và gọi `GET /products/:id`.
+  - Map field: `name`, `imageUrl` (onerror hiển thị "This image is not available now"), `price` (format VND), `condition` (map `new`→"New", `used`→"Used"), `location`, `description`, breadcrumb theo `category.name`.
+  - Thử gọi `GET /users/:id` theo `sellerId` để lấy `displayName/email`; nếu không có endpoint/không tìm thấy thì fallback hiển thị `sellerId` và `console.log` theo yêu cầu.
+  - Gọi `GET /products` để lọc và render tối đa 4 sản phẩm liên quan cùng `categoryId` (loại bỏ sản phẩm hiện tại); xử lý lỗi ảnh cho từng item liên quan.
+  - Ẩn các trường chưa có dữ liệu trong DB: old price/discount/shipping.
+  - Xử lý lỗi: thiếu `id`/không fetch được → đặt tiêu đề thân thiện và ghi log; không thay đổi backend error handler.
+- Backend: thêm endpoint `GET /users/:id` tại `backend/src/modules/users/users_routes.js` trả về tối thiểu `{ id, displayName, email, role }` từ collection `users`; mount tại `/users` trong `backend/src/index.js`.
+- Không thay đổi CSS.
+
+- Tình trạng hiển thị hiện tại:
+  - Trang danh sách và trang chi tiết đã hiển thị được sản phẩm bình thường từ Firestore thông qua các endpoint `/products` và `/products/:id`.
+  - Breadcrumb, giá (format VND), condition, location, description đã map đúng; ảnh có xử lý lỗi (fallback thông báo khi ảnh hỏng).
+
+- Các chỉnh sửa chính đã thực hiện để khắc phục tình trạng trước đó:
+  - Sửa đường dẫn trang chi tiết trong danh sách sản phẩm cho đúng tên file.
+  - Bổ sung các ID hook vào HTML để gán dữ liệu động mà không thay đổi CSS.
+  - Cập nhật script trang chi tiết để đọc `id` từ URL, gọi API chi tiết sản phẩm, map dữ liệu và render sản phẩm liên quan.
+  - Thêm endpoint `/users/:id` để lấy thông tin người bán cơ bản (nếu có), có fallback khi không tồn tại.
+
+- Vấn đề còn tồn tại:
+  - CSS: một số phần căn lề/khoảng cách/icon giữa trang danh sách và trang chi tiết chưa đồng nhất; cần tinh chỉnh CSS sau (chưa thay đổi trong lần này).
+  - Hardcode: một vài phần trên trang chi tiết vẫn mang tính tĩnh/chưa có dữ liệu từ DB (ví dụ: old price/discount/shipping đang ẩn hoặc placeholder; avatar người bán; bộ ảnh thumbnail tĩnh chưa gắn gallery theo sản phẩm).
+  - i18n: nhãn condition đang hiển thị "New/Used" cần Việt hóa đồng nhất toàn site nếu muốn.
+  - Breadcrumb chưa hỗ trợ đa cấp khi danh mục có nhiều tầng (hiện hiển thị 1 cấp dựa trên category hiện tại).
+
+Hướng dẫn test thủ công:
+1) Khởi chạy backend:
+   - `cd capstone1_SMPC_store/backend`
+   - `npm install` (lần đầu)
+   - `npm start` (hoặc `node src/index.js`)
+2) Mở trang danh sách: `http://localhost:4000/pages/product_list.html`.
+   - Kiểm tra các thẻ sản phẩm hiển thị, bấm "View Details" → điều hướng tới `product_details.html?id=<productId>`.
+3) Trên trang chi tiết:
+   - Kiểm tra Title, Breadcrumb, Price (định dạng VND), Condition (New/Used), Location, Description.
+   - Kiểm tra ảnh: nếu ảnh lỗi → hiển thị dòng "This image is not available now".
+   - Kiểm tra Seller: nếu có `users/{sellerId}` với `displayName` → hiển thị tên; nếu không → hiển thị `sellerId` và xem `console.log` thông báo endpoint không sẵn sàng/không tìm thấy.
+   - Kiểm tra sản phẩm liên quan: hiển thị tối đa 4 sản phẩm cùng `categoryId`, không bao gồm sản phẩm hiện tại.
+4) Kiểm thử lỗi:
+   - Truy cập `product_details.html` KHÔNG có `?id=` → tiêu đề hiển thị thông báo thiếu ID.
+   - Truy cập với `?id` không tồn tại → tiêu đề hiển thị lỗi tải sản phẩm, xem `console.log`.

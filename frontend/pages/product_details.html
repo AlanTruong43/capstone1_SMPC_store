@@ -35,10 +35,10 @@
             <li>></li>
             <li>Products</li>
             <li>></li>
-            <li>Electronics</li>
+            <li id="breadcrumbCategory">Category</li>
             <li>></li>
             <!-- tiêu đề product -->
-            <li>Iphone 13 promax</li>
+            <li id="breadcrumbProduct">Product</li>
         </ul>
     </section>
 
@@ -59,30 +59,30 @@
 
         <div class="product_contain1_right">
             <ul class="address_product">
-                <li>Electronics</li>
+                <li id="detailCategory">Category</li>
                 <li>></li>
-                <li style="color: #2563EB;">Smartphone</li>
+                <li id="detailSubCategory" style="color: #2563EB;">Category</li>
             </ul>
 
-            <h3 class="product_title" style="margin: 20px 0;">iPhone 13 Pro Max 256GB - Space Gray</h3>
+            <h3 id="productTitle" class="product_title" style="margin: 20px 0;">Product Name</h3>
             
             <div class="status_product_detail">
-                <span class="status_item_detail">Like New</span>
-                <span class="location_item_detail">Ho Chi Minh</span>
-                <span class="shipping_item_detail">Fast Shipping</span>
+                <span id="productCondition" class="status_item_detail"></span>
+                <span id="productLocation" class="location_item_detail"></span>
+                <span id="productShipping" class="shipping_item_detail" style="display:none;"></span>
             </div>
 
             <div class="price_item_detail">
-                <p class="product_price" style="font-size: 36px;">18,500,000 ₫</p>
-                <p class="product_old_price" style="font-size: 20px;">25,000,000 ₫</p>
-                <p class="product_save_price">Save 26%</p>
+                <p id="productPrice" class="product_price" style="font-size: 36px;"></p>
+                <p id="productOldPrice" class="product_old_price" style="font-size: 20px; display:none;"></p>
+                <p id="productSave" class="product_save_price" style="display:none;"></p>
             </div>
 
             <div class="info_product_detail">
                 <div class="info_product_detail_1">
                     <img src="/img/icon/user.png" alt="" class="avt_info_product_detail">
                     <div class="info_product_detail_1_2">
-                        <p class="name_seller" style="font-weight: 500;">AlanTruong</p>
+                        <p id="sellerName" class="name_seller" style="font-weight: 500;"></p>
                         <div class="rate">
                             <p>5</p>
                             <img src="/img/icon/star.png" alt="">
@@ -112,7 +112,7 @@
     <section class="product_contain2">
         <div class="product_detail_description">
             <h3>Product Description</h3>
-            <p>This iPhone 13 Pro Max is in excellent condition with minimal signs of use. The device has been well-maintained with a screen protector and case since day one. Battery health is at 92% and all functions work perfectly. Includes original charger and box. Perfect for anyone looking for a premium smartphone at a great price.</p>
+            <p id="productDescription"></p>
         </div>
         <div class="specifications">
             <h3>Specifications</h3>
@@ -138,55 +138,7 @@
     </section>
     <section class="related_product">
         <h3>Related Products</h3>
-        <div class="related_product_list">
-        <div class="product_info_short">
-            <div class="product_info_short_head">
-                <img src="/img/banner/d31390df38a31d0d02df82f4738fa6e1 (1).jpg" alt="" class="product_id">
-                <span class="product_status">Like New</span>
-                <span class="product_like"><img src="/img/icon/white heart.png" alt=""></span>
-            </div>
-            <div class="product_info_long">
-                <h3 class="product_title" style="margin: 20px 0;">iphone 13 ProxMax</h3>
-                <p class="product_price" style="margin-bottom: 20px;">18,500,000 VND</p>
-            </div>
-        </div>
-
-        <div class="product_info_short">
-            <div class="product_info_short_head">
-                <img src="/img/banner/d31390df38a31d0d02df82f4738fa6e1 (1).jpg" alt="" class="product_id">
-                <span class="product_status">Like New</span>
-                <span class="product_like"><img src="/img/icon/white heart.png" alt=""></span>
-            </div>
-            <div class="product_info_long">
-                <h3 class="product_title" style="margin: 20px 0;">iphone 13 ProxMax</h3>
-                <p class="product_price" style="margin-bottom: 20px;">18,500,000 VND</p>
-            </div>
-        </div>
-
-        <div class="product_info_short">
-            <div class="product_info_short_head">
-                <img src="/img/banner/d31390df38a31d0d02df82f4738fa6e1 (1).jpg" alt="" class="product_id">
-                <span class="product_status">Like New</span>
-                <span class="product_like"><img src="/img/icon/white heart.png" alt=""></span>
-            </div>
-            <div class="product_info_long">
-                <h3 class="product_title" style="margin: 20px 0;">iphone 13 ProxMax</h3>
-                <p class="product_price" style="margin-bottom: 20px;">18,500,000 VND</p>
-            </div>
-        </div>
-
-        <div class="product_info_short">
-            <div class="product_info_short_head">
-                <img src="/img/banner/d31390df38a31d0d02df82f4738fa6e1 (1).jpg" alt="" class="product_id">
-                <span class="product_status">Like New</span>
-                <span class="product_like"><img src="/img/icon/white heart.png" alt=""></span>
-            </div>
-            <div class="product_info_long">
-                <h3 class="product_title" style="margin: 20px 0;">iphone 13 ProxMax</h3>
-                <p class="product_price" style="margin-bottom: 20px;">18,500,000 VND</p>
-            </div>
-        </div>
-        </div>
+        <div id="relatedProducts" class="related_product_list"></div>
     </section>
 
   <footer>
@@ -221,6 +173,6 @@
     </nav>
   </footer>
 
-    <script src="/frontend/js/product_detail.js"></script>
+    <script src="../js/product_detail.js"></script>
 </body>
 </html>
