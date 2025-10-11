@@ -895,3 +895,124 @@ div.product_page_1_1 h3{
     display: flex;
     margin-bottom: 20px;
 }
+
+.cart_1{
+    width: 90%;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+
+.cart_1 p{
+    margin: 20px 0;
+}
+
+.cart_2{
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+}
+
+.cart_2_left{
+    width: 60%;
+}
+
+.cart_2_right{
+    width: 35%;
+    background-color: white;
+    border-radius: 12px;
+    padding: 20px 0;
+    padding-left: 20px;
+    height: calc(40vh + 40px);
+}
+
+.cart_2_left_1{
+    width: 100%;
+    display: flex;
+    background-color: white;
+    border-radius: 12px;
+    padding: 20px 0;
+    padding-left: 20px;
+}
+
+.cart_2_left_2{
+    width: 100%;
+}
+
+.product_cart{
+    width: 100%;
+    margin-top: 20px;
+    padding: 20px 0;
+    padding-left: 20px;
+    display: flex;
+    background-color: white;
+    border-radius: 12px;
+}
+
+.product_cart_img{
+    width: 10%;
+}
+
+.product_cart_img img{
+    width: 100%;
+}
+
+.product_cart_info{
+    margin-left: 20px;
+    width: calc(100% - 150px);
+}
+
+.product_cart_info_1{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.product_cart_info p{
+    margin-bottom: 15px;
+}
+
+.product_cart_info_2{
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.status_item_cart{
+    padding: 4px 12px;
+    background-color: #DCFCE7;
+    border-radius: 9999px;
+    color: #15803D;
+}
+
+.cart_2_right > *{
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    width: calc(100% - 40px);
+}
+
+.cart_2_right img{
+    width: 16px;
+    height: 12px;
+    margin-right: 20px;
+}
+
+.cart_2_right_policy_1, .cart_2_right_policy_2, .cart_2_right_policy_3{
+    justify-content: start;
+}
+
+.cart_2_right button{
+    padding: 12px 65px;
+    color: white;
+    border-radius: 8px;
+    margin-top: 30px;
+    font-size: medium;
+    justify-content: center;
+}
+
+.cart_2_right .seller_3_btn_2:hover{
+    background-color: yellow;
+}
