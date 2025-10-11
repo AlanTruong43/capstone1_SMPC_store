@@ -12,14 +12,26 @@ router.post('/query', async (req, res) => {
 
     const result = await searchProductsByIntent({ query, limit: Number(limit) || 8 });
 
-    // 🔹 Dựng phần trả lời thân thiện
+    // 🔹 Dựng phần trả lời thân thiện (linh hoạt hơn với min/max/keywords)
     const reply = [];
-    if (result.intent.categorySlug)
-      reply.push(`Bạn đang tìm ${result.intent.categorySlug.replace('-', ' ')}.`);
-    if (result.intent.condition)
-      reply.push(`Loại hàng ${result.intent.condition === 'new' ? 'mới' : 'đã qua sử dụng'}.`);
-    if (result.intent.maxPrice)
-      reply.push(`Giá dưới ${result.intent.maxPrice.toLocaleString('vi-VN')} VND.`);
+    const it = result.intent || {};
+    if (it.categorySlug) {
+      reply.push(`Bạn đang tìm ${String(it.categorySlug).replace('-', ' ')}.`);
+    }
+    if (it.condition) {
+      reply.push(`Loại hàng ${it.condition === 'new' ? 'mới' : 'đã qua sử dụng'}.`);
+    }
+    if (it.minPrice && it.maxPrice) {
+      reply.push(`Giá từ ${it.minPrice.toLocaleString('vi-VN')} đến ${it.maxPrice.toLocaleString('vi-VN')} VND.`);
+    } else if (it.maxPrice) {
+      reply.push(`Giá dưới ${it.maxPrice.toLocaleString('vi-VN')} VND.`);
+    } else if (it.minPrice) {
+      reply.push(`Giá từ ${it.minPrice.toLocaleString('vi-VN')} VND.`);
+    }
+    if (Array.isArray(it.keywords) && it.keywords.length) {
+      const kws = it.keywords.slice(0, 5).join(', ');
+      reply.push(`Từ khóa: ${kws}.`);
+    }
 
     const summary = reply.length
       ? `OK, tôi đã tìm được một số sản phẩm phù hợp:\n${reply.join(' ')}`
@@ -28,6 +40,11 @@ router.post('/query', async (req, res) => {
     res.json({
       reply: summary,
       items: result.products,
+      debugIntent: result.intent,
+      debugCount: {
+        total: result.__debugTotal || null,
+        afterFilters: Array.isArray(result.products) ? result.products.length : null
+      }
     });
   } catch (e) {
     console.error(e);
