@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="../css/admin.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+  <title>Dash Board</title>
+</head>
+<body>
+    <header>
+        <nav>
+        <a href="index.html" class="home_icon">
+            <p class="logo_1">SMPC</p><p class="logo_2">Second-hand Marketplace</p>
+        </a>
+        <ul class="info_shop">
+            <li><img src="/img/icon/icons8-alert-24.png" alt="alert"></li>
+            <li><div class="viewsite">
+                <img src="/img/icon/icons8-share-50.png" alt="">
+                <p>Viewsite</p>
+            </div></li>
+            <li>
+                <div class="logout">
+                    <img src="/img/icon/icons8-logout-50.png" alt="">
+                    <p>Logout</p>
+                </div>
+            </li>
+        </ul>
+        </nav>
+    </header>
+
+    <section class="body">
+        <section class="menu">
+            <a href="/frontend/admin/dashboard.html">
+                <div class="dashboard active_menu">
+                    <img src="/img/icon/active icon admin menu/icons8-dashboard-24.png" alt="">
+                    <p>Dashboard</p>
+                </div>
+            </a>
+            <a href="/frontend/admin/user_management.html">
+                <div class="user_management">
+                    <img src="/img/icon/icons8-users-settings-32 (1).png" alt="">
+                    <p>User Management</p>
+                </div>
+            </a>
+            <a href="/frontend/admin/order_management.html">
+                <div class="order_management">
+                    <img src="/img/icon/icons8-order-management-66.png" alt="">
+                    <p>Order Management</p>
+                </div>
+            </a>
+            <a href="commission.html">
+                <div class="commission">
+                    <img src="/img/icon/icons8-commission-64.png" alt="">
+                    <p>Commission</p>
+                </div>
+            </a>
+            <a href="/frontend/admin/Products.html">
+                <div class="products">
+                    <img src="/img/icon/icons8-product-50.png" alt="">
+                    <p>Products</p>
+                </div>
+            </a>
+            <a href="/frontend/admin/analytics.html">
+                <div class="analytics">
+                    <img src="/img/icon/icons8-analytic-64.png" alt="">
+                    <p>Analytics</p>
+                </div>
+            </a>
+            <a href="/frontend/admin/setting.html">
+                <div class="setting">
+                    <img src="/img/icon/icons8-setting-50.png" alt="">
+                    <p>Setting</p>
+                </div>
+            </a>
+        </section>
+
+        <section class="content">
+            <div class="dashboard_content_1">
+                <div class="dashboard_content_1_1">
+                    <h3>Dashboard Overview</h3>
+                    <p>Monitor your marketplace performance and key metrics</p>
+                </div>
+                <div class="dashboard_content_1_2">
+                    <select name="" id="">
+                        <option value="7d">7 Days</option>
+                        <option value="1w">1 Weeks</option>
+                        <option value="2w">2 Weeks</option>
+                        <option value="1m">1 Month</option>
+                        <option value="3m">3 Month</option>
+                        <option value="1y">1 Years</option>
+                    </select>
+                    <button><img src="/img/icon/icons8-export-24.png" alt=""><p>Export</p></button>
+                </div>
+            </div>
+            <div class="dashboard_content_2">
+                <div class="bar">
+                    <div class="total_bar">
+                        <div class="total_bar_1">
+                            <p class="total_bar_title">Total Revenue</p>
+                            <p class="total_bar_price">₫2,847,500</p>
+                        </div>
+                        <img src="/img/icon/total bar/icons8-dollar-50.png" alt="">
+                    </div>
+                    <p class="com">
+                        <img src="/img/icon/total bar/icons8-arrow-50.png" alt="">
+                        <span>+12.5%</span>
+                        vs last period
+                    </p>
+                </div>
+                <div class="bar">
+                    <div class="total_bar">
+                        <div class="total_bar_1">
+                            <p class="total_bar_title">Total Commission</p>
+                            <p class="total_bar_price">₫142,375</p>
+                        </div>
+                        <!-- thay img mũi tên giảm -->
+                        <img src="/img/icon/total bar/icons8-commission-64.png" alt="">
+                    </div>
+                    <p class="com">
+                        <img src="/img/icon/total bar/icons8-arrow-50 (1).png" alt="">
+                        <!-- thêm color red vào thẻ span total giảm -->
+                        <span style="color: red;">+8.2%</span>
+                        vs last period
+                    </p>
+                </div>
+                <div class="bar">
+                    <div class="total_bar">
+                        <div class="total_bar_1">
+                            <p class="total_bar_title">Total Orders</p>
+                            <p class="total_bar_price">1,247</p>
+                        </div>
+                        <img src="/img/icon/total bar/icons8-order-50.png" alt="">
+                    </div>
+                    <p class="com">
+                        <img src="/img/icon/total bar/icons8-arrow-50.png" alt="">
+                        <span>+15.3%</span>
+                        vs last period
+                    </p>
+                </div>
+                <div class="bar">
+                    <div class="total_bar">
+                        <div class="total_bar_1">
+                            <p class="total_bar_title">Total Users</p>
+                            <p class="total_bar_price">8,432</p>
+                        </div>
+                        <img src="/img/icon/total bar/icons8-user-32.png" alt="">
+                    </div>
+                    <p class="com">
+                        <img src="/img/icon/total bar/icons8-arrow-50.png" alt="">
+                        <span>5.7%</span>
+                        vs last period
+                    </p>
+                </div>
+            </div>
+            <div class="dashboard_content_3">
+                
+            </div>
+        </section>
+    </section>
+</body>
+</html>
