@@ -714,3 +714,266 @@ body.has-sticky-header {
         font-size: 28px
     }
 }
+
+/* cart */
+.cart_2_right .seller_3_btn_2:hover {
+    background-color: yellow;
+}
+
+/* spin */
+/* CSS cho Lucky Wheel - Đã fix để phù hợp với header và footer */
+.lucky-wheel-container {
+    text-align: center;
+    padding: 50px 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: calc(100vh - 200px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.lucky-wheel-container h1 {
+    color: white;
+    margin-bottom: 40px;
+    font-size: 32px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.wheel-wrapper {
+    position: relative;
+    width: 350px;
+    height: 350px;
+    margin: 0 auto 50px;
+}
+
+.wheel {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    position: relative;
+    transition: transform 4s cubic-bezier(0.2, 0.8, 0.3, 1);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+    background: conic-gradient(#FF6B6B 0deg 45deg,
+            #4ECDC4 45deg 90deg,
+            #45B7D1 90deg 135deg,
+            #96CEB4 135deg 180deg,
+            #FFEAA7 180deg 225deg,
+            #DDA0DD 225deg 270deg,
+            #98D8C8 270deg 315deg,
+            #F7DC6F 315deg 360deg);
+}
+
+.segment {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    top: 0;
+    left: 50%;
+    transform-origin: 0% 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 40px;
+    font-weight: bold;
+    font-size: 14px;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.segment-content {
+    transform: rotate(45deg);
+    text-align: center;
+    width: 80px;
+    font-size: 12px;
+}
+
+.spin-pointer {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 50px;
+    color: #ff0000;
+    z-index: 10;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.7));
+}
+
+.spin-button {
+    background: linear-gradient(45deg, #FF6B6B, #FF8E53);
+    color: white;
+    border: none;
+    padding: 20px 60px;
+    font-size: 22px;
+    font-weight: bold;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 20px;
+}
+
+.spin-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 25px rgba(255, 107, 107, 0.6);
+}
+
+.spin-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.result-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.popup-content {
+    background: white;
+    padding: 50px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 450px;
+    width: 90%;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    animation: popupShow 0.5s ease;
+}
+
+@keyframes popupShow {
+    from {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.popup-content h3 {
+    color: #FF6B6B;
+    font-size: 32px;
+    margin-bottom: 25px;
+}
+
+.popup-content p {
+    font-size: 20px;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+#prizeName {
+    color: #FF6B6B;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+#closePopup {
+    background: #4ECDC4;
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 18px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+#closePopup:hover {
+    background: #45B7D1;
+    transform: scale(1.05);
+}
+
+/* Hiệu ứng confetti */
+@keyframes confettiFall {
+    0% {
+        transform: translateY(-10px) rotate(0deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.confetti {
+    position: fixed;
+    width: 12px;
+    height: 12px;
+    pointer-events: none;
+    z-index: 1001;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .lucky-wheel-container {
+        padding: 30px 20px;
+        min-height: calc(100vh - 150px);
+    }
+
+    .wheel-wrapper {
+        width: 280px;
+        height: 280px;
+    }
+
+    .segment {
+        padding-left: 30px;
+    }
+
+    .segment-content {
+        font-size: 10px;
+        width: 60px;
+    }
+
+    .spin-button {
+        padding: 18px 40px;
+        font-size: 18px;
+    }
+
+    .popup-content {
+        padding: 30px;
+    }
+
+    .popup-content h3 {
+        font-size: 28px;
+    }
+
+    .popup-content p {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .wheel-wrapper {
+        width: 250px;
+        height: 250px;
+    }
+
+    .segment {
+        padding-left: 25px;
+    }
+
+    .segment-content {
+        font-size: 9px;
+        width: 50px;
+    }
+
+    .spin-button {
+        padding: 15px 30px;
+        font-size: 16px;
+    }
+}
