@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../css/style.css"/>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet"/>
-    <title>Home</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@300;400;500;700&display=swap"
+    rel="stylesheet" />
+  <title>Home</title>
+  <!-- Styles moved to ../css/style.css -->
 </head>
+
 <body>
   <header>
     <nav>
       <a href="index.html" class="home_icon">
-        <p class="logo_1">SMPC</p><p class="logo_2">Second-hand Marketplace</p>
+        <p class="logo_1">SMPC</p>
+        <p class="logo_2">Second-hand Marketplace</p>
       </a>
       <ul class="nav_menu">
         <li><a href="index.html">Home</a></li>
@@ -29,20 +34,311 @@
     </nav>
   </header>
 
-    <section class="body1">
-        <img class="banner_body1" src="/img/banner/d31390df38a31d0d02df82f4738fa6e1 (1).jpg" alt="">
-        <h1 class="title1">Find Your Perfect</h1>
-        <h1 class="title2">Second-Hand Find</h1>
-        <h2 class="content1">Discover quality pre-owned items with personalized AI recommendations. <h2 class="content2">Smart shopping made simple.</h2></h2>
-        <div class="search_bar">
-            <img src="/img/icon/search.png" alt="">
-            <input type="text" class="search">
-            <button class="btn_search">SEARCH</button>
-        </div>
-        <a href="product_list.html"><button class="btn_startshopping">START SHOPPING</button></a>
-        <a href="sell_product.html"><button class="btn_sellyouritem">SELL YOUR ITEM</button></a>
-    </section>
+  <section class="hero">
+    <div class="hero-inner">
+      <h1>Find Your Perfect</h1>
+      <h2>Second-Hand Find</h2>
+      <p class="lead">Discover quality pre-owned items with personalized AI recommendations. Smart shopping made simple.
+      </p>
 
-    <section></section>
+      <div class="search-wrap">
+        <form id="hero-search-form" class="search-box" action="product_list.html" method="get">
+          <span class="search-icon">🔍</span>
+          <input id="hero-search-input" name="query" type="search"
+            placeholder="Search for products, brands, or categories..." aria-label="Search" />
+          <button type="submit" aria-label="Search"><span class="btn-icon">�</span> Search</button>
+        </form>
+      </div>
+
+      <div class="cta-row">
+        <a href="#" class="btn btn-primary"><span class="btn-icon">🛍️</span> Start Shopping</a>
+        <a href="#" class="btn btn-success"><span class="btn-icon">➕</span> Sell Your Items</a>
+      </div>
+
+      <!-- Dark translucent panel with badges below the CTAs -->
+      <div class="cta-panel">
+        <div class="badges">
+          <div class="badge-item">✅ Verified Sellers</div>
+          <div class="badge-item">🤖 AI-Powered Recommendations</div>
+          <div class="badge-item">🔒 Secure Payments</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="popular">
+    <h3>Popular Categories</h3>
+    <p>Explore thousands of quality second-hand items across different categories</p>
+    <div class="categories-grid">
+      <a class="category-card" href="#">
+        <div class="card-media" style="background-image:url('/img/body/ip13.png');background-size:cover;background-position:center"></div>
+        <div class="card-overlay">
+          <img src="/img/icon/icons8-document-50.png" alt="icon">
+          <div class="card-title">Electronics</div>
+          <div class="card-count">2,847 items</div>
+        </div>
+      </a>
+
+      <a class="category-card" href="#">
+        <div class="card-media" style="background-image:url('/img/body/fashion&clothing.png');background-size:cover;background-position:center"></div>
+        <div class="card-overlay">
+          <img src="/img/icon/icons8-home-50.png" alt="icon">
+          <div class="card-title">Fashion & Clothing</div>
+          <div class="card-count">4,321 items</div>
+        </div>
+      </a>
+
+      <a class="category-card" href="#">
+        <div class="card-media" style="background-image:url('/img/body/books&media.png');background-size:cover;background-position:center"></div>
+        <div class="card-overlay">
+          <img src="/img/icon/icons8-document-50.png" alt="icon">
+          <div class="card-title">Books & Media</div>
+          <div class="card-count">1,567 items</div>
+        </div>
+      </a>
+
+      <a class="category-card" href="#">
+        <div class="card-media" style="background-image:url('/img/body/home&living.png');background-size:cover;background-position:center"></div>
+        <div class="card-overlay">
+          <img src="/img/icon/icons8-home-50.png" alt="icon">
+          <div class="card-title">Home & Living</div>
+          <div class="card-count">3,892 items</div>
+        </div>
+      </a>
+
+      <a class="category-card" href="#">
+        <div class="card-media" style="background-image:url('/img/body/sport&outdoors.png');background-size:cover;background-position:center"></div>
+        <div class="card-overlay">
+          <img src="/img/icon/icons8-light-64.png" alt="icon">
+          <div class="card-title">Sports & Outdoors</div>
+          <div class="card-count">987 items</div>
+        </div>
+      </a>
+
+      <a class="category-card" href="#">
+        <div class="card-media" style="background-image:url('/img/body/beauty&heath.png');background-size:cover;background-position:center"></div>
+        <div class="card-overlay">
+          <img src="/img/icon/white heart.png" alt="icon">
+          <div class="card-title">Beauty & Health</div>
+          <div class="card-count">1,234 items</div>
+        </div>
+      </a>
+    </div>
+    <div style="text-align:center;margin-top:20px;"><a class="view-all-link" href="#">View All Categories →</a></div>
+  </section>
+
+  <section class="featured-products">
+    <div class="section-inner">
+      <h3>Featured Products</h3>
+      <p class="section-sub">Handpicked quality items from trusted sellers with great ratings</p>
+
+      <div class="products-grid">
+        <!-- card 1 -->
+        <article class="product-card">
+          <div class="product-media" style="background-image:url('/img/body/ip13.png');">
+            <div class="card-badge">Like New</div>
+            <button class="fav-btn">♡</button>
+          </div>
+          <div class="product-body">
+            <h4 class="product-title">iPhone 13 Pro Max 256GB</h4>
+            <div class="product-price">18,500,000 ₫</div>
+            <div class="meta-row">
+              <div class="seller">TechStore_VN</div>
+              <div class="rating">★ 4.8 (124)</div>
+            </div>
+            <div class="meta-row small">📍 Ho Chi Minh City</div>
+          </div>
+          <div class="product-footer">
+            <button class="btn btn-primary btn-add">Add to Cart</button>
+          </div>
+        </article>
+
+        <!-- card 2 -->
+        <article class="product-card">
+          <div class="product-media" style="background-image:url('/img/body/macbook.png');">
+            <div class="card-badge badge-blue">Excellent</div>
+            <button class="fav-btn">♡</button>
+          </div>
+          <div class="product-body">
+            <h4 class="product-title">MacBook Air M2 2022</h4>
+            <div class="product-price">24,000,000 ₫</div>
+            <div class="meta-row">
+              <div class="seller">LaptopPro_HN</div>
+              <div class="rating">★ 4.9 (89)</div>
+            </div>
+            <div class="meta-row small">📍 Hanoi</div>
+          </div>
+          <div class="product-footer">
+            <button class="btn btn-primary btn-add">Add to Cart</button>
+          </div>
+        </article>
+
+        <!-- card 3 -->
+        <article class="product-card">
+          <div class="product-media" style="background-image:url('/img/body/jordan.png');">
+            <div class="card-badge badge-amber">Good</div>
+            <button class="fav-btn">♡</button>
+          </div>
+          <div class="product-body">
+            <h4 class="product-title">Nike Air Jordan 1 Size 42</h4>
+            <div class="product-price">3,200,000 ₫</div>
+            <div class="meta-row">
+              <div class="seller">SneakerHub</div>
+              <div class="rating">★ 4.7 (156)</div>
+            </div>
+            <div class="meta-row small">📍 Da Nang</div>
+          </div>
+          <div class="product-footer">
+            <button class="btn btn-primary btn-add">Add to Cart</button>
+          </div>
+        </article>
+
+        <!-- card 4 -->
+        <article class="product-card">
+          <div class="product-media" style="background-image:url('/img/body/canon.png');">
+            <div class="card-badge">Like New</div>
+            <button class="fav-btn">♡</button>
+          </div>
+          <div class="product-body">
+            <h4 class="product-title">Canon EOS R6 Camera Body</h4>
+            <div class="product-price">32,000,000 ₫</div>
+            <div class="meta-row">
+              <div class="seller">PhotoWorld</div>
+              <div class="rating">★ 4.6 (78)</div>
+            </div>
+            <div class="meta-row small">📍 Ha Noi</div>
+          </div>
+          <div class="product-footer">
+            <button class="btn btn-primary btn-add">Add to Cart</button>
+          </div>
+        </article>
+
+        <!-- card 5 -->
+        <article class="product-card">
+          <div class="product-media" style="background-image:url('/img/body/sony.png');">
+            <div class="card-badge badge-yellow">Very Good</div>
+            <button class="fav-btn">♡</button>
+          </div>
+          <div class="product-body">
+            <h4 class="product-title">Sony WH-1000XM4 Headphones</h4>
+            <div class="product-price">4,800,000 ₫</div>
+            <div class="meta-row">
+              <div class="seller">AudioCenter</div>
+              <div class="rating">★ 4.5 (64)</div>
+            </div>
+            <div class="meta-row small">📍 Ho Chi Minh City</div>
+          </div>
+          <div class="product-footer">
+            <button class="btn btn-primary btn-add">Add to Cart</button>
+          </div>
+        </article>
+
+        <!-- card 6 -->
+        <article class="product-card">
+          <div class="product-media" style="background-image:url('/img/body/chair.png');">
+            <div class="card-badge badge-amber">Good</div>
+            <button class="fav-btn">♡</button>
+          </div>
+          <div class="product-body">
+            <h4 class="product-title">Herman Miller Aeron Chair</h4>
+            <div class="product-price">12,500,000 ₫</div>
+            <div class="meta-row">
+              <div class="seller">OfficeGear</div>
+              <div class="rating">★ 4.4 (52)</div>
+            </div>
+            <div class="meta-row small">📍 Da Nang</div>
+          </div>
+          <div class="product-footer">
+            <button class="btn btn-primary btn-add">Add to Cart</button>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+  <div style="text-align:center;margin-top:20px;margin-bottom:60px;">
+    <a class="view-all-link" href="product_list.html">View All Products →</a>
+  </div>
+  <!-- AI Assistant section (from attachment) -->
+  <section class="ai-assistant">
+    <div class="ai-inner">
+      <div class="ai-col ai-text">
+        <h2>AI Assistant - Trợ lý thông minh<br>cho mọi giao dịch</h2>
+        <p>Được hỗ trợ bởi công nghệ AI tiên tiến, trợ lý của chúng tôi giúp bạn tìm kiếm sản phẩm, so sánh giá cả và đưa ra lời khuyên mua bán thông minh 24/7.</p>
+
+        <ul class="ai-features">
+          <li>🔍 Tìm kiếm sản phẩm thông minh</li>
+          <li>⚖️ So sánh giá từ nhiều người bán</li>
+          <li>💡 Tư vấn mua hàng cá nhân hóa</li>
+          <li>⏰ Hỗ trợ 24/7 không giới hạn</li>
+        </ul>
+
+        <a class="btn btn-primary" href="#">🔎 Try AI Assistant Now</a>
+      </div>
+
+      <div class="ai-col ai-media">
+        <div class="ai-media-wrap">
+          <img src="/img/AI/AI.jpg" alt="AI room"/>
+          <div class="pill-status">● AI đang hoạt động</div>
+          <div class="badge-247">24/7<br>Hỗ trợ</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    <!-- Footer: added to match provided design -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-col footer-brand">
+          <div class="brand-wrap">
+            <div class="brand-logo">SMPC</div>
+            <p class="brand-desc">Vietnam's trusted second-hand marketplace with AI-powered product consultation. Find quality pre-owned items and get personalized recommendations.</p>
+            <div class="socials">
+              <a href="#" aria-label="facebook" class="social-circle">
+                <!-- Facebook SVG -->
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M22 12.07C22 6.48 17.52 2 11.93 2S2 6.48 2 12.07C2 17.09 5.66 21.21 10.44 22v-7.03H8.08v-2.9h2.36V9.41c0-2.33 1.4-3.61 3.53-3.61 1.02 0 2.09.18 2.09.18v2.3h-1.18c-1.16 0-1.52.72-1.52 1.46v1.75h2.59l-.41 2.9h-2.18V22C18.34 21.21 22 17.09 22 12.07z" fill="#2563EB"/>
+                </svg>
+              </a>
+              <a href="#" aria-label="twitter" class="social-circle">
+                <!-- Twitter SVG -->
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M22 5.92c-.63.28-1.3.47-2.01.57.72-.43 1.28-1.1 1.54-1.9-.68.4-1.42.7-2.22.86A3.48 3.48 0 0016.1 4c-1.92 0-3.48 1.6-3.48 3.57 0 .28.03.55.09.81C9.1 8.27 6.1 6.6 4 4.02c-.31.53-.48 1.14-.48 1.79 0 1.23.6 2.31 1.52 2.95-.56-.02-1.09-.17-1.55-.42v.04c0 1.72 1.24 3.15 2.9 3.48-.3.08-.6.12-.92.12-.23 0-.45-.02-.67-.06.45 1.46 1.74 2.53 3.27 2.56A6.98 6.98 0 012 19.54a9.88 9.88 0 005.35 1.57c6.42 0 9.94-5.37 9.94-10.02v-.46c.68-.5 1.27-1.12 1.74-1.82-.63.29-1.3.49-2 .58.72-.44 1.27-1.14 1.53-1.96z" fill="#2563EB"/>
+                </svg>
+              </a>
+              <a href="#" aria-label="instagram" class="social-circle">
+                <!-- Instagram SVG -->
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5zm5 5.8a4.2 4.2 0 100 8.4 4.2 4.2 0 000-8.4zM18.5 6.1a1.2 1.2 0 11-2.4 0 1.2 1.2 0 012.4 0z" fill="#2563EB"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-col footer-links">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="about.html">How it Works</a></li>
+            <li><a href="#">Safety Tips</a></li>
+            <li><a href="sell_product.html">Seller Guide</a></li>
+            <li><a href="#">Made with Readdy</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col footer-support">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
 </body>
+<script src="../js/index_search.js"></script>
+<script src="../js/header_sticky.js"></script>
+
 </html>
