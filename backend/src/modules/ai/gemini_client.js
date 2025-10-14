@@ -16,10 +16,12 @@ function toNumberOrNull(v) {
 
 async function getIntentFromGemini(query) {
   const apiKey = process.env.GEMINI_API_KEY;
+  console.log('[GEMINI_DEBUG] API Key exists:', !!apiKey);
+  console.log('[GEMINI_DEBUG] API Key length:', apiKey ? apiKey.length : 0);
   if (!apiKey) throw new Error('Missing GEMINI_API_KEY in environment');
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  // SDK 0.24.1 dùng v1beta → chọn model tương thích. Có thể nâng cấp SDK để dùng 1.5.
+  
   const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
   // Define a tool for function calling
@@ -32,7 +34,7 @@ async function getIntentFromGemini(query) {
           parameters: {
             type: 'OBJECT',
             properties: {
-              category: { type: 'STRING', description: 'Category slug or name e.g., smartphones, laptops, accessories' },
+              category: { type: 'STRING', description: 'Category slug or name e.g., smartphones, laptops, accessories, books, clothes, instruments' },
               minPrice: { type: 'NUMBER', description: 'Minimum price in VND' },
               maxPrice: { type: 'NUMBER', description: 'Maximum price in VND' },
               condition: { type: 'STRING', description: 'new | used' },
