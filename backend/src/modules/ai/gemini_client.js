@@ -18,6 +18,7 @@ async function getIntentFromGemini(query) {
   const apiKey = process.env.GEMINI_API_KEY;
   console.log('[GEMINI_DEBUG] API Key exists:', !!apiKey);
   console.log('[GEMINI_DEBUG] API Key length:', apiKey ? apiKey.length : 0);
+  console.log('[GEMINI_DEBUG] API Key prefix:', apiKey ? apiKey.substring(0, 10) + '...' : 'none');
   if (!apiKey) throw new Error('Missing GEMINI_API_KEY in environment');
 
   const genAI = new GoogleGenerativeAI(apiKey);

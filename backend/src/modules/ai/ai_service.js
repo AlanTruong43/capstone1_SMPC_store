@@ -105,19 +105,15 @@ exports.searchProductsByIntent = async ({ query, limit = 8 }) => {
   const ruleIntent = parseWithRules(query);
 
   let intentRaw = null;
-  // Chỉ gọi Gemini khi độ tin cậy thấp; đặt timeout để không treo request
-  if ((ruleIntent?.confidence || 0) < 0.5) {
-    try {
-      console.log('[AI_DEBUG] Calling Gemini API for query:', query);
-      intentRaw = await withTimeout(getIntentFromGemini(query), 1500);
-      console.log('[AI_DEBUG] Gemini API response:', intentRaw);
-    } catch (e) {
-      console.log('[AI_DEBUG] Gemini API error:', e.message);
-      // im lặng fallback — ruleIntent sẽ dùng làm chính
-      intentRaw = null;
-    }
-  } else {
-    console.log('[AI_DEBUG] Skipping Gemini API, confidence:', ruleIntent?.confidence);
+  // Luôn gọi Gemini API để có kết quả tốt hơn, nhưng với timeout ngắn
+  try {
+    console.log('[AI_DEBUG] Calling Gemini API for query:', query);
+    intentRaw = await withTimeout(getIntentFromGemini(query), 2000);
+    console.log('[AI_DEBUG] Gemini API response:', intentRaw);
+  } catch (e) {
+    console.log('[AI_DEBUG] Gemini API error:', e.message);
+    // Fallback to rule-based parsing
+    intentRaw = null;
   }
 
   let categorySlug = normalizeCategorySlug(intentRaw?.category ?? ruleIntent.category, query);
