@@ -109,9 +109,9 @@ function renderRelated(list, currentId){
         return;
     }
     wrap.innerHTML = items.map(p => `
-      <div class="product_info_short">
+      <div class="product_info_short" data-product-id="${p.id}">
         <div class="product_info_short_head">
-          <img src="${p.imageUrl || ''}" alt="" class="product_id" onerror="this.remove(); this.insertAdjacentText('afterend','This image is not available now');">
+          <img src="${p.imageUrl || ''}" alt="" class="product_id related-product-image" onerror="this.remove(); this.insertAdjacentText('afterend','This image is not available now');">
           <span class="product_status">${mapCondition(p.condition) || ''}</span>
           <span class="product_like"><img src="/img/icon/white heart.png" alt=""></span>
         </div>
@@ -121,6 +121,23 @@ function renderRelated(list, currentId){
         </div>
       </div>
     `).join('');
+    
+    // Add click event listeners to related product images
+    addRelatedProductClickHandlers();
+}
+
+function addRelatedProductClickHandlers(){
+    const relatedImages = document.querySelectorAll('.related-product-image');
+    relatedImages.forEach(img => {
+        img.style.cursor = 'pointer';
+        img.addEventListener('click', function(){
+            const productCard = this.closest('.product_info_short');
+            const productId = productCard.getAttribute('data-product-id');
+            if(productId){
+                window.location.href = `product_details.html?id=${productId}`;
+            }
+        });
+    });
 }
 
 async function initDetail(){

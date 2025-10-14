@@ -438,6 +438,17 @@
     object-fit: cover;
 }
 
+/* Related product image clickable styles */
+.related-product-image {
+    cursor: pointer;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.related-product-image:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
 .product_status {
     position: absolute;
     top: 12px;
