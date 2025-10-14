@@ -144,7 +144,7 @@ function renderProducts(products) {
               alt="${p.name}"
               class="product-img"
               loading="lazy"
-              onerror="this.src='../img/placeholder.png'"
+              onerror="this.src='../img/placeholder.svg'"
             />
           </div>
           <div class="product_item_body">
