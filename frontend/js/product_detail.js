@@ -244,4 +244,42 @@ document.addEventListener('DOMContentLoaded', function() {
     updateButtonStates();
     // kick off
     initDetail();
+
+    // 🛒 Buy Now Button Functionality
+    const buyNowBtn = document.querySelector('.product_detail_btn_buynow');
+    
+    if (buyNowBtn) {
+        buyNowBtn.addEventListener('click', function() {
+            console.log('🛒 Buy Now clicked');
+            
+            // Get current product ID and quantity
+            const productId = getQueryId();
+            const quantity = parseInt(quantityInput.value) || 1;
+            
+            if (!productId) {
+                alert('Product not found. Please refresh the page.');
+                return;
+            }
+
+            console.log('📦 Redirecting to checkout:', { productId, quantity });
+            
+            // Redirect to checkout page with product ID and quantity
+            window.location.href = `/pages/checkout.html?productId=${productId}&quantity=${quantity}`;
+        });
+    }
+
+    // 🛒 Add to Cart Button (Optional - for future implementation)
+    const addToCartBtn = document.querySelector('.product_detail_btn_addcart');
+    
+    if (addToCartBtn) {
+        addToCartBtn.addEventListener('click', function() {
+            // For now, show alert - cart functionality to be implemented
+            alert('🛒 Cart functionality coming soon!\n\nFor now, please use the "Buy Now" button for direct purchase.');
+            
+            // Future: Add to cart logic here
+            // const productId = getQueryId();
+            // const quantity = parseInt(quantityInput.value) || 1;
+            // addToCart(productId, quantity);
+        });
+    }
 });

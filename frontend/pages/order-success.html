@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Success - SmartShopAI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .success-container {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading-state {
+            padding: 40px 20px;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            animation: checkmark 0.8s ease-in-out;
+        }
+
+        @keyframes checkmark {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-icon.pending {
+            background: #ffc107;
+        }
+
+        .success-icon.failed {
+            background: #dc3545;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .order-info {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .status-badge.paid {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-badge.failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+        }
+
+        .note {
+            margin-top: 30px;
+            padding: 15px;
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            border-radius: 4px;
+            text-align: left;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .error-message {
+            background: #fff5f5;
+            border: 2px solid #dc3545;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #721c24;
+        }
+
+        @media (max-width: 480px) {
+            .success-container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-state">
+            <div class="spinner"></div>
+            <p style="color: #666;">Verifying your payment...</p>
+        </div>
+
+        <!-- Success State -->
+        <div id="successState" style="display: none;">
+            <div class="success-icon" id="statusIcon">
+                ✓
+            </div>
+
+            <h1 id="statusTitle">Payment Successful!</h1>
+            <p class="subtitle" id="statusSubtitle">Thank you for your purchase</p>
+
+            <div class="order-info" id="orderInfo">
+                <!-- Order details will be injected here -->
+            </div>
+
+            <div id="noteContainer" class="note" style="display: none;">
+                💡 <strong>Note:</strong> The seller will process your order shortly. 
+                You will receive a confirmation once the item is shipped.
+            </div>
+
+            <div class="buttons">
+                <a href="/pages/product_list.html" class="btn btn-secondary">
+                    Continue Shopping
+                </a>
+                <a href="#" id="viewOrderBtn" class="btn btn-primary">
+                    View Order Details
+                </a>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" style="display: none;">
+            <div class="success-icon failed">
+                ✕
+            </div>
+            <h1>Payment Failed</h1>
+            <p class="subtitle">There was an issue processing your payment</p>
+            
+            <div class="error-message" id="errorMessage">
+                <!-- Error details will be shown here -->
+            </div>
+
+            <div class="buttons">
+                <a href="/pages/product_list.html" class="btn btn-secondary">
+                    Back to Shopping
+                </a>
+                <a href="#" id="retryBtn" class="btn btn-primary">
+                    Try Again
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:4000';
+        let currentOrderId = null;
+        let checkInterval = null;
+        let checkCount = 0;
+        const MAX_CHECKS = 10; // Maximum 10 checks (20 seconds)
+
+        // Get order ID from URL or localStorage
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderIdFromUrl = urlParams.get('orderId');
+        const orderIdFromStorage = localStorage.getItem('pendingOrderId');
+        const orderId = orderIdFromUrl || orderIdFromStorage;
+
+        console.log('🔍 Order ID from URL:', orderIdFromUrl);
+        console.log('🔍 Order ID from storage:', orderIdFromStorage);
+        console.log('📦 Using Order ID:', orderId);
+
+        if (orderId) {
+            currentOrderId = orderId;
+            // Start verification process
+            verifyPayment();
+        } else {
+            showError('No order information found. Please contact support.');
+        }
+
+        /**
+         * Verify payment status
+         */
+        async function verifyPayment() {
+            try {
+                console.log('🔍 Verifying payment for order:', currentOrderId);
+
+                const response = await fetch(`${API_BASE}/api/orders/${currentOrderId}/verify-payment`);
+                const result = await response.json();
+
+                console.log('📥 Verification result:', result);
+
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || 'Failed to verify payment');
+                }
+
+                handlePaymentResult(result);
+
+            } catch (error) {
+                console.error('❌ Verification failed:', error);
+                
+                // If this is not the last attempt, retry
+                if (checkCount < MAX_CHECKS) {
+                    checkCount++;
+                    console.log(`🔄 Retrying... (${checkCount}/${MAX_CHECKS})`);
+                    setTimeout(verifyPayment, 2000); // Retry after 2 seconds
+                } else {
+                    showError('Could not verify payment. Please contact support with your order ID: ' + currentOrderId);
+                }
+            }
+        }
+
+        /**
+         * Handle payment verification result
+         */
+        function handlePaymentResult(result) {
+            const { status, order } = result;
+
+            console.log('💳 Payment status:', status);
+
+            if (status === 'paid') {
+                // Payment successful
+                displaySuccess(order);
+                
+                // Clear pending order from localStorage
+                localStorage.removeItem('pendingOrderId');
+                
+            } else if (status === 'pending') {
+                // Payment still processing, check again
+                if (checkCount < MAX_CHECKS) {
+                    checkCount++;
+                    console.log(`⏳ Payment pending, checking again... (${checkCount}/${MAX_CHECKS})`);
+                    setTimeout(verifyPayment, 2000);
+                } else {
+                    // Max attempts reached, show pending state
+                    displayPending(order);
+                }
+                
+            } else if (status === 'failed') {
+                // Payment failed
+                displayFailed(order);
+                localStorage.removeItem('pendingOrderId');
+            }
+        }
+
+        /**
+         * Display success state
+         */
+        function displaySuccess(order) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('successState').style.display = 'block';
+
+            const orderInfoEl = document.getElementById('orderInfo');
+            const noteContainer = document.getElementById('noteContainer');
+
+            orderInfoEl.innerHTML = `
+                <div class="info-row">
+                    <span class="info-label">Order ID:</span>
+                    <span class="info-value">${order.id || 'N/A'}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Status:</span>
+                    <span class="status-badge paid">✓ Paid</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Product:</span>
+                    <span class="info-value">${order.productName || 'N/A'}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Quantity:</span>
+                    <span class="info-value">${order.quantity || 1}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Total Amount:</span>
+                    <span class="info-value" style="color: #667eea; font-weight: 700;">
+                        ${formatPrice(order.totalAmount)}
+                    </span>
+                </div>
+            `;
+
+            noteContainer.style.display = 'block';
+
+            // Setup view order button
+            document.getElementById('viewOrderBtn').onclick = (e) => {
+                e.preventDefault();
+                // For now, just show order ID
+                alert('Order ID: ' + currentOrderId + '\n\nOrder history feature coming soon!');
+            };
+        }
+
+        /**
+         * Display pending state
+         */
+        function displayPending(order) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('successState').style.display = 'block';
+
+            const statusIcon = document.getElementById('statusIcon');
+            const statusTitle = document.getElementById('statusTitle');
+            const statusSubtitle = document.getElementById('statusSubtitle');
+            const orderInfoEl = document.getElementById('orderInfo');
+
+            statusIcon.classList.add('pending');
+            statusIcon.textContent = '⏳';
+            statusTitle.textContent = 'Payment Processing';
+            statusSubtitle.textContent = 'Your payment is being verified';
+
+            orderInfoEl.innerHTML = `
+                <div class="info-row">
+                    <span class="info-label">Order ID:</span>
+                    <span class="info-value">${order.id || 'N/A'}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Status:</span>
+                    <span class="status-badge pending">⏳ Processing</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Total Amount:</span>
+                    <span class="info-value">${formatPrice(order.totalAmount)}</span>
+                </div>
+            `;
+
+            document.getElementById('noteContainer').innerHTML = 
+                '💡 <strong>Note:</strong> Your payment is being processed. Please check back in a few minutes or contact support if the issue persists.';
+            document.getElementById('noteContainer').style.display = 'block';
+        }
+
+        /**
+         * Display failed state
+         */
+        function displayFailed(order) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorState').style.display = 'block';
+
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = order.paymentFailureReason || 'Payment was declined or cancelled.';
+
+            // Setup retry button
+            document.getElementById('retryBtn').onclick = (e) => {
+                e.preventDefault();
+                // Go back to checkout with same product
+                window.location.href = `/pages/checkout.html?productId=${order.productId}&quantity=${order.quantity}`;
+            };
+        }
+
+        /**
+         * Show error state
+         */
+        function showError(message) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorState').style.display = 'block';
+
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        /**
+         * Format price
+         */
+        function formatPrice(price) {
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND'
+            }).format(price);
+        }
+    </script>
+</body>
+</html>
+

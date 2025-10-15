@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - SmartShopAI</title>
+    <link rel="stylesheet" href="../css/checkout.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="checkout-container">
+        <!-- Header -->
+        <div class="checkout-header">
+            <h1>🛒 Checkout</h1>
+            <p>Complete your purchase</p>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading" class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading product details...</p>
+        </div>
+
+        <!-- Main Content -->
+        <div id="mainContent" class="main-content" style="display: none;">
+            <div class="checkout-grid">
+                <!-- Left Column: Order Summary -->
+                <div class="order-summary-section">
+                    <h2>📦 Order Summary</h2>
+                    
+                    <div id="productSummary" class="product-summary">
+                        <!-- Product details will be injected here -->
+                    </div>
+
+                    <div class="summary-totals">
+                        <div class="summary-row">
+                            <span>Subtotal:</span>
+                            <span id="subtotal">0 ₫</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Shipping:</span>
+                            <span id="shipping">Free</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total:</span>
+                            <span id="total">0 ₫</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Shipping Form -->
+                <div class="shipping-form-section">
+                    <h2>📍 Shipping Address</h2>
+
+                    <form id="checkoutForm">
+                        <div class="form-group">
+                            <label for="fullName">Full Name <span class="required">*</span></label>
+                            <input 
+                                type="text" 
+                                id="fullName" 
+                                name="fullName" 
+                                required
+                                placeholder="Enter your full name"
+                            >
+                            <span class="error-message" id="fullNameError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number <span class="required">*</span></label>
+                            <input 
+                                type="tel" 
+                                id="phone" 
+                                name="phone" 
+                                required
+                                placeholder="0912345678"
+                                pattern="[0-9]{10,11}"
+                            >
+                            <span class="error-message" id="phoneError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address">Address <span class="required">*</span></label>
+                            <textarea 
+                                id="address" 
+                                name="address" 
+                                required
+                                rows="3"
+                                placeholder="Enter your street address"
+                            ></textarea>
+                            <span class="error-message" id="addressError"></span>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="city">City</label>
+                                <input 
+                                    type="text" 
+                                    id="city" 
+                                    name="city"
+                                    placeholder="Ho Chi Minh City"
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="postalCode">Postal Code</label>
+                                <input 
+                                    type="text" 
+                                    id="postalCode" 
+                                    name="postalCode"
+                                    placeholder="700000"
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Error Message Container -->
+                        <div id="errorContainer" class="error-container" style="display: none;">
+                            <div class="error-icon">⚠️</div>
+                            <div class="error-text" id="errorText"></div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" id="submitBtn" class="submit-btn">
+                            <span class="btn-text">Proceed to Payment</span>
+                            <span class="btn-loader" style="display: none;">
+                                <span class="spinner-small"></span>
+                                Processing...
+                            </span>
+                        </button>
+
+                        <div class="security-note">
+                            🔒 Secure payment powered by MoMo
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error State (Product not found) -->
+        <div id="errorState" class="error-state" style="display: none;">
+            <div class="error-icon-large">❌</div>
+            <h2>Product Not Found</h2>
+            <p>The product you're trying to purchase could not be found.</p>
+            <a href="/pages/product_list.html" class="btn-back">Back to Products</a>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDI1V6BaKvdeLo2kbXAREWweZyiGAF4508",
+            authDomain: "smartshopai-45959.firebaseapp.com",
+            projectId: "smartshopai-45959",
+            storageBucket: "smartshopai-45959.firebasestorage.app",
+            messagingSenderId: "550339763780",
+            appId: "1:550339763780:web:b9b8957b1597ef09d5a611"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Make auth available globally for checkout.js
+        window.firebaseAuth = auth;
+    </script>
+
+    <!-- Checkout Logic -->
+    <script src="../js/checkout.js"></script>
+</body>
+</html>
+

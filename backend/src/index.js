@@ -48,6 +48,14 @@ app.use("/metadata", metadataRoutes);
 const aiRoutes = require('./modules/ai/ai_routes'); // <— ROUTER AI
 const usersRoutes = require('./modules/users/users_routes');
 
+// routes orders (MoMo integration)
+const ordersRoutes = require('./modules/orders/orders_routes');
+app.use('/api/orders', ordersRoutes);
+
+// routes payment (MoMo webhook)
+const momoRoutes = require('./modules/momo/momo_routes');
+app.use('/api/payment', momoRoutes);
+
 // mount AI
 app.use('/ai', aiRoutes);
 app.use('/users', usersRoutes);
