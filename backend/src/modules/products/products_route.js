@@ -9,6 +9,57 @@ const svc = require('./products_service');
 const { validate, validateProductIdParam } = require('./products_validator'); 
 const router = express.Router();
 
+router.get("/search", async (req, res) => {
+  try {
+    const results = await svc.searchProducts(req.query);
+    res.json(results);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// RECOMMEND
+router.get("/recommend", async (req, res) => {
+  try {
+    const { category, exclude } = req.query;
+    const results = await svc.recommendProducts(category, exclude);
+    res.json(results);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// LATEST
+router.get("/latest", async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit || "10");
+    const results = await svc.getLatestProducts(limit);
+    res.json(results);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// MARK AS SOLD
+router.put("/:id/mark-sold", requireAuth, async (req, res) => {
+  try {
+    const result = await svc.markProductAsSold(req.user.uid, req.params.id);
+    res.json(result);
+  } catch (err) {
+    res.status(403).json({ error: err.message });
+  }
+});
+
+// USER PRODUCT STATS
+router.get("/my/stats", requireAuth, async (req, res) => {
+  try {
+    const stats = await svc.getUserProductStats(req.user.uid);
+    res.json(stats);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.post("/", requireAuth, async (req, res) => {
   try {
     const { valid, errors, data } = validateAndNormalizeProduct(req.body);
