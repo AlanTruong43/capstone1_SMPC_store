@@ -114,6 +114,92 @@ async function getProductById(id) {
   return product;
 }
 
+async function searchProducts(params) {
+  let query = productCol;
+
+  if (params.category) {
+    const snap = await categoryCol.where("slug", "==", params.category).limit(1).get();
+    if (!snap.empty) {
+      const categoryId = snap.docs[0].id;
+      query = query.where("categoryId", "==", categoryId);
+    }
+  }
+
+  if (params.minPrice) query = query.where("price", ">=", Number(params.minPrice));
+  if (params.maxPrice) query = query.where("price", "<=", Number(params.maxPrice));
+  if (params.condition) query = query.where("condition", "==", params.condition);
+  if (params.status) query = query.where("status", "==", params.status);
+
+  const snapshot = await query.get();
+  let results = snapshot.docs.map(serializeDoc);
+
+  // Lọc client-side theo tên
+  if (params.q) {
+    const qLower = params.q.toLowerCase();
+    results = results.filter(p => p.name.toLowerCase().includes(qLower));
+  }
+
+  return results;
+}
+
+
+// Gợi ý sản phẩm trong cùng category
+async function recommendProducts(categorySlug, excludeId) {
+  const snap = await categoryCol.where("slug", "==", categorySlug).limit(1).get();
+  if (snap.empty) throw new Error("Category not found");
+
+  const categoryId = snap.docs[0].id;
+  const qs = await productCol
+    .where("categoryId", "==", categoryId)
+    .where("status", "==", "available")
+    .limit(10)
+    .get();
+
+  return qs.docs
+    .filter(d => d.id !== excludeId)
+    .map(serializeDoc);
+}
+
+// Sản phẩm mới đăng
+async function getLatestProducts(limit = 10) {
+  const qs = await productCol
+    .where("status", "==", "available")
+    .orderBy("postDate", "desc")
+    .limit(limit)
+    .get();
+  return qs.docs.map(serializeDoc);
+}
+
+// Đánh dấu sản phẩm đã bán
+async function markProductAsSold(uid, productId) {
+  const ref = productCol.doc(productId);
+  const doc = await ref.get();
+  if (!doc.exists) throw new Error("Product not found");
+  if (doc.data().sellerId !== uid) throw new Error("Permission denied");
+
+  await ref.update({
+    status: "sold",
+    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+  });
+
+  return { id: productId, status: "sold" };
+}
+
+// Thống kê sản phẩm của người dùng
+async function getUserProductStats(uid) {
+  const qs = await productCol.where("sellerId", "==", uid).get();
+  const products = qs.docs.map(doc => doc.data());
+
+  const total = products.length;
+  const sold = products.filter(p => p.status === "sold").length;
+  const available = products.filter(p => p.status === "available").length;
+
+  const totalRevenue = products
+    .filter(p => p.status === "sold")
+    .reduce((sum, p) => sum + (p.price * (p.quantity || 1)), 0);
+
+  return { total, sold, available, totalRevenue };
+}
 
 module.exports = {
   createProduct,
@@ -122,4 +208,10 @@ module.exports = {
   updateProduct,
   deleteProduct,
   getProductById,
+
+  searchProducts,
+  recommendProducts,
+  getLatestProducts,
+  markProductAsSold,
+  getUserProductStats,
 };
