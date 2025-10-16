@@ -105,7 +105,8 @@ ul.info_shop li.sellnow a button{
     background-color: white;
     padding-left: 20px;
     border-right: 2px solid #4B5563;
-    height: 100vh;
+    min-height: 100vh;
+    height: auto;
 }
 
 .menu div{
@@ -441,4 +442,151 @@ tr:hover {
     background-color: #2563EB;
     color: white;
     /* border: none; */
+}
+
+.dashboard_content_3 {
+    max-width: 90%;
+    margin: 0 auto;
+    margin-top: 30px;
+}
+
+.dashboard_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e8ecef;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    /* transform: translateY(-5px); */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.card h2 {
+    margin: 0 0 8px 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a1d1f;
+}
+
+.subtitle {
+    margin: 0 0 20px 0;
+    color: #6f767e;
+    font-size: 14px;
+}
+
+.chart_legend {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.legend_item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #6f767e;
+}
+
+.legend_dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.revenue_dot {
+    background: #2a85ff;
+}
+
+.commission_dot {
+    background: #83bf6e;
+}
+
+.orders_dot {
+    background: #83bf6e;
+}
+
+.chart_container {
+    position: relative;
+    height: 250px;
+    margin-bottom: 20px;
+}
+
+.date_labels {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    font-size: 12px;
+    color: #6f767e;
+}
+
+.stats_container {
+    display: flex;
+    gap: 24px;
+    margin-top: 20px;
+}
+
+.stat_item {
+    flex: 1;
+}
+
+.stat_label {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    color: #6f767e;
+}
+
+.stat_value {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1d1f;
+}
+
+.stat_value.positive {
+    color: #83bf6e;
+}
+
+.stat_value.negative {
+    color: #ff6a55;
+}
+
+.dashboard_content_4 {
+    display: block;
+    width: calc(90% - 40px);
+    margin: 0 auto;
+    margin-top: 30px;
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.dashboard_content_4_1 p{
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.dashboard_content_4_2_content{
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    border-top: 2px solid #E5E7EB;
+    padding: 10px 0;
+}
+
+.dashboard_content_4_2_content img{
+    width: 19;
+    height: 19px;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #F0FDF4;
 }

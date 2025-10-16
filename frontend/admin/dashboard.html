@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <title>Dash Board</title>
 </head>
 <body>
@@ -156,9 +157,139 @@
                 </div>
             </div>
             <div class="dashboard_content_3">
-                
+                <div class="dashboard_grid">
+                    <!-- Revenue & Commission Section -->
+                    <div class="card revenue_commission">
+                        <h2>Revenue & Commission</h2>
+                        <p class="subtitle">Track revenue and commission over time</p>
+                        
+                        <div class="chart_legend">
+                            <div class="legend_item">
+                                <span class="legend_dot revenue_dot"></span>
+                                <span>Revenue</span>
+                            </div>
+                            <div class="legend_item">
+                                <span class="legend_dot commission_dot"></span>
+                                <span>Commission</span>
+                            </div>
+                        </div>
+                        
+                        <div class="chart_container">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                        
+                        <div class="date_labels">
+                            <span>Jan 1</span>
+                            <span>Jan 2</span>
+                            <span>Jan 3</span>
+                            <span>Jan 4</span>
+                            <span>Jan 5</span>
+                            <span>Jan 6</span>
+                            <span>Jan 7</span>
+                        </div>
+                        
+                        <div class="stats_container">
+                            <div class="stat_item">
+                                <p class="stat_label">Total Revenue</p>
+                                <p class="stat_value">$387,000</p>
+                            </div>
+                            <div class="stat_item">
+                                <p class="stat_label">Total Commission</p>
+                                <p class="stat_value">$19,350</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Orders Overview Section -->
+                    <div class="card orders_overview">
+                        <h2>Orders Overview</h2>
+                        <p class="subtitle">Daily order volume and trends</p>
+                        
+                        <div class="chart_legend">
+                            <div class="legend_item">
+                                <span class="legend_dot orders_dot"></span>
+                                <span>Orders</span>
+                            </div>
+                        </div>
+                        
+                        <div class="chart_container">
+                            <canvas id="ordersChart"></canvas>
+                        </div>
+                        
+                        <div class="date_labels">
+                            <span>Jan 1</span>
+                            <span>Jan 2</span>
+                            <span>Jan 3</span>
+                            <span>Jan 4</span>
+                            <span>Jan 5</span>
+                            <span>Jan 6</span>
+                            <span>Jan 7</span>
+                        </div>
+                        
+                        <div class="stats_container">
+                            <div class="stat_item">
+                                <p class="stat_label">Total Orders</p>
+                                <p class="stat_value">246</p>
+                            </div>
+                            <div class="stat_item">
+                                <p class="stat_label">Avg per Day</p>
+                                <p class="stat_value">35.1</p>
+                            </div>
+                            <div class="stat_item">
+                                <p class="stat_label">Growth</p>
+                                <p class="stat_value positive">+12.5%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="dashboard_content_4">
+                <div class="dashboard_content_4_1">
+                    <h3>Recent Activity</h3>
+                    <p>Latest marketplace activities and events</p>
+                </div>
+                <div class="dashboard_content_4_2">
+                    <div class="dashboard_content_4_2_content">
+                        <!-- img link tương ứng đơn hàng mới -->
+                        <img src="/img/icon/total bar/icons8-order-50.png" alt="">
+                        <div class="dashboard_content_4_2_content_text" style="margin-left: 10px;">
+                            <!-- thông báo mới -->
+                            <p class="dashboard_content_4_2_content_text_1" style="font-weight: 500;">New Order Placed</p>
+                            <!-- mã đơn hàng và tên nếu cần 2 thẻ thì sử dụng span -->
+                            <p class="dashboard_content_4_2_content_text_2" style="margin: 5px 0;">Order #12345 by John Doe</p>
+                            <!-- thời gian thông báo, thời gian thay đổi trong span -->
+                            <p class="dashboard_content_4_2_content_text_3" style="color: #6B7280;"><span>1</span> minutes ago</p>
+                        </div>
+                    </div>
+                    <div class="dashboard_content_4_2_content">
+                        <img src="/img/icon/total bar/icons8-user-32.png" alt="">
+                        <div class="dashboard_content_4_2_content_text" style="margin-left: 10px;">
+                            <p class="dashboard_content_4_2_content_text_1" style="font-weight: 500;">New user registered</p>
+                            <p class="dashboard_content_4_2_content_text_2" style="margin: 5px 0;">Tran Thi B joined the marketplace</p>
+                            <p class="dashboard_content_4_2_content_text_3" style="color: #6B7280;"><span>5</span> minutes ago</p>
+                        </div>
+                    </div>
+                    <div class="dashboard_content_4_2_content">
+                        <img src="/img/icon/total bar/icons8-commission-64.png" alt="">
+                        <div class="dashboard_content_4_2_content_text" style="margin-left: 10px;">
+                            <p class="dashboard_content_4_2_content_text_1" style="font-weight: 500;">Payment received</p>
+                            <p class="dashboard_content_4_2_content_text_2" style="margin: 5px 0;">Commission ₫1,250 from order #ORD-2024-002</p>
+                            <p class="dashboard_content_4_2_content_text_3" style="color: #6B7280;"><span>7</span> minutes ago</p>
+                        </div>
+                    </div>
+                    <div class="dashboard_content_4_2_content">
+                        <img src="/img/icon/total bar/icons8-order-50.png" alt="">
+                        <div class="dashboard_content_4_2_content_text" style="margin-left: 10px;">
+                            <p class="dashboard_content_4_2_content_text_1" style="font-weight: 500;">New Order Placed</p>
+                            <p class="dashboard_content_4_2_content_text_2" style="margin: 5px 0;">Order #12345 by John Doe</p>
+                            <p class="dashboard_content_4_2_content_text_3" style="color: #6B7280;"><span>1</span> minutes ago</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </section>
+
+    <script src="/frontend/js/admin_dashboard.js"></script>
 </body>
 </html>
