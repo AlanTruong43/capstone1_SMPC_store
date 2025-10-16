@@ -105,6 +105,7 @@ ul.info_shop li.sellnow a button{
     background-color: white;
     padding-left: 20px;
     border-right: 2px solid #4B5563;
+    height: 100vh;
 }
 
 .menu div{
@@ -222,4 +223,222 @@ ul.info_shop li.sellnow a button{
     font-weight: 500;
     font-size: 20px;
     background-color: #EFF6FF;
+}
+
+.user_management_1{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    margin: 0 auto;
+    margin-bottom: 20px;
+}
+
+.add_user{
+    background-color: #2563EB;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.user_management_1_1 p{
+    margin-top: 20px;
+    color: #6B7280;
+}
+
+.user_management_2{
+    width: 90%;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 8px;
+    display: flex;
+    padding: 20px;
+    align-items: center;
+}
+
+.user_management_2 input{
+    /* background-color: #D1D5DB; */
+    width:  100%;
+    border-radius: 8px;
+    padding: 5px 10px;
+    margin-right: 20px;
+}
+
+.user_management_2 select{
+    background-color: #D1D5DB;
+    width: 150px;
+    border-radius: 8px;
+    text-align: center;
+    margin-right: 20px;
+    padding: 5px 0;
+}
+
+.user_management_3{
+    width: 90%;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 8px;
+    margin-top: 20px;
+    padding: 20px;
+}
+
+.user_management_3_1{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.user_management_3_1_2{
+    display: flex;
+    align-items: center;
+}
+
+.user_management_3_1_2 button{
+    background-color: #2563EB;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user_management_3_1_2 button img{
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+.user_management_3_1_2_export{
+    margin-left: 20px;
+}
+
+/* bảng admin (table) */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+th {
+    background-color: #f8f9fa;
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    color: #2c3e50;
+    border-bottom: 2px solid #eaeaea;
+}
+
+td {
+    padding: 15px;
+    border-bottom: 1px solid #eaeaea;
+}
+
+tr:hover {
+    background-color: #f8f9fa;
+}
+
+.user-info{
+    display: flex;
+}
+
+.user-info img{
+    width: 40px;
+    height: 40px;
+    border-radius: 9999px;
+    margin-right: 10px;
+}
+
+.user-info-2 {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.user-email {
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+.active p {
+    color: #27ae60;
+    font-weight: 600;
+    background-color: #BBF7D0;
+}
+
+.nonactive p {
+    color: #B91C1C;
+    font-weight: 600;
+    background-color: #FECACA;
+}
+
+.status-suspended {
+    color: #e74c3c;
+    font-weight: 600;
+}
+
+.seller p {
+    color: #1D4ED8;
+    background-color: #BFDBFE;
+}
+
+.buyer p {
+    color: #374151;
+    background-color: #E5E7EB;
+}
+
+.admin p {
+    color: #7E22CE;
+    background-color: #E9D5FF;
+}
+
+.form_table p{
+    border-radius: 9999px;
+    text-align: center;
+    width: 70%;
+}
+
+.table_action img{
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.table_action img:nth-child(2){
+    margin: 0 10px;
+}
+
+.user_management_4{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.user_management_4_page button{
+    /* background-color: white; */
+    border: 1px solid #D1D5DB;
+    padding: 5px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.active_page{
+    background-color: #2563EB;
+    color: white;
+    /* border: none; */
 }
