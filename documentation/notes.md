@@ -187,3 +187,5 @@ Hướng dẫn test thủ công:
 4) Kiểm thử lỗi:
    - Truy cập `product_details.html` KHÔNG có `?id=` → tiêu đề hiển thị thông báo thiếu ID.
    - Truy cập với `?id` không tồn tại → tiêu đề hiển thị lỗi tải sản phẩm, xem `console.log`.
+
+   16/10 : cài đặt thêm thư viện : npm i @payos/node để sử dụng payos

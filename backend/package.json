@@ -16,6 +16,7 @@
   "dependencies": {
     "@faker-js/faker": "^10.0.0",
     "@google/generative-ai": "^0.24.1",
+    "@payos/node": "^2.0.3",
     "axios": "^1.12.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",

@@ -1,0 +1,1 @@
+// làm việc trong folder này cho chức năng thanh toán qua stripe nhé -- Lộc noted
