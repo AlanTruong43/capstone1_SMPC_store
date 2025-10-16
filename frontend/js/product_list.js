@@ -215,7 +215,24 @@ async function init() {
     state.categoryNameById = Object.fromEntries(categories.map(c => [c.id, c.name]));
     populateFilters();
 
-    // 2) products
+    // 2) Check URL params for initial filters
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryParam = urlParams.get('category');
+    const queryParam = urlParams.get('query');
+    
+    if (categoryParam) {
+      state.filters.categorySlug = categoryParam.toLowerCase();
+      const catSelect = $("#filterCategory");
+      if (catSelect) catSelect.value = categoryParam.toLowerCase();
+    }
+    
+    if (queryParam) {
+      state.filters.keyword = queryParam.trim().toLowerCase();
+      const searchInput = $("#searchInput");
+      if (searchInput) searchInput.value = queryParam;
+    }
+
+    // 3) products
     const products = await fetchProducts();
     state.allProducts = Array.isArray(products) ? products : [];
     applyFilters(); // sẽ render bên trong
