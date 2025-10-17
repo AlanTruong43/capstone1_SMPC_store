@@ -49,9 +49,13 @@
       try {
         const cred = await signInWithEmailAndPassword(auth, emailEl.value.trim(), passEl.value);
         const idToken = await cred.user.getIdToken();
+        
+        // Fetch custom claims to check for admin role
+        const idTokenResult = await cred.user.getIdTokenResult();
 
         localStorage.setItem('idToken', idToken);
         console.log('ID TOKEN >>>', idToken);
+        console.log('Custom Claims >>>', idTokenResult.claims);
   
         await fetch('http://localhost:4000/auth/verify', {
           method: 'POST',
@@ -60,7 +64,15 @@
         });
   
         if (successBox) successBox.style.display = 'block';
-        setTimeout(() => { window.location.href = '/pages/index.html'; }, 800);
+        
+        // Conditional redirect based on admin claim
+        setTimeout(() => {
+          if (idTokenResult.claims.admin === true) {
+            window.location.href = '/admin/dashboard.html';
+          } else {
+            window.location.href = '/pages/index.html';
+          }
+        }, 800);
       } catch (err) {
         const code = (err.code || '').toString();
         if (code.includes('invalid-email'))     emailErr.textContent = 'Email không hợp lệ';
