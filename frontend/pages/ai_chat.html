@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <title>SmartShopAI Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- (tuỳ bạn) <link rel="stylesheet" href="../css/ai_chat.css" /> -->
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;background:#f7f7f8;margin:0}
+    .wrap{max-width:900px;margin:24px auto;padding:16px}
+    .sys{color:#6b7280;margin:12px 0}
+    .chat{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);min-height:420px;padding:16px}
+    .row{display:flex;margin:10px 0}
+    .row.user{justify-content:flex-end}
+    .bubble{max-width:70%;padding:10px 14px;border-radius:16px;line-height:1.4}
+    .bubble.user{background:#2563eb;color:#fff;border-bottom-right-radius:4px}
+    .bubble.bot{background:#eef2ff;color:#111827;border-bottom-left-radius:4px}
+    .composer{display:flex;gap:8px;margin-top:12px}
+    #user-input{flex:1;padding:12px;border:1px solid #e5e7eb;border-radius:10px;font-size:15px}
+    #send-btn{padding:0 14px;border:0;background:#2563eb;color:#fff;border-radius:10px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h2>SmartShopAI Assistant</h2>
+    <div class="sys">Hỏi tôi về sản phẩm bạn muốn tìm…</div>
+    <div class="sys">Ví dụ: “Mình cần mua laptop dưới 25 triệu”.</div>
+
+    <div id="chat" class="chat"></div>
+
+    <form id="composer" class="composer">
+      <input id="user-input" type="text" placeholder="Nhập câu hỏi…" autocomplete="off" />
+      <button id="send-btn" type="submit">Gửi</button>
+    </form>
+  </div>
+
+  <script src="../js/ai_chat.js"></script>
+</body>
+</html>

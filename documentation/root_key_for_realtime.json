@@ -1,0 +1,13 @@
+{
+    "presence": {
+      "user123": { "state": "online", "lastChanged": 1716562345000 },
+      "user456": { "state": "offline", "lastChanged": 1716562000000 }
+    },
+    "notifications": {
+      "user123": {
+        "notif1": { "type": "order", "message": "Bạn vừa nhận đơn hàng mới", "timestamp": 1716562345000, "read": false },
+        "notif2": { "type": "system", "message": "Cập nhật chính sách phí", "timestamp": 1716562300000, "read": true }
+      }
+    }
+  }
+  

@@ -1,3 +1,4 @@
+HEAD
 # Firebase credentials
 serviceAccountKey.json
 config/serviceAccountKey.json
@@ -11,3 +12,9 @@ node_modules/
 
 # Package lock
 package-lock.json
+
+# Ignore node_modules và file nhạy cảm
+node_modules/
+.env
+serviceAccountKey.json
+>>>>>>> 3c6a87867198f428c248f7df3bcc387ade947bdc

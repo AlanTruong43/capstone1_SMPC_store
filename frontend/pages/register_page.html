@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+    <link rel="stylesheet" href="../css/register_page_style.css">
+    <link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css" />
+</head>
+
+<!-- Firebase Auth for REGISTER page -->
+<script type="module">
+    /* 1) Import SDK từ CDN */
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+    /* 👇 THÊM Firestore để ghi users/{uid} */
+    import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+  
+    /* 2) Cấu hình firebaseConfig từ Firebase Console vào đây */
+    const firebaseConfig = {
+  apiKey: "AIzaSyDI1V6BaKvdeLo2kbXAREWweZyiGAF4508",
+  authDomain: "smartshopai-45959.firebaseapp.com",
+  projectId: "smartshopai-45959",
+  storageBucket: "smartshopai-45959.firebasestorage.app",
+  messagingSenderId: "550339763780",
+  appId: "1:550339763780:web:b9b8957b1597ef09d5a611"
+};
+  
+    /* 3) Khởi tạo */
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app); // THÊM: khởi tạo Firestore
+
+    /* 4) Lấy phần tử từ form của bạn (đúng với file bạn gửi) */
+    const form       = document.getElementById('registerForm');
+    const emailEl    = document.getElementById('email');
+    const passEl     = document.getElementById('password');
+    const nameEl     = document.getElementById('username');      // ô “Username” nếu có
+    const emailErr   = document.getElementById('emailError');
+    const passErr    = document.getElementById('passwordError');
+    const successBox = document.getElementById('successMessage');
+
+    /* 🚫 Ngăn script “fake submit” phía dưới chạy chồng: đặt cờ báo đã xử lý bằng Firebase */
+    window.__FIREBASE_REGISTER = true;
+  
+    /* 5) Submit: tạo tài khoản + ghi Firestore */
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      emailErr.textContent = '';
+      passErr.textContent  = '';
+  
+      try {
+        // 5.1 Tạo user trên Authentication
+        const cred = await createUserWithEmailAndPassword(auth, emailEl.value.trim(), passEl.value);
+        if (nameEl && nameEl.value.trim()) {
+          await updateProfile(cred.user, { displayName: nameEl.value.trim() });
+        }
+
+        // 5.2 Ghi hồ sơ vào Firestore: users/{uid}
+        await setDoc(doc(db, 'users', cred.user.uid), {
+          email: emailEl.value.trim(),
+          displayName: nameEl?.value?.trim() || "",
+          role: 'customer',
+          registrationDate: serverTimestamp(),
+          lastLogin: serverTimestamp(),
+          isActive: true
+        });
+
+        // (Tuỳ chọn) phần cũ: verify token với backend nếu bạn vẫn dùng
+        try {
+          const idToken = await cred.user.getIdToken();
+          await fetch('http://localhost:4000/auth/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idToken })
+          });
+        } catch (_) {
+          // Bỏ qua nếu backend không chạy
+        }
+  
+        // 5.3 Thông báo & điều hướng
+        if (successBox) successBox.style.display = 'block';
+        setTimeout(() => { window.location.href = '/login'; }, 800);
+      } catch (err) {
+        const code = (err.code || '').toString();
+        if (code.includes('email-already-in-use')) emailErr.textContent = 'Email đã tồn tại';
+        else if (code.includes('invalid-email'))   emailErr.textContent = 'Email không hợp lệ';
+        else if (code.includes('weak-password'))   passErr.textContent  = 'Mật khẩu quá yếu';
+        else passErr.textContent = 'Đăng ký thất bại';
+        console.error(err);
+      }
+    });
+  
+    /* 6) Link chuyển sang trang đăng nhập */
+    const signinLink = document.querySelector('.signup-link a');
+    if (signinLink) signinLink.setAttribute('href', '/login');
+  </script>
+  
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="logo-square" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="9" cy="21" r="1"></circle>
+                      <circle cx="20" cy="21" r="1"></circle>
+                      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                </div>
+                <h2>Create Account</h2>
+                <p>Fill in your details</p>
+            </div>
+
+            <form class="login-form" id="registerForm" novalidate>
+                <div class="form-group">
+                    <label for="username" class="form-label">Username</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="username" name="username" required autocomplete="username">
+                    </div>
+                    <span class="error-message" id="usernameError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="form-label">Email</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="email" name="email" required autocomplete="email">
+                    </div>
+                    <span class="error-message" id="emailError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone" class="form-label">Phone</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="phone" name="phone" required autocomplete="tel">
+                    </div>
+                    <span class="error-message" id="phoneError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="address" class="form-label">Address</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="address" name="address" required autocomplete="street-address">
+                    </div>
+                    <span class="error-message" id="addressError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="input-wrapper password-wrapper">
+                        <input type="password" id="password" name="password" required autocomplete="new-password">
+                        <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password visibility">
+                            <span class="toggle-text">SHOW</span>
+                        </button>
+                    </div>
+                    <span class="error-message" id="passwordError"></span>
+                </div>
+
+                <button type="submit" class="login-btn">
+                    <span class="btn-text">CREATE ACCOUNT</span>
+                    <div class="btn-loader">
+                        <div class="loader-bar"></div>
+                        <div class="loader-bar"></div>
+                        <div class="loader-bar"></div>
+                    </div>
+                </button>
+            </form>
+
+            <div class="divider">
+                <span>OR</span>
+            </div>
+
+            <div class="social-login">
+                <button type="button" class="social-btn">
+                    <span class="social-text">GOOGLE</span>
+                </button>
+                <button type="button" class="social-btn">
+                    <span class="social-text">FACEBOOK</span>
+                </button>
+            </div>
+
+            <div class="signup-link">
+                <span>Already have an account? </span>
+                <a href="/login">Sign in</a>
+            </div>
+
+            <div class="success-message" id="successMessage">
+                <div class="success-icon">✓</div>
+                <h3>Registered</h3>
+                <p>Redirecting...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function(){
+        /* ⛔ Nếu đã dùng Firebase ở trên thì không chạy fake submit nữa */
+        if (window.__FIREBASE_REGISTER) return;
+
+        const form = document.getElementById('registerForm');
+        const toggle = document.getElementById('passwordToggle');
+        const password = document.getElementById('password');
+        const toggleText = toggle && toggle.querySelector('.toggle-text');
+
+        if (toggle && password) {
+            toggle.addEventListener('click', function() {
+                const isHidden = password.type === 'password';
+                password.type = isHidden ? 'text' : 'password';
+                if (toggleText) toggleText.textContent = isHidden ? 'HIDE' : 'SHOW';
+            });
+        }
+
+        if (form) {
+            form.addEventListener('submit', function(e){
+                e.preventDefault();
+                const btn = form.querySelector('.login-btn');
+                if (btn) btn.classList.add('loading');
+                setTimeout(function(){
+                    const success = document.getElementById('successMessage');
+                    if (success) success.classList.add('show');
+                    if (btn) btn.classList.remove('loading');
+                }, 1000);
+            });
+        }
+    })();
+    </script>
+</body>
+</html>

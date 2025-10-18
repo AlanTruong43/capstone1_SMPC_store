@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="../css/admin.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+  <title>user Management</title>
+</head>
+<body>
+    <header>
+        <nav>
+        <a href="index.html" class="home_icon">
+            <p class="logo_1">SMPC</p><p class="logo_2">Second-hand Marketplace</p>
+        </a>
+        <ul class="info_shop">
+            <li><img src="/img/icon/icons8-alert-24.png" alt="alert"></li>
+            <li><div class="viewsite">
+                <img src="/img/icon/icons8-share-50.png" alt="">
+                <p>Viewsite</p>
+            </div></li>
+            <li>
+                <div class="logout">
+                    <img src="/img/icon/icons8-logout-50.png" alt="">
+                    <p>Logout</p>
+                </div>
+            </li>
+        </ul>
+        </nav>
+    </header>
+    
+    <section class="body">
+        <section class="menu">
+            <a href="/admin/dashboard.html">
+                <div class="dashboard">
+                    <img src="/img/icon/icons8-dashboard-48.png" alt="">
+                    <p>Dashboard</p>
+                </div>
+            </a>
+            <a href="/admin/user_management.html">
+                <div class="user_management active_menu">
+                    <img src="/img/icon/active icon admin menu/icons8-users-settings-32.png" alt="">
+                    <p>User Management</p>
+                </div>
+            </a>
+            <a href="/admin/order_management.html">
+                <div class="order_management">
+                    <img src="/img/icon/icons8-order-management-66.png" alt="">
+                    <p>Order Management</p>
+                </div>
+            </a>
+            <a href="/admin/commission.html">
+                <div class="commission">
+                    <img src="/img/icon/icons8-commission-64.png" alt="">
+                    <p>Commission</p>
+                </div>
+            </a>
+            <a href="/admin/Products.html">
+                <div class="products">
+                    <img src="/img/icon/icons8-product-50.png" alt="">
+                    <p>Products</p>
+                </div>
+            </a>
+            <a href="/admin/analytics.html">
+                <div class="analytics">
+                    <img src="/img/icon/icons8-analytic-64.png" alt="">
+                    <p>Analytics</p>
+                </div>
+            </a>
+            <a href="/admin/setting.html">
+                <div class="setting">
+                    <img src="/img/icon/icons8-setting-50.png" alt="">
+                    <p>Setting</p>
+                </div>
+            </a>
+        </section>
+
+        <section class="content">
+            <div class="user_management_1">
+                <div class="user_management_1_1">
+                    <h3>User Management</h3>
+                    <p>Manage all users and their account status</p>
+                </div>
+                <button class="add_user" id="addUserBtn">+ Add User</button>
+            </div>
+            <div class="user_management_2">
+                <input type="search" placeholder="Search user by name or email" class="search_user">
+                <select name="" id="" class="roles">
+                    <option value="role">Roles</option>
+                    <option value="admin">Admin</option>
+                    <option value="user">User</option>
+                    <option value="seller">Seller</option>
+                </select>
+                <select name="" id="" class="status_user">
+                    <option value="status">Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="suspensed">Suspensed</option>
+                </select>
+            </div>
+            <div class="user_management_3">
+                <div class="user_management_3_1">
+                    <p class="user_management_3_1_1"><span>5</span> Users</p>
+                    <div class="user_management_3_1_2">
+                        <button class="user_management_3_1_2_filter"><img src="/img/icon/icons8-filter-24.png" alt="">Filters</button>
+                        <button class="user_management_3_1_2_export"><img src="/img/icon/icons8-download-32.png" alt="">Exports</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Join Date</th>
+                            <th>Orders</th>
+                            <th>Revenue</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- Users will be dynamically loaded here by user_management.js -->
+                        <!-- Example structure (kept for reference):
+                        <tr>
+                            <td>
+                                <div class="user-info">
+                                    <img src="/img/icon/user.png" alt="">
+                                    <div class="user-info-2">
+                                        <div class="user-name">Nguyen Van A</div>
+                                        <div class="user-email">nguyenvan@gmail.com</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="form_table seller"><p>Seller</p></td>
+                            <td class="form_table active"><p>Active</p></td>
+                            <td>2024-01-15</td>
+                            <td>23</td>
+                            <td>42,450,000</td>
+                            <td class="table_action">
+                                <img src="/img/icon/icons8-edit-50.png" alt="">
+                                <img src="/img/icon/icons8-view-24.png" alt="">
+                                <img src="/img/icon/icons8-delete-user-male-24.png" alt="">
+                            </td>
+                        </tr>
+                        -->
+                    </tbody>
+                </table>
+                <div class="user_management_4">
+                    <p>Showing 1 to 5 of <span>5</span> results</p>
+                    <div class="user_management_4_page">
+                        <button class="user_management_4_page_prev">Previous</button>
+                        <!-- trang nào được hiển thị sẽ thêm class active_page -->
+                        <button class="user_management_4_page_number active_page">1</button>
+                        <button class="user_management_4_page_number">2</button>
+                        <button class="user_management_4_page_next">Next</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </section>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal" style="display: none;">
+        <div class="modal-overlay" onclick="closeDeleteModal()"></div>
+        <div class="modal-content">
+            <h3>Delete User</h3>
+            <p id="deleteMessage">Are you sure you want to delete this user?</p>
+            <p style="font-weight: 500; margin: 10px 0;" id="deleteUserEmail"></p>
+            
+            <div class="checkbox-wrapper" style="margin: 20px 0;">
+                <label style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="deleteConfirmCheckbox">
+                    <span>Yes, I want to permanently delete this user</span>
+                </label>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn-danger" id="confirmDeleteBtn" onclick="confirmDelete()" disabled>Delete User</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal" style="display: none;">
+        <div class="modal-overlay" onclick="closeAddUserModal()"></div>
+        <div class="modal-content">
+            <h3>Add New User</h3>
+            <form id="addUserForm" onsubmit="return false;">
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="addEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Password *</label>
+                    <input type="password" id="addPassword" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label>Display Name</label>
+                    <input type="text" id="addDisplayName">
+                </div>
+                <div class="form-group">
+                    <label>Role *</label>
+                    <select id="addRole" required>
+                        <option value="customer">Customer</option>
+                        <option value="seller">Seller</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeAddUserModal()">Cancel</button>
+                    <button type="submit" class="btn-primary" onclick="submitAddUser()">Create User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="editUserModal" class="modal" style="display: none;">
+        <div class="modal-overlay" onclick="closeEditUserModal()"></div>
+        <div class="modal-content">
+            <h3>Edit User</h3>
+            <form id="editUserForm" onsubmit="return false;">
+                <input type="hidden" id="editUid">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="editEmail" disabled style="background: #f3f4f6;">
+                </div>
+                <div class="form-group">
+                    <label>Display Name</label>
+                    <input type="text" id="editDisplayName">
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select id="editRole">
+                        <option value="customer">Customer</option>
+                        <option value="seller">Seller</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="editStatus">
+                        <option value="true">Active</option>
+                        <option value="false">Inactive</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeEditUserModal()">Cancel</button>
+                    <button type="submit" class="btn-primary" onclick="submitEditUser()">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View User Modal -->
+    <div id="viewUserModal" class="modal" style="display: none;">
+        <div class="modal-overlay" onclick="closeViewUserModal()"></div>
+        <div class="modal-content">
+            <h3>User Details</h3>
+            <div class="user-details">
+                <div class="detail-row">
+                    <strong>Email:</strong>
+                    <span id="viewEmail"></span>
+                </div>
+                <div class="detail-row">
+                    <strong>Display Name:</strong>
+                    <span id="viewDisplayName"></span>
+                </div>
+                <div class="detail-row">
+                    <strong>Role:</strong>
+                    <span id="viewRole"></span>
+                </div>
+                <div class="detail-row">
+                    <strong>Status:</strong>
+                    <span id="viewStatus"></span>
+                </div>
+                <div class="detail-row">
+                    <strong>Registered:</strong>
+                    <span id="viewRegistrationDate"></span>
+                </div>
+                <div class="detail-row">
+                    <strong>Last Login:</strong>
+                    <span id="viewLastLogin"></span>
+                </div>
+                <div class="detail-row">
+                    <strong>User ID:</strong>
+                    <span id="viewUid" style="font-family: monospace; font-size: 0.9em;"></span>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-primary" onclick="closeViewUserModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+        }
+
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            position: relative;
+            background: white;
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #111827;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #D1D5DB;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3B82F6;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-primary, .btn-secondary, .btn-danger {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary {
+            background: #3B82F6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563EB;
+        }
+
+        .btn-secondary {
+            background: #6B7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4B5563;
+        }
+
+        .btn-danger {
+            background: #EF4444;
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #DC2626;
+        }
+
+        .btn-danger:disabled {
+            background: #9CA3AF;
+            cursor: not-allowed;
+        }
+
+        .user-details {
+            background: #F9FAFB;
+            padding: 20px;
+            border-radius: 4px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .checkbox-wrapper label {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+    </style>
+    
+    <script src="/js/user_management.js"></script>
+</body>
+</html>
