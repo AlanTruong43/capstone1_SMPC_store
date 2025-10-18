@@ -1,0 +1,13 @@
+# Firebase credentials
+serviceAccountKey.json
+config/serviceAccountKey.json
+
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.local
+
+# Package lock
+package-lock.json
