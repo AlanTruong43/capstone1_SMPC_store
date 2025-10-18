@@ -4,7 +4,7 @@ const express = require("express");
 const { validateAndNormalizeProduct } = require("./products_validator.js");
 const { createProduct, getAllProducts, getUserProducts, updateProduct, deleteProduct } =
   require("./products_service.js");
-const requireAuth = require("../../middlewares/auth_middleware.js"); // nếu export default thì đổi cho đúng
+const { requireAuth } = require("../../middlewares/auth_middleware.js"); // Fixed: use destructured import
 const svc = require('./products_service');
 const { validate, validateProductIdParam } = require('./products_validator'); 
 const router = express.Router();

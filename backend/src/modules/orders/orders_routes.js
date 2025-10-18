@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { db } = require('../../config/firebase');
-const requireAuth = require('../../middlewares/auth_middleware');
+const { requireAuth } = require('../../middlewares/auth_middleware');
 const { createPaymentRequest, queryTransactionStatus } = require('../momo/momo_service');
 const { 
   createOrder, 

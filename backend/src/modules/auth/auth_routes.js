@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { create_user, verify_id_token, sign_in_with_password } = require('./auth_service');
-const requireAuth = require('../../middlewares/auth_middleware');
+const { requireAuth } = require('../../middlewares/auth_middleware');
 
 // Đăng ký user (demo tạo từ backend)
 router.post('/signup', async (req, res) => {
