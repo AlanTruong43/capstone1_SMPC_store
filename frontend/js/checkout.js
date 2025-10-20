@@ -310,12 +310,14 @@ async function handleCheckoutSubmit(e) {
 
         // Success! Redirect to MoMo payment
         console.log('✅ Payment URL received:', result.payUrl);
-        console.log('🚀 Redirecting to MoMo...');
+        console.log('📦 Order ID:', result.orderId);
 
         // Save order ID to localStorage for success page
         localStorage.setItem('pendingOrderId', result.orderId);
 
-        // Redirect to MoMo payment page
+        // Always redirect to MoMo to show QR code
+        // User can see the real MoMo payment page
+        console.log('🚀 Redirecting to MoMo payment page...');
         window.location.href = result.payUrl;
 
     } catch (error) {

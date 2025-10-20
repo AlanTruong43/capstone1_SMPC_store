@@ -276,6 +276,16 @@
                     View Order Details
                 </a>
             </div>
+            
+            <!-- Development Test Button (only shows if payment is pending) -->
+            <div id="testPaymentBtn" style="display: none; margin-top: 20px;">
+                <button onclick="simulatePayment()" class="btn btn-primary" style="width: 100%; background: #ffc107; color: #000;">
+                    🧪 [DEV] Simulate Payment Completion
+                </button>
+                <p style="margin-top: 10px; font-size: 0.9rem; color: #666;">
+                    Click this to test payment without scanning QR code (localhost only)
+                </p>
+            </div>
         </div>
 
         <!-- Error State -->
@@ -471,6 +481,40 @@
             document.getElementById('noteContainer').innerHTML = 
                 '💡 <strong>Note:</strong> Your payment is being processed. Please check back in a few minutes or contact support if the issue persists.';
             document.getElementById('noteContainer').style.display = 'block';
+            
+            // Show test payment button for development (localhost only)
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                document.getElementById('testPaymentBtn').style.display = 'block';
+            }
+        }
+
+        /**
+         * Simulate payment completion (development only)
+         */
+        async function simulatePayment() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = '⏳ Simulating payment...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/payment/momo_ipn_test`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ orderId: currentOrderId })
+                });
+                
+                const result = await response.json();
+                console.log('✅ Payment simulated:', result);
+                
+                // Reload page to show updated status
+                window.location.reload();
+                
+            } catch (error) {
+                console.error('❌ Simulation failed:', error);
+                btn.disabled = false;
+                btn.textContent = '🧪 [DEV] Simulate Payment Completion';
+                alert('Failed to simulate payment: ' + error.message);
+            }
         }
 
         /**
