@@ -56,6 +56,10 @@ app.use('/api/orders', ordersRoutes);
 const momoRoutes = require('./modules/momo/momo_routes');
 app.use('/api/payment', momoRoutes);
 
+// routes payment (Stripe)
+const stripeRoutes = require('./modules/stripe/stripe.routes');
+app.use('/api/payments/stripe', stripeRoutes);
+
 // mount AI
 app.use('/ai', aiRoutes);
 app.use('/users', usersRoutes);
