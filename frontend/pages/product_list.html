@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" href="../css/style.css"/>
-  <link rel="stylesheet" href="../css/product_list.css"/>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/product_list.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@300;400;500;700&display=swap"
+    rel="stylesheet" />
   <title>Product</title>
   <style>
     .product-thumb {
@@ -20,6 +22,7 @@
       align-items: center;
       justify-content: center;
     }
+
     .product-thumb img {
       width: 100%;
       height: 100%;
@@ -27,11 +30,13 @@
     }
   </style>
 </head>
+
 <body>
   <header>
     <nav>
       <a href="index.html" class="home_icon">
-        <p class="logo_1">SMPC</p><p class="logo_2">Second-hand Marketplace</p>
+        <p class="logo_1">SMPC</p>
+        <p class="logo_2">Second-hand Marketplace</p>
       </a>
       <ul class="nav_menu">
         <li><a href="index.html">Home</a></li>
@@ -59,7 +64,7 @@
         <!-- Search -->
         <div class="product_page_1_2_search_input">
           <img src="../img/icon/search.png" alt="">
-          <input id="searchInput" type="search" placeholder="Search Product"/>
+          <input id="searchInput" type="search" placeholder="Search Product" />
         </div>
 
         <!-- Category (nạp động) -->
@@ -94,38 +99,18 @@
     <div id="product-list" class="product_list_info"></div>
   </section>
 
-  <footer>
-    <nav style="align-items:flex-start;">
-      <div class="nav_foot1">
-        <a href="index.html" class="home_icon" style="display:inline-block;">
-          <p class="logo_1">SMPC</p>
-        </a>
-        <p style="margin:20px 0;">
-          Vietnam's trusted second-hand marketplace with AI-powered product consultation.
-          Find quality pre-owned items and get personalized recommendations.
-        </p>
-        <div class="nav_foot1_social">
-          <img src="../img/icon/icons8-facebook-50.png" alt="">
-          <img src="../img/icon/icons8-twitter-50.png" alt="">
-          <img src="../img/icon/icons8-instagram-50.png" alt="">
-        </div>
-      </div>
-      <ul class="nav_foot2">
-        <li><h3>Quick Links</h3></li>
-        <li><a href="">About US</a></li>
-        <li><a href="">How it Work</a></li>
-        <li><a href="">TIP</a></li>
-        <li><a href="">Seller Guide</a></li>
-      </ul>
-      <ul class="nav_foot3">
-        <li><h3 style="color:black;">Support</h3></li>
-        <li><a href="">Help Center</a></li>
-        <li><a href="">Contact US</a></li>
-        <li><a href="">Policy</a></li>
-      </ul>
-    </nav>
-  </footer>
+  <div id="footer-placeholder"></div>
+  <script>
+    // Load footer dynamically
+    fetch("footer.html")
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById("footer-placeholder").innerHTML = data;
+      })
+      .catch(err => console.error("Error loading footer:", err));
+  </script>
 
   <script src="../js/product_list.js"></script>
 </body>
+
 </html>
