@@ -33,7 +33,7 @@ function initializeStripe() {
  * @param {Object} params.metadata - Additional metadata to store with the payment
  * @returns {Promise<Object>} Payment intent with client secret
  */
-async function createPaymentIntent({ amount, currency = 'VND', orderId, description, metadata = {} }) {
+async function createPaymentIntent({ amount, currency = 'vnd', orderId, description, metadata = {} }) {
   try {
     const stripeClient = initializeStripe();
 

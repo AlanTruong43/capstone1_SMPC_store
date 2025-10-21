@@ -13,7 +13,7 @@ const { getOrderById, updateOrderStatus } = require('../orders/orders_service');
  */
 async function createPayment(req, res) {
   try {
-    const { orderId, amount, currency = 'usd', description } = req.body;
+    const { orderId, amount, currency = 'vnd', description } = req.body;
     const userId = req.user.uid; // From requireAuth middleware
 
     // Validate required fields
