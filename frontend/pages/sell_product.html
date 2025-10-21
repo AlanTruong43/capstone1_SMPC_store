@@ -1,39 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" href="../css/style.css"/>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet"/>
-  <title>Product Seller</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@300;400;500;700&display=swap"
+        rel="stylesheet" />
+    <title>Product Seller</title>
 </head>
+
 <body style="background-color: #DBEAFE;">
     <header>
         <nav>
-        <a href="index.html" class="home_icon">
-            <p class="logo_1">SMPC</p><p class="logo_2">Second-hand Marketplace</p>
-        </a>
-        <ul class="nav_menu">
-            <li><a href="index.html">Home</a></li>
-            <li class="active"><a href="product_list.html">Product</a></li>
-            <li><a href="about.html">How It Works</a></li>
-        </ul>
-        <ul class="info_shop">
-            <li><img src="/img/icon/search.png" alt="search"></li>
-            <li><img src="/img/icon/user.png" alt="user"></li>
-            <li><a href="cart.html" class="cart"><img src="/img/icon/cart.png" alt="cart"></a></li>
-            <li class="sellnow"><a href="sell_product.html"><button>+ SELL NOW</button></a></li>
-        </ul>
+            <a href="index.html" class="home_icon">
+                <p class="logo_1">SMPC</p>
+                <p class="logo_2">Second-hand Marketplace</p>
+            </a>
+            <ul class="nav_menu">
+                <li><a href="index.html">Home</a></li>
+                <li class="active"><a href="product_list.html">Product</a></li>
+                <li><a href="about.html">How It Works</a></li>
+            </ul>
+            <ul class="info_shop">
+                <li><img src="/img/icon/search.png" alt="search"></li>
+                <li><img src="/img/icon/user.png" alt="user"></li>
+                <li><a href="cart.html" class="cart"><img src="/img/icon/cart.png" alt="cart"></a></li>
+                <li class="sellnow"><a href="sell_product.html"><button>+ SELL NOW</button></a></li>
+            </ul>
         </nav>
     </header>
 
     <section class="seller">
         <div class="seller_1">
             <h1>Sell Your Items</h3>
-            <p>Turn your unused items into cash! List them on our marketplace and reach</p>
-            <p>thousands of potential buyers.</p>
+                <p>Turn your unused items into cash! List them on our marketplace and reach</p>
+                <p>thousands of potential buyers.</p>
         </div>
 
         <div class="seller_2">
@@ -71,7 +75,8 @@
                         <option value="electronic">Electronic</option>
                         <option value="fashion_and_clothing">Fashion & Clothing</option>
                         <option value="books_and_media">Books & Media</option>
-                        <option value="home_and_living">Home & Living</option>                        <option value="category">Category</option>
+                        <option value="home_and_living">Home & Living</option>
+                        <option value="category">Category</option>
                         <option value="sport">Sport</option>
                         <option value="beauty_and_health">Beauty & Health</option>
                     </select>
@@ -146,36 +151,16 @@
         </div>
     </section>
 
-  <footer>
-    <nav style="align-items:flex-start;">
-      <div class="nav_foot1">
-        <a href="index.html" class="home_icon" style="display:inline-block;">
-          <p class="logo_1">SMPC</p>
-        </a>
-        <p style="margin:20px 0;">
-          Vietnam's trusted second-hand marketplace with AI-powered product consultation.
-          Find quality pre-owned items and get personalized recommendations.
-        </p>
-        <div class="nav_foot1_social">
-          <img src="/img/icon/icons8-facebook-50.png" alt="">
-          <img src="/img/icon/icons8-twitter-50.png" alt="">
-          <img src="/img/icon/icons8-instagram-50.png" alt="">
-        </div>
-      </div>
-      <ul class="nav_foot2">
-        <li><h3>Quick Links</h3></li>
-        <li><a href="">About US</a></li>
-        <li><a href="">How it Work</a></li>
-        <li><a href="">TIP</a></li>
-        <li><a href="">Seller Guide</a></li>
-      </ul>
-      <ul class="nav_foot3">
-        <li><h3 style="color:black;">Support</h3></li>
-        <li><a href="">Help Center</a></li>
-        <li><a href="">Contact US</a></li>
-        <li><a href="">Policy</a></li>
-      </ul>
-    </nav>
-  </footer>
+    <div id="footer-placeholder"></div>
+    <script>
+        // Load footer dynamically
+        fetch("footer.html")
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("footer-placeholder").innerHTML = data;
+            })
+            .catch(err => console.error("Error loading footer:", err));
+    </script>
 </body>
+
 </html>

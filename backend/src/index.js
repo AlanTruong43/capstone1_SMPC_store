@@ -56,16 +56,14 @@ app.use('/api/orders', ordersRoutes);
 const momoRoutes = require('./modules/momo/momo_routes');
 app.use('/api/payment', momoRoutes);
 
-// mount AI
-app.use('/ai', aiRoutes);
-app.use('/users', usersRoutes);
+// routes payment (Stripe)
+const stripeRoutes = require('./modules/stripe/stripe.routes');
+app.use('/api/payments/stripe', stripeRoutes);
 
 // trang thử nhanh
 app.get('/', (req, res) => {
   res.redirect('/pages/ai_chat.html');
 });
-
-
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, async () => {
