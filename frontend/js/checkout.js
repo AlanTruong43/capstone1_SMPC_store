@@ -6,6 +6,7 @@
 // Global state
 let currentProduct = null;
 let productQuantity = 1;
+let selectedPaymentMethod = 'momo'; // Default to MoMo
 const API_BASE = 'http://localhost:4000';
 
 // DOM elements
@@ -43,6 +44,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Setup form validation
     setupFormValidation();
+
+    // Setup payment method selection
+    setupPaymentMethodSelection();
 
     // Setup form submission
     checkoutForm.addEventListener('submit', handleCheckoutSubmit);
@@ -114,6 +118,29 @@ function formatPrice(price) {
         style: 'currency',
         currency: 'VND'
     }).format(price);
+}
+
+/**
+ * Setup payment method selection
+ */
+function setupPaymentMethodSelection() {
+    const paymentOptions = document.querySelectorAll('input[name="paymentMethod"]');
+    const securityNote = document.getElementById('securityNote');
+
+    paymentOptions.forEach(option => {
+        option.addEventListener('change', (e) => {
+            selectedPaymentMethod = e.target.value;
+            
+            // Update security note based on selected method
+            if (selectedPaymentMethod === 'momo') {
+                securityNote.textContent = '🔒 Secure payment powered by MoMo';
+            } else if (selectedPaymentMethod === 'stripe') {
+                securityNote.textContent = '🔒 Secure payment powered by Stripe';
+            }
+
+            console.log('💳 Payment method selected:', selectedPaymentMethod);
+        });
+    });
 }
 
 /**
@@ -280,6 +307,7 @@ async function handleCheckoutSubmit(e) {
     };
 
     console.log('📦 Order data:', formData);
+    console.log('💳 Selected payment method:', selectedPaymentMethod);
 
     // Show loading state
     setLoadingState(true);
@@ -288,37 +316,13 @@ async function handleCheckoutSubmit(e) {
         // Get user ID token
         const idToken = await user.getIdToken();
 
-        console.log('💳 Creating order and requesting payment...');
-
-        // Call backend to create order and get payment URL
-        const response = await fetch(`${API_BASE}/api/orders/create-and-checkout`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${idToken}`
-            },
-            body: JSON.stringify(formData)
-        });
-
-        const result = await response.json();
-
-        console.log('📥 Server response:', result);
-
-        if (!response.ok || !result.success) {
-            throw new Error(result.message || result.error || 'Failed to create order');
+        if (selectedPaymentMethod === 'momo') {
+            // MoMo Payment Flow
+            await handleMoMoPayment(formData, idToken);
+        } else if (selectedPaymentMethod === 'stripe') {
+            // Stripe Payment Flow
+            await handleStripePayment(formData, idToken);
         }
-
-        // Success! Redirect to MoMo payment
-        console.log('✅ Payment URL received:', result.payUrl);
-        console.log('📦 Order ID:', result.orderId);
-
-        // Save order ID to localStorage for success page
-        localStorage.setItem('pendingOrderId', result.orderId);
-
-        // Always redirect to MoMo to show QR code
-        // User can see the real MoMo payment page
-        console.log('🚀 Redirecting to MoMo payment page...');
-        window.location.href = result.payUrl;
 
     } catch (error) {
         console.error('❌ Checkout failed:', error);
@@ -337,6 +341,113 @@ async function handleCheckoutSubmit(e) {
         }
 
         showErrorContainer(errorMessage);
+    }
+}
+
+/**
+ * Handle MoMo payment flow
+ */
+async function handleMoMoPayment(formData, idToken) {
+    console.log('💳 Processing MoMo payment...');
+
+    // Call backend to create order and get payment URL
+    const response = await fetch(`${API_BASE}/api/orders/create-and-checkout`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${idToken}`
+        },
+        body: JSON.stringify(formData)
+    });
+
+    const result = await response.json();
+    console.log('📥 MoMo response:', result);
+
+    if (!response.ok || !result.success) {
+        throw new Error(result.message || result.error || 'Failed to create order');
+    }
+
+    // Success! Redirect to MoMo payment
+    console.log('✅ Payment URL received:', result.payUrl);
+    console.log('📦 Order ID:', result.orderId);
+
+    // Save order ID to localStorage for success page
+    localStorage.setItem('pendingOrderId', result.orderId);
+
+    // Redirect to MoMo payment page
+    console.log('🚀 Redirecting to MoMo payment page...');
+    window.location.href = result.payUrl;
+}
+
+/**
+ * Handle Stripe payment flow
+ */
+async function handleStripePayment(formData, idToken) {
+    console.log('💳 Processing Stripe payment...');
+
+    try {
+        // Step 1: Create order first
+        const orderResponse = await fetch(`${API_BASE}/api/orders`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${idToken}`
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const orderResult = await orderResponse.json();
+        console.log('📥 Order created:', orderResult);
+
+        if (!orderResponse.ok || !orderResult.success) {
+            throw new Error(orderResult.message || 'Failed to create order');
+        }
+
+        const orderId = orderResult.orderId;
+        const orderTotal = orderResult.order.totalAmount;
+
+        // Step 2: Create Stripe Payment Intent
+        const paymentResponse = await fetch(`${API_BASE}/api/payments/stripe/create`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${idToken}`
+            },
+            body: JSON.stringify({
+                orderId: orderId,
+                amount: Math.round(orderTotal), // VND doesn't use decimals
+                currency: 'vnd',
+                description: `Payment for ${currentProduct.name}`
+            })
+        });
+
+        const paymentResult = await paymentResponse.json();
+        console.log('📥 Stripe payment intent created:', paymentResult);
+
+        if (!paymentResponse.ok || !paymentResult.success) {
+            throw new Error(paymentResult.error || 'Failed to create payment intent');
+        }
+
+        // Step 3: Save order ID and show message
+        localStorage.setItem('pendingOrderId', orderId);
+
+        // For now, show alert since Stripe UI is not implemented yet
+        setLoadingState(false);
+        alert('⚠️ Stripe payment UI is not yet implemented.\n\nYour order has been created (Order ID: ' + orderId + ').\n\nPlease contact support to complete payment via Stripe.\n\nClient Secret: ' + paymentResult.clientSecret);
+
+        // TODO: Implement Stripe.js UI here
+        // - Load Stripe.js library
+        // - Create card element
+        // - Confirm payment with clientSecret
+        // - Handle result and redirect to success page
+
+        console.log('⚠️ Stripe UI not implemented. Order created but payment pending.');
+        console.log('Client Secret:', paymentResult.clientSecret);
+
+    } catch (error) {
+        console.error('❌ Stripe payment failed:', error);
+        setLoadingState(false);
+        throw error;
     }
 }
 

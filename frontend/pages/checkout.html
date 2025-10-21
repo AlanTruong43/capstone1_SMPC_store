@@ -112,6 +112,56 @@
                             </div>
                         </div>
 
+                        <!-- Payment Method Selection -->
+                        <div class="payment-method-section">
+                            <h3>💳 Payment Method</h3>
+                            <p class="payment-subtitle">Choose your preferred payment method</p>
+                            
+                            <div class="payment-options">
+                                <!-- MoMo Option -->
+                                <div class="payment-option" data-method="momo">
+                                    <input type="radio" id="paymentMomo" name="paymentMethod" value="momo" checked>
+                                    <label for="paymentMomo">
+                                        <div class="payment-option-header">
+                                            <div class="payment-icon momo-icon">
+                                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                                    <rect width="32" height="32" rx="8" fill="#A50064"/>
+                                                    <path d="M16 8C11.6 8 8 11.6 8 16C8 20.4 11.6 24 16 24C20.4 24 24 20.4 24 16C24 11.6 20.4 8 16 8Z" fill="white"/>
+                                                    <path d="M19 14L15 18L13 16" stroke="#A50064" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                            </div>
+                                            <div class="payment-info">
+                                                <div class="payment-name">MoMo Wallet</div>
+                                                <div class="payment-desc">Pay with MoMo e-wallet or QR code</div>
+                                            </div>
+                                        </div>
+                                        <div class="payment-badge">Popular</div>
+                                    </label>
+                                </div>
+
+                                <!-- Stripe Option -->
+                                <div class="payment-option" data-method="stripe">
+                                    <input type="radio" id="paymentStripe" name="paymentMethod" value="stripe">
+                                    <label for="paymentStripe">
+                                        <div class="payment-option-header">
+                                            <div class="payment-icon stripe-icon">
+                                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                                    <rect width="32" height="32" rx="8" fill="#635BFF"/>
+                                                    <path d="M16 8C11.6 8 8 11.6 8 16C8 20.4 11.6 24 16 24C20.4 24 24 20.4 24 16C24 11.6 20.4 8 16 8Z" fill="white"/>
+                                                    <path d="M16 12V20M12 16H20" stroke="#635BFF" stroke-width="2" stroke-linecap="round"/>
+                                                </svg>
+                                            </div>
+                                            <div class="payment-info">
+                                                <div class="payment-name">Credit/Debit Card</div>
+                                                <div class="payment-desc">Pay securely with Stripe</div>
+                                            </div>
+                                        </div>
+                                        <div class="payment-badge international">International</div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Error Message Container -->
                         <div id="errorContainer" class="error-container" style="display: none;">
                             <div class="error-icon">⚠️</div>
@@ -127,7 +177,7 @@
                             </span>
                         </button>
 
-                        <div class="security-note">
+                        <div class="security-note" id="securityNote">
                             🔒 Secure payment powered by MoMo
                         </div>
                     </form>
