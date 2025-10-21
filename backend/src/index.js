@@ -60,16 +60,10 @@ app.use('/api/payment', momoRoutes);
 const stripeRoutes = require('./modules/stripe/stripe.routes');
 app.use('/api/payments/stripe', stripeRoutes);
 
-// mount AI
-app.use('/ai', aiRoutes);
-app.use('/users', usersRoutes);
-
 // trang thử nhanh
 app.get('/', (req, res) => {
   res.redirect('/pages/ai_chat.html');
 });
-
-
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, async () => {
