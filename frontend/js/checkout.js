@@ -134,6 +134,8 @@ function setupPaymentMethodSelection() {
             // Update security note based on selected method
             if (selectedPaymentMethod === 'momo') {
                 securityNote.textContent = '🔒 Secure payment powered by MoMo';
+            } else if (selectedPaymentMethod === 'zalopay') {
+                securityNote.textContent = '🔒 Secure payment powered by ZaloPay';
             } else if (selectedPaymentMethod === 'stripe') {
                 securityNote.textContent = '🔒 Secure payment powered by Stripe';
             }

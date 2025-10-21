@@ -395,6 +395,10 @@ body {
     fill: #A50064;
 }
 
+.zalopay-icon svg rect:first-child {
+    fill: #0068FF;
+}
+
 .stripe-icon svg rect:first-child {
     fill: #635BFF;
 }
@@ -428,6 +432,10 @@ body {
 
 .payment-badge.international {
     background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.payment-badge.zalopay-badge {
+    background: linear-gradient(135deg, #0068FF 0%, #00D4FF 100%);
 }
 
 /* Security Note */

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZaloPay Payment - SmartShopAI</title>
+    <link rel="stylesheet" href="../css/zalopay.css">
+</head>
+<body>
+    <div class="zalopay-container">
+        <!-- Header -->
+        <div class="zalopay-header">
+            <div class="header-logo">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                    <rect width="48" height="48" rx="12" fill="#0068FF"/>
+                    <path d="M18 15L30 33M30 15L18 33" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+                    <circle cx="24" cy="24" r="13" stroke="white" stroke-width="2.5"/>
+                </svg>
+                <div class="header-title">
+                    <h1>ZaloPay</h1>
+                    <p>Secure Payment Gateway</p>
+                </div>
+            </div>
+            <div class="header-badge">
+                <span class="secure-icon">🔒</span>
+                <span>Secure</span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="zalopay-content">
+            <!-- Order Summary Card -->
+            <div class="order-summary-card">
+                <div class="card-header">
+                    <h2>📦 Order Summary</h2>
+                    <span class="order-id">Order #<span id="orderId">Loading...</span></span>
+                </div>
+
+                <div class="order-details" id="orderDetails">
+                    <!-- Order details will be injected here -->
+                    <div class="loading-placeholder">
+                        <div class="spinner"></div>
+                        <p>Loading order details...</p>
+                    </div>
+                </div>
+
+                <div class="order-total">
+                    <div class="total-row">
+                        <span>Subtotal</span>
+                        <span id="subtotal">0 ₫</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Fee</span>
+                        <span id="fee">0 ₫</span>
+                    </div>
+                    <div class="total-row total-amount">
+                        <span>Total Amount</span>
+                        <span id="totalAmount">0 ₫</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Method Card -->
+            <div class="payment-method-card">
+                <h2>💳 Payment Method</h2>
+                
+                <div class="method-options">
+                    <!-- ZaloPay Wallet -->
+                    <div class="method-option active" data-method="wallet">
+                        <input type="radio" id="methodWallet" name="paymentType" value="wallet" checked>
+                        <label for="methodWallet">
+                            <div class="method-icon">
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                    <rect width="32" height="32" rx="8" fill="#0068FF"/>
+                                    <path d="M8 12C8 10.3431 9.34315 9 11 9H21C22.6569 9 24 10.3431 24 12V20C24 21.6569 22.6569 23 21 23H11C9.34315 23 8 21.6569 8 20V12Z" fill="white"/>
+                                    <circle cx="19" cy="16" r="1.5" fill="#0068FF"/>
+                                </svg>
+                            </div>
+                            <div class="method-info">
+                                <div class="method-name">ZaloPay Wallet</div>
+                                <div class="method-desc">Pay with your ZaloPay balance</div>
+                            </div>
+                            <div class="method-checkmark">✓</div>
+                        </label>
+                    </div>
+
+                    <!-- Linked Bank Account -->
+                    <div class="method-option" data-method="bank">
+                        <input type="radio" id="methodBank" name="paymentType" value="bank">
+                        <label for="methodBank">
+                            <div class="method-icon">
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                    <rect width="32" height="32" rx="8" fill="#0068FF"/>
+                                    <path d="M16 8L8 13V15H24V13L16 8Z" fill="white"/>
+                                    <path d="M10 16V22H13V16H10Z" fill="white"/>
+                                    <path d="M14.5 16V22H17.5V16H14.5Z" fill="white"/>
+                                    <path d="M19 16V22H22V16H19Z" fill="white"/>
+                                    <path d="M7 23H25V25H7V23Z" fill="white"/>
+                                </svg>
+                            </div>
+                            <div class="method-info">
+                                <div class="method-name">Linked Bank Account</div>
+                                <div class="method-desc">Pay directly from your bank</div>
+                            </div>
+                            <div class="method-checkmark">✓</div>
+                        </label>
+                    </div>
+
+                    <!-- ATM/Debit Card -->
+                    <div class="method-option" data-method="atm">
+                        <input type="radio" id="methodATM" name="paymentType" value="atm">
+                        <label for="methodATM">
+                            <div class="method-icon">
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                    <rect width="32" height="32" rx="8" fill="#0068FF"/>
+                                    <rect x="6" y="10" width="20" height="12" rx="2" fill="white"/>
+                                    <rect x="6" y="12" width="20" height="3" fill="#0068FF"/>
+                                    <rect x="8" y="17" width="8" height="2" rx="1" fill="#0068FF"/>
+                                </svg>
+                            </div>
+                            <div class="method-info">
+                                <div class="method-name">ATM/Debit Card</div>
+                                <div class="method-desc">Pay with domestic ATM card</div>
+                            </div>
+                            <div class="method-checkmark">✓</div>
+                        </label>
+                    </div>
+
+                    <!-- Credit Card -->
+                    <div class="method-option" data-method="credit">
+                        <input type="radio" id="methodCredit" name="paymentType" value="credit">
+                        <label for="methodCredit">
+                            <div class="method-icon">
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                    <rect width="32" height="32" rx="8" fill="#0068FF"/>
+                                    <rect x="6" y="10" width="20" height="12" rx="2" fill="white"/>
+                                    <rect x="6" y="12" width="20" height="3" fill="#FFD700"/>
+                                    <rect x="18" y="17" width="6" height="2" rx="1" fill="#0068FF"/>
+                                </svg>
+                            </div>
+                            <div class="method-info">
+                                <div class="method-name">Credit Card</div>
+                                <div class="method-desc">Visa, MasterCard, JCB</div>
+                            </div>
+                            <div class="method-checkmark">✓</div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QR Code Section (Initially Hidden) -->
+            <div class="qr-code-section" id="qrCodeSection" style="display: none;">
+                <h3>📱 Scan QR Code to Pay</h3>
+                <p class="qr-instruction">Open ZaloPay app and scan this QR code</p>
+                
+                <div class="qr-code-container">
+                    <div id="qrCodeDisplay" class="qr-code-placeholder">
+                        <!-- QR Code will be generated here -->
+                        <div class="qr-loading">
+                            <div class="spinner"></div>
+                            <p>Generating QR Code...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qr-timer">
+                    <span class="timer-icon">⏱️</span>
+                    <span>Expires in: <span id="qrTimer">10:00</span></span>
+                </div>
+
+                <div class="qr-actions">
+                    <button class="btn-secondary" id="refreshQR">
+                        <span class="icon">🔄</span>
+                        Refresh QR Code
+                    </button>
+                </div>
+            </div>
+
+            <!-- Payment Actions -->
+            <div class="payment-actions">
+                <button class="btn-cancel" id="cancelBtn">
+                    Cancel Payment
+                </button>
+                <button class="btn-proceed" id="proceedBtn">
+                    <span class="btn-text">Proceed to Pay</span>
+                    <span class="btn-loader" style="display: none;">
+                        <span class="spinner-small"></span>
+                        Processing...
+                    </span>
+                </button>
+            </div>
+
+            <!-- Payment Status Messages -->
+            <div class="status-message success" id="successMessage" style="display: none;">
+                <span class="status-icon">✅</span>
+                <div class="status-text">
+                    <strong>Payment Successful!</strong>
+                    <p>Your order has been confirmed. Redirecting...</p>
+                </div>
+            </div>
+
+            <div class="status-message error" id="errorMessage" style="display: none;">
+                <span class="status-icon">❌</span>
+                <div class="status-text">
+                    <strong>Payment Failed</strong>
+                    <p id="errorText">Something went wrong. Please try again.</p>
+                </div>
+            </div>
+
+            <div class="status-message pending" id="pendingMessage" style="display: none;">
+                <span class="status-icon">⏳</span>
+                <div class="status-text">
+                    <strong>Payment Pending</strong>
+                    <p>Waiting for payment confirmation...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="zalopay-footer">
+            <div class="footer-security">
+                <span class="security-badge">🔐 Encrypted Connection</span>
+                <span class="security-badge">🛡️ PCI DSS Compliant</span>
+            </div>
+            <div class="footer-info">
+                <p>Powered by ZaloPay Payment Gateway</p>
+                <p class="footer-links">
+                    <a href="#">Help</a> • 
+                    <a href="#">Terms</a> • 
+                    <a href="#">Privacy</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK (for authentication) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDI1V6BaKvdeLo2kbXAREWweZyiGAF4508",
+            authDomain: "smartshopai-45959.firebaseapp.com",
+            projectId: "smartshopai-45959",
+            storageBucket: "smartshopai-45959.firebasestorage.app",
+            messagingSenderId: "550339763780",
+            appId: "1:550339763780:web:b9b8957b1597ef09d5a611"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        window.firebaseAuth = auth;
+    </script>
+
+    <!-- ZaloPay Page Logic -->
+    <script>
+        /**
+         * ZaloPay Payment Page Logic
+         * This is a placeholder for backend integration
+         * 
+         * TODO: Implement the following:
+         * 1. Load order details from URL params or API
+         * 2. Handle payment method selection
+         * 3. Call ZaloPay API to create payment
+         * 4. Generate and display QR code
+         * 5. Poll payment status
+         * 6. Handle payment completion/failure
+         */
+
+        const API_BASE = 'http://localhost:4000';
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 ZaloPay payment page loaded');
+            
+            // Get order ID from URL params
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('orderId');
+            
+            if (orderId) {
+                console.log('📦 Order ID:', orderId);
+                document.getElementById('orderId').textContent = orderId;
+                
+                // TODO: Load order details
+                // loadOrderDetails(orderId);
+            } else {
+                console.error('❌ No order ID provided');
+                showError('Invalid payment request. No order ID found.');
+            }
+
+            // Setup event listeners
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Payment method selection
+            const methodOptions = document.querySelectorAll('.method-option');
+            methodOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    methodOptions.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    option.querySelector('input').checked = true;
+                });
+            });
+
+            // Proceed button
+            document.getElementById('proceedBtn').addEventListener('click', handleProceedPayment);
+
+            // Cancel button
+            document.getElementById('cancelBtn').addEventListener('click', handleCancelPayment);
+
+            // Refresh QR code
+            document.getElementById('refreshQR').addEventListener('click', handleRefreshQR);
+        }
+
+        function handleProceedPayment() {
+            console.log('💳 Proceeding with ZaloPay payment...');
+            
+            const selectedMethod = document.querySelector('input[name="paymentType"]:checked').value;
+            console.log('Selected payment type:', selectedMethod);
+
+            // TODO: Implement ZaloPay payment flow
+            // 1. Call backend API to create ZaloPay payment
+            // 2. Receive payment URL or QR code data
+            // 3. Display QR code or redirect to payment page
+            // 4. Poll for payment status
+
+            alert('⚠️ ZaloPay payment integration not implemented yet.\n\nThis is a placeholder page for backend integration.\n\nSelected method: ' + selectedMethod);
+        }
+
+        function handleCancelPayment() {
+            console.log('🚫 Payment cancelled');
+            
+            if (confirm('Are you sure you want to cancel this payment?')) {
+                // Redirect back to checkout or product page
+                window.location.href = '/pages/checkout.html';
+            }
+        }
+
+        function handleRefreshQR() {
+            console.log('🔄 Refreshing QR code...');
+            
+            // TODO: Request new QR code from backend
+            alert('QR code refresh not implemented yet.');
+        }
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            
+            errorText.textContent = message;
+            errorMessage.style.display = 'flex';
+        }
+
+        function showSuccess() {
+            const successMessage = document.getElementById('successMessage');
+            successMessage.style.display = 'flex';
+            
+            // Redirect after 3 seconds
+            setTimeout(() => {
+                window.location.href = '/pages/order-success.html';
+            }, 3000);
+        }
+
+        function showPending() {
+            const pendingMessage = document.getElementById('pendingMessage');
+            pendingMessage.style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
+

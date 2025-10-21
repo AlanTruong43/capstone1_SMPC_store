@@ -139,6 +139,27 @@
                                     </label>
                                 </div>
 
+                                <!-- ZaloPay Option -->
+                                <div class="payment-option" data-method="zalopay">
+                                    <input type="radio" id="paymentZaloPay" name="paymentMethod" value="zalopay">
+                                    <label for="paymentZaloPay">
+                                        <div class="payment-option-header">
+                                            <div class="payment-icon zalopay-icon">
+                                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                                    <rect width="32" height="32" rx="8" fill="#0068FF"/>
+                                                    <path d="M12 10L20 22M20 10L12 22" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                                                    <circle cx="16" cy="16" r="9" stroke="white" stroke-width="2"/>
+                                                </svg>
+                                            </div>
+                                            <div class="payment-info">
+                                                <div class="payment-name">ZaloPay</div>
+                                                <div class="payment-desc">Pay with ZaloPay wallet or QR code</div>
+                                            </div>
+                                        </div>
+                                        <div class="payment-badge zalopay-badge">Fast</div>
+                                    </label>
+                                </div>
+
                                 <!-- Stripe Option -->
                                 <div class="payment-option" data-method="stripe">
                                     <input type="radio" id="paymentStripe" name="paymentMethod" value="stripe">

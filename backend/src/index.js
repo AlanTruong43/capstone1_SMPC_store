@@ -47,6 +47,7 @@ app.use("/metadata", metadataRoutes);
 
 const aiRoutes = require('./modules/ai/ai_routes'); // <— ROUTER AI
 const usersRoutes = require('./modules/users/users_routes');
+app.use('/users', usersRoutes);
 
 // routes orders (MoMo integration)
 const ordersRoutes = require('./modules/orders/orders_routes');
@@ -59,11 +60,6 @@ app.use('/api/payment', momoRoutes);
 // routes payment (Stripe)
 const stripeRoutes = require('./modules/stripe/stripe.routes');
 app.use('/api/payments/stripe', stripeRoutes);
-
-// trang thử nhanh
-app.get('/', (req, res) => {
-  res.redirect('/pages/ai_chat.html');
-});
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, async () => {
