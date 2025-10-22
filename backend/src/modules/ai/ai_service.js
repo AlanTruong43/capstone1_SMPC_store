@@ -35,7 +35,16 @@ function naiveParse(query) {
     trong : 'instruments',
     'pi a nô' : 'instruments',
     guitar : 'instruments',
-
+    ghita : 'instruments',
+    'guitar': 'instruments',
+    'ghita': 'instruments',
+    'pi a nô': 'instruments',
+    'trống': 'instruments',
+    'trong': 'instruments',
+    'nhạc cụ': 'instruments',
+    'quần jean': 'clothes',
+    'quần': 'clothes',
+    'áo sơ mi': 'clothes',
   };
 
   let categorySlug = null;

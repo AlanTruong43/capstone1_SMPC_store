@@ -46,6 +46,8 @@ const metadataRoutes = require("./modules/metadata/metadata_routes.js");
 app.use("/metadata", metadataRoutes);
 
 const aiRoutes = require('./modules/ai/ai_routes'); // <— ROUTER AI
+app.use('/ai', aiRoutes);
+
 const usersRoutes = require('./modules/users/users_routes');
 app.use('/users', usersRoutes);
 
