@@ -381,6 +381,12 @@ tr:hover {
     background-color: #BBF7D0;
 }
 
+.pending p {
+    color: #A16207;
+    font-weight: 600;
+    background-color: #FEF08A;
+}
+
 .nonactive p {
     color: #B91C1C;
     font-weight: 600;
@@ -407,10 +413,31 @@ tr:hover {
     background-color: #E9D5FF;
 }
 
+.delivered p{
+    color: #15803D;
+    background-color: #BBF7D0;
+}
+
+.shipped p{
+    color: #7E22CE;
+    background-color: #E9D5FF;
+}
+
+.processing p{
+    color: #1D4ED8;
+    background-color: #BFDBFE;
+}
+
+.cancelled p{
+    color: #B91C1C;
+    background-color: #FECACA;
+}
+
 .form_table p{
     border-radius: 9999px;
     text-align: center;
     width: 70%;
+    padding: 5px 10px;
 }
 
 .table_action img{
@@ -590,3 +617,4 @@ tr:hover {
     padding: 10px;
     background-color: #F0FDF4;
 }
+
