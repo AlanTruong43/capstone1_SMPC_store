@@ -280,6 +280,87 @@ async function deleteProductAdmin(productId) {
 }
 
 
+/**
+ * Check if a product can be edited by customer
+ * Product cannot be edited if it's sold or has pending orders
+ */
+async function canEditProduct(productId) {
+  const productRef = productCol.doc(productId);
+  const productDoc = await productRef.get();
+  
+  if (!productDoc.exists) {
+    throw new Error("Product not found");
+  }
+  
+  const product = productDoc.data();
+  
+  // Cannot edit if product is sold
+  if (product.status === "sold") {
+    return { canEdit: false, reason: "Product is already sold" };
+  }
+  
+  // Check if product has any pending orders
+  const ordersCol = db.collection("orders");
+  const pendingOrders = await ordersCol
+    .where("productId", "==", productId)
+    .where("status", "==", "pending")
+    .limit(1)
+    .get();
+  
+  if (!pendingOrders.empty) {
+    return { canEdit: false, reason: "Product has pending orders" };
+  }
+  
+  return { canEdit: true };
+}
+
+/**
+ * Customer update product with order status validation
+ */
+async function updateProductCustomer(uid, productId, updates) {
+  const ref = productCol.doc(productId);
+  const doc = await ref.get();
+  
+  if (!doc.exists) throw new Error("Product not found");
+  if (doc.data().sellerId !== uid) throw new Error("Permission denied");
+  
+  // Check if product can be edited
+  const editCheck = await canEditProduct(productId);
+  if (!editCheck.canEdit) {
+    throw new Error(editCheck.reason);
+  }
+  
+  const data = {};
+  // Allow updating all fields for customers
+  ["name","description","price","quantity","imageUrl","location","condition","status"].forEach(k=>{
+    if (updates[k] !== undefined) data[k] = updates[k];
+  });
+
+  // Allow changing category by slug or id
+  if (updates.categorySlug || updates.categoryId) {
+    data.categoryId = await resolveCategoryId(updates);
+  }
+
+  data.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+  await ref.update(data);
+  
+  const updatedDoc = await ref.get();
+  return serializeDoc(updatedDoc);
+}
+
+/**
+ * Get single product by ID with ownership check
+ */
+async function getCustomerProductById(uid, productId) {
+  const product = await getProductById(productId);
+  
+  if (product.sellerId !== uid) {
+    throw new Error("Permission denied");
+  }
+  
+  return product;
+}
+
 module.exports = {
   createProduct,
   getAllProducts,
@@ -292,4 +373,8 @@ module.exports = {
   createProductAdmin,
   updateProductAdmin,
   deleteProductAdmin,
+  // Customer functions
+  canEditProduct,
+  updateProductCustomer,
+  getCustomerProductById,
 };

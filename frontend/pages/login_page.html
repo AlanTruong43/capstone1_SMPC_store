@@ -9,8 +9,8 @@
 </head>
 <!-- Firebase Auth for LOGIN page -->
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
   
     const firebaseConfig = {
   apiKey: "AIzaSyDI1V6BaKvdeLo2kbXAREWweZyiGAF4508",
@@ -47,6 +47,9 @@
       passErr.textContent  = '';
   
       try {
+        // Set persistence to LOCAL before login (auth state survives browser close)
+        await setPersistence(auth, browserLocalPersistence);
+        
         const cred = await signInWithEmailAndPassword(auth, emailEl.value.trim(), passEl.value);
         const idToken = await cred.user.getIdToken();
         

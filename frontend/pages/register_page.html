@@ -12,7 +12,7 @@
 <script type="module">
     /* 1) Import SDK từ CDN */
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, updateProfile, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
     /* 👇 THÊM Firestore để ghi users/{uid} */
     import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
   
@@ -50,6 +50,9 @@
       passErr.textContent  = '';
   
       try {
+        // Set persistence to LOCAL before registration (auth state survives browser close)
+        await setPersistence(auth, browserLocalPersistence);
+        
         // 5.1 Tạo user trên Authentication
         const cred = await createUserWithEmailAndPassword(auth, emailEl.value.trim(), passEl.value);
         if (nameEl && nameEl.value.trim()) {

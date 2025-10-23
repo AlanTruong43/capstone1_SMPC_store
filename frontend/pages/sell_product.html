@@ -5,11 +5,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/sell_product.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@300;400;500;700&display=swap"
         rel="stylesheet" />
-    <title>Product Seller</title>
+    <title>Sell Your Product - SMPC</title>
 </head>
 
 <body style="background-color: #DBEAFE;">
@@ -21,7 +22,8 @@
             </a>
             <ul class="nav_menu">
                 <li><a href="index.html">Home</a></li>
-                <li class="active"><a href="product_list.html">Product</a></li>
+                <li><a href="product_list.html">Product</a></li>
+                <li><a href="customer_products.html">My Products</a></li>
                 <li><a href="about.html">How It Works</a></li>
             </ul>
             <ul class="info_shop">
@@ -63,61 +65,55 @@
 
         <div class="seller_3">
             <h2>Basic Information</h2>
+            
+            <!-- Message Container for errors/success -->
+            <div id="messageContainer" style="display: none;"></div>
+            
             <div class="seller_3_1">
                 <div class="seller_3_1_1">
                     <p>Product Title <span class="seller_3_must">*</span></p>
-                    <input type="text" placeholder="e.g., iPhone 13 Pro Max 256GB - Like New">
+                    <input type="text" id="productTitle" placeholder="e.g., iPhone 13 Pro Max 256GB - Like New">
                 </div>
                 <div class="seller_3_1_2">
                     <p>Category <span class="seller_3_must">*</span></p>
-                    <select name="category_seller_3" id="">
-                        <option value="category">Category</option>
-                        <option value="electronic">Electronic</option>
-                        <option value="fashion_and_clothing">Fashion & Clothing</option>
-                        <option value="books_and_media">Books & Media</option>
-                        <option value="home_and_living">Home & Living</option>
-                        <option value="category">Category</option>
-                        <option value="sport">Sport</option>
-                        <option value="beauty_and_health">Beauty & Health</option>
+                    <select id="productCategory">
+                        <option value="">Select Category</option>
+                        <!-- Categories will be loaded dynamically -->
                     </select>
                 </div>
             </div>
             <div class="seller_3_2">
                 <div class="seller_3_2_1">
                     <p>Condition <span class="seller_3_must">*</span></p>
-                    <select name="condition_seller_3" id="">
-                        <option value="condition">Condition</option>
+                    <select id="productCondition">
+                        <option value="">Select Condition</option>
                         <option value="new">New</option>
-                        <option value="like_new">Like New</option>
-                        <option value="medium">Medium</option>
-                        <option value="old">Old</option>
+                        <option value="used">Used</option>
                     </select>
                 </div>
                 <div class="seller_3_2_2">
-                    <p>Price <span class="seller_3_must">*</span></p>
-                    <input type="text" placeholder="1,500,000">
+                    <p>Price (VND) <span class="seller_3_must">*</span></p>
+                    <input type="number" id="productPrice" placeholder="1500000" min="0" step="1000">
                 </div>
             </div>
             <div class="seller_3_3">
                 <p>Description <span class="seller_3_must">*</span></p>
-                <textarea placeholder="Describe your item in detail"></textarea>
-                <p style="float: right;">0/500 characters</p>
+                <textarea id="productDescription" placeholder="Describe your item in detail" maxlength="500"></textarea>
+                <p id="charCount" style="float: right; margin: 0;">0/500 characters</p>
             </div>
 
             <div class="seller_4">
-                <h2>Photos (Up to 5) <span class="seller_4_must">*</span></h2>
-                <div class="seller_4_upload">
-                    <div class="upload_area">
-                        <div class="upload_icon">📁</div>
-                        <p>Drag and drop your images here, or <strong>browse files</strong></p>
-                        <p class="upload_note">PNG, JPG, GIF up to 10MB each</p>
-                    </div>
+                <h2>Product Image <span class="seller_4_must">*</span></h2>
+                <div class="image_url_input">
+                    <label for="productImageUrl">Image URL <span class="seller_3_must">*</span></label>
+                    <input type="url" id="productImageUrl" placeholder="https://example.com/image.jpg" required>
+                    <p class="upload_note" style="margin-top: 8px;">Enter the full URL of your product image (must start with http:// or https://)</p>
                 </div>
             </div>
 
             <div class="seller_3_btn">
-                <button class="seller_3_btn_1">List My Item</button>
-                <button class="seller_3_btn_2">Cancel</button>
+                <button type="button" class="seller_3_btn_1" id="submitProductBtn">List My Item</button>
+                <button type="button" class="seller_3_btn_2" id="cancelProductBtn">Cancel</button>
             </div>
         </div>
 
@@ -152,6 +148,14 @@
     </section>
 
     <div id="footer-placeholder"></div>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    
+    <!-- Sell Product Script -->
+    <script src="../js/sell_product.js"></script>
+    
     <script>
         // Load footer dynamically
         fetch("footer.html")

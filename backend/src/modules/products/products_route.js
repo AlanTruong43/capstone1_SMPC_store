@@ -38,37 +38,10 @@ router.get("/my", requireAuth, async (req, res) => {
   }
 });
 
-router.put("/:id", requireAuth, async (req, res) => {
-  try {
-    const updated = await updateProduct(req.user.uid, req.params.id, req.body);
-    res.json(updated);
-  } catch (e) {
-    res.status(403).json({ error: e.message });
-  }
-});
-
-router.delete("/:id", requireAuth, async (req, res) => {
-  try {
-    const result = await deleteProduct(req.user.uid, req.params.id);
-    res.json(result);
-  } catch (e) {
-    res.status(403).json({ error: e.message });
-  }
-});
-
-// GET /products/:id  -> product detail
-router.get('/:id', async (req, res, next) => {
-  try {
-    const product = await svc.getProductById(req.params.id);
-    res.json(product);
-  } catch (err) {
-    next(err);
-  }
-});
-
 // ============================================
 // ADMIN ROUTES - Product Management
 // ============================================
+// NOTE: Admin routes must come BEFORE /:id route to avoid conflicts
 
 // GET /products/admin/all - Get all products with filters (admin only)
 router.get("/admin/all", requireAuth, requireAdmin, async (req, res) => {
@@ -114,6 +87,118 @@ router.delete("/admin/:id", requireAuth, requireAdmin, async (req, res) => {
     res.json(result);
   } catch (e) {
     res.status(400).json({ error: e.message });
+  }
+});
+
+// ============================================
+// CUSTOMER ROUTES - Product Management
+// ============================================
+// NOTE: Customer routes must come BEFORE /:id route to avoid conflicts
+
+// POST /products/customer - Customer create product
+router.post("/customer", requireAuth, async (req, res) => {
+  try {
+    const { valid, errors, data } = validateAndNormalizeProduct(req.body);
+    if (!valid) return res.status(400).json({ errors });
+    const created = await createProduct(req.user.uid, data);
+    res.status(201).json(created);
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+// GET /products/customer - Get current user's products
+router.get("/customer", requireAuth, async (req, res) => {
+  try {
+    const list = await svc.getUserProducts(req.user.uid);
+    res.json(list);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// GET /products/customer/:id/can-edit - Check if product can be edited (must be before /customer/:id)
+router.get("/customer/:id/can-edit", requireAuth, async (req, res) => {
+  try {
+    // First verify ownership
+    await svc.getCustomerProductById(req.user.uid, req.params.id);
+    // Then check edit status
+    const result = await svc.canEditProduct(req.params.id);
+    res.json(result);
+  } catch (e) {
+    const status = e.message === "Permission denied" ? 403 : 404;
+    res.status(status).json({ error: e.message });
+  }
+});
+
+// GET /products/customer/:id - Get single product (ownership check)
+router.get("/customer/:id", requireAuth, async (req, res) => {
+  try {
+    const product = await svc.getCustomerProductById(req.user.uid, req.params.id);
+    res.json(product);
+  } catch (e) {
+    const status = e.message === "Permission denied" ? 403 : 404;
+    res.status(status).json({ error: e.message });
+  }
+});
+
+// PUT /products/customer/:id - Update product (with order status check)
+router.put("/customer/:id", requireAuth, async (req, res) => {
+  try {
+    const { valid, errors, data } = validateAndNormalizeProduct(req.body);
+    if (!valid) return res.status(400).json({ errors });
+    
+    const updated = await svc.updateProductCustomer(req.user.uid, req.params.id, data);
+    res.json(updated);
+  } catch (e) {
+    const status = e.message === "Permission denied" ? 403 : 400;
+    res.status(status).json({ error: e.message });
+  }
+});
+
+// DELETE /products/customer/:id - Delete product (ownership check)
+router.delete("/customer/:id", requireAuth, async (req, res) => {
+  try {
+    const result = await svc.deleteProduct(req.user.uid, req.params.id);
+    res.json(result);
+  } catch (e) {
+    const status = e.message === "Permission denied" ? 403 : 400;
+    res.status(status).json({ error: e.message });
+  }
+});
+
+// ============================================
+// GENERIC ROUTES - Must be LAST
+// ============================================
+// NOTE: These dynamic routes (:id) must come AFTER all specific routes
+
+// PUT /products/:id - Update product (legacy)
+router.put("/:id", requireAuth, async (req, res) => {
+  try {
+    const updated = await updateProduct(req.user.uid, req.params.id, req.body);
+    res.json(updated);
+  } catch (e) {
+    res.status(403).json({ error: e.message });
+  }
+});
+
+// DELETE /products/:id - Delete product (legacy)
+router.delete("/:id", requireAuth, async (req, res) => {
+  try {
+    const result = await deleteProduct(req.user.uid, req.params.id);
+    res.json(result);
+  } catch (e) {
+    res.status(403).json({ error: e.message });
+  }
+});
+
+// GET /products/:id - Get product detail (public)
+router.get('/:id', async (req, res, next) => {
+  try {
+    const product = await svc.getProductById(req.params.id);
+    res.json(product);
+  } catch (err) {
+    next(err);
   }
 });
 
