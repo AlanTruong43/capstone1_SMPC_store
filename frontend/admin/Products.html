@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="../css/admin.css"/>
+  <title>Products - Admin</title>
+  
+  <!-- Auth Protection Script -->
+  <script type="module">
+    import { requireAdmin, logout } from '../js/auth_manager.js';
+    
+    // Protect this page - redirect if not admin
+    await requireAdmin();
+    
+    // Setup logout button
+    document.addEventListener('DOMContentLoaded', () => {
+      const logoutBtn = document.querySelector('.logout');
+      if (logoutBtn) {
+        logoutBtn.style.cursor = 'pointer';
+        logoutBtn.addEventListener('click', async () => {
+          if (confirm('Are you sure you want to logout?')) {
+            await logout('/pages/index.html');
+          }
+        });
+      }
+
+      // Setup viewsite button
+      const viewsiteBtn = document.querySelector('.viewsite');
+      if (viewsiteBtn) {
+        viewsiteBtn.style.cursor = 'pointer';
+        viewsiteBtn.addEventListener('click', () => {
+          window.location.href = '/pages/index.html';
+        });
+      }
+    });
+  </script>
+</head>
+<body>
+    <header>
+        <nav>
+        <a href="/admin/dashboard.html" class="home_icon">
+            <p class="logo_1">SMPC</p><p class="logo_2">Second-hand Marketplace</p>
+        </a>
+        <ul class="info_shop">
+            <li><img src="/img/icon/icons8-alert-24.png" alt="alert"></li>
+            <li><div class="viewsite">
+                <img src="/img/icon/icons8-share-50.png" alt="">
+                <p>Viewsite</p>
+            </div></li>
+            <li>
+                <div class="logout">
+                    <img src="/img/icon/icons8-logout-50.png" alt="">
+                    <p>Logout</p>
+                </div>
+            </li>
+        </ul>
+        </nav>
+    </header>
+
+    <section class="body">
+        <section class="content">
+            <h1>Products</h1>
+            <p>Products management page - Under construction</p>
+        </section>
+    </section>
+</body>
+</html>
+

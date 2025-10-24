@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="stylesheet" href="demo_product_management.css"/>
   <title>Product Management - Admin Demo</title>
+  
+  <!-- Auth Protection Script -->
+  <script type="module">
+    import { requireAdmin, logout } from '../js/auth_manager.js';
+    
+    // Protect this page - redirect if not admin
+    await requireAdmin();
+  </script>
 </head>
 <body>
     <div class="container">

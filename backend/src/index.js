@@ -18,9 +18,9 @@ app.use(express.static(FRONTEND_DIR));
 // phục vụ thư mục img gốc (ngoài frontend/)
 app.use('/img', express.static(IMAGES_DIR));
 
-//  route gốc: trả về login_page.html
+//  route gốc: trả về index.html
 app.get('/', (_req, res) => {
-  res.sendFile(path.join(FRONTEND_DIR, 'pages/register_page.html'));
+  res.sendFile(path.join(FRONTEND_DIR, 'pages/index.html'));
 });
 
 // route /register: trả về register_page.html

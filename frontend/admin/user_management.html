@@ -8,11 +8,41 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet"/>
   <title>user Management</title>
+  
+  <!-- Auth Protection Script -->
+  <script type="module">
+    import { requireAdmin, logout } from '../js/auth_manager.js';
+    
+    // Protect this page - redirect if not admin
+    await requireAdmin();
+    
+    // Setup logout button
+    document.addEventListener('DOMContentLoaded', () => {
+      const logoutBtn = document.querySelector('.logout');
+      if (logoutBtn) {
+        logoutBtn.style.cursor = 'pointer';
+        logoutBtn.addEventListener('click', async () => {
+          if (confirm('Are you sure you want to logout?')) {
+            await logout('/pages/index.html');
+          }
+        });
+      }
+
+      // Setup viewsite button
+      const viewsiteBtn = document.querySelector('.viewsite');
+      if (viewsiteBtn) {
+        viewsiteBtn.style.cursor = 'pointer';
+        viewsiteBtn.addEventListener('click', () => {
+          window.location.href = '/pages/index.html';
+        });
+      }
+    });
+  </script>
 </head>
 <body>
     <header>
         <nav>
-        <a href="index.html" class="home_icon">
+        <a href="/admin/dashboard.html" class="home_icon">
             <p class="logo_1">SMPC</p><p class="logo_2">Second-hand Marketplace</p>
         </a>
         <ul class="info_shop">
@@ -57,7 +87,7 @@
                     <p>Commission</p>
                 </div>
             </a>
-            <a href="/admin/Products.html">
+            <a href="/admin/demo_product_management.html">
                 <div class="products">
                     <img src="/img/icon/icons8-product-50.png" alt="">
                     <p>Products</p>
