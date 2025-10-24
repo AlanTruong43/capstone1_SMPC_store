@@ -1,15 +1,8 @@
-/**
- * Checkout Page Logic
- * Handles product display, form validation, and payment initiation
- */
-
-// Global state
 let currentProduct = null;
 let productQuantity = 1;
-let selectedPaymentMethod = 'momo'; // Default to MoMo
+let selectedPaymentMethod = 'zalopay';
 const API_BASE = 'http://localhost:4000';
 
-// DOM elements
 const loadingEl = document.getElementById('loading');
 const mainContentEl = document.getElementById('mainContent');
 const errorStateEl = document.getElementById('errorState');
@@ -21,482 +14,218 @@ const submitBtn = document.getElementById('submitBtn');
 const errorContainer = document.getElementById('errorContainer');
 const errorText = document.getElementById('errorText');
 
-/**
- * Initialize page on load
- */
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('🚀 Checkout page loaded');
-
-    // Get product ID from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const productId = urlParams.get('productId');
-    const quantity = parseInt(urlParams.get('quantity')) || 1;
-
-    if (!productId) {
-        showError('No product selected');
-        return;
-    }
-
-    productQuantity = quantity;
-
-    // Load product details
-    await loadProductDetails(productId);
-
-    // Setup form validation
-    setupFormValidation();
-
-    // Setup payment method selection
-    setupPaymentMethodSelection();
-
-    // Setup form submission
-    checkoutForm.addEventListener('submit', handleCheckoutSubmit);
+  const urlParams = new URLSearchParams(window.location.search);
+  const productId = urlParams.get('productId');
+  const quantity = parseInt(urlParams.get('quantity')) || 1;
+  if (!productId) return showError('No product selected');
+  productQuantity = quantity;
+  await loadProductDetails(productId);
+  setupFormValidation();
+  setupPaymentMethodSelection();
+  checkoutForm.addEventListener('submit', handleCheckoutSubmit);
 });
 
-/**
- * Load product details from API
- */
 async function loadProductDetails(productId) {
-    try {
-        console.log('📦 Loading product:', productId);
-
-        const response = await fetch(`${API_BASE}/products/${productId}`);
-        
-        if (!response.ok) {
-            throw new Error('Product not found');
-        }
-
-        const data = await response.json();
-        currentProduct = data;
-
-        console.log('✅ Product loaded:', currentProduct);
-
-        // Display product
-        displayProduct(currentProduct);
-
-        // Show main content
-        loadingEl.style.display = 'none';
-        mainContentEl.style.display = 'block';
-
-    } catch (error) {
-        console.error('❌ Failed to load product:', error);
-        showError('Failed to load product details');
-    }
-}
-
-/**
- * Display product in order summary
- */
-function displayProduct(product) {
-    const subtotal = product.price * productQuantity;
-
-    productSummaryEl.innerHTML = `
-        <div class="product-card">
-            <img 
-                src="${product.imageUrl || '/img/placeholder.svg'}" 
-                alt="${product.name}"
-                class="product-image"
-                onerror="this.src='/img/placeholder.svg'"
-            >
-            <div class="product-details">
-                <div class="product-name">${product.name}</div>
-                <div class="product-condition">${product.condition || 'New'}</div>
-                <div class="product-price">${formatPrice(product.price)}</div>
-                <div class="product-quantity">Quantity: ${productQuantity}</div>
-            </div>
-        </div>
-    `;
-
-    subtotalEl.textContent = formatPrice(subtotal);
-    totalEl.textContent = formatPrice(subtotal);
-}
-
-/**
- * Format price to VND currency
- */
-function formatPrice(price) {
-    return new Intl.NumberFormat('vi-VN', {
-        style: 'currency',
-        currency: 'VND'
-    }).format(price);
-}
-
-/**
- * Setup payment method selection
- */
-function setupPaymentMethodSelection() {
-    const paymentOptions = document.querySelectorAll('input[name="paymentMethod"]');
-    const securityNote = document.getElementById('securityNote');
-
-    paymentOptions.forEach(option => {
-        option.addEventListener('change', (e) => {
-            selectedPaymentMethod = e.target.value;
-            
-            // Update security note based on selected method
-            if (selectedPaymentMethod === 'momo') {
-                securityNote.textContent = '🔒 Secure payment powered by MoMo';
-            } else if (selectedPaymentMethod === 'zalopay') {
-                securityNote.textContent = '🔒 Secure payment powered by ZaloPay';
-            } else if (selectedPaymentMethod === 'stripe') {
-                securityNote.textContent = '🔒 Secure payment powered by Stripe';
-            }
-
-            console.log('💳 Payment method selected:', selectedPaymentMethod);
-        });
-    });
-}
-
-/**
- * Setup form validation
- */
-function setupFormValidation() {
-    const phoneInput = document.getElementById('phone');
-    const fullNameInput = document.getElementById('fullName');
-    const addressInput = document.getElementById('address');
-
-    // Phone validation
-    phoneInput.addEventListener('blur', () => {
-        validatePhone(phoneInput.value);
-    });
-
-    // Clear errors on input
-    [fullNameInput, phoneInput, addressInput].forEach(input => {
-        input.addEventListener('input', () => {
-            clearFieldError(input.id);
-            hideErrorContainer();
-        });
-    });
-}
-
-/**
- * Validate phone number
- */
-function validatePhone(phone) {
-    const phoneRegex = /^[0-9]{10,11}$/;
-    const phoneError = document.getElementById('phoneError');
-    const phoneInput = document.getElementById('phone');
-
-    if (!phone) {
-        return true; // Will be caught by required validation
-    }
-
-    if (!phoneRegex.test(phone)) {
-        phoneError.textContent = 'Phone number must be 10-11 digits';
-        phoneInput.classList.add('error');
-        return false;
-    }
-
-    phoneError.textContent = '';
-    phoneInput.classList.remove('error');
-    return true;
-}
-
-/**
- * Validate all form fields
- */
-function validateForm() {
-    const fullName = document.getElementById('fullName').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const address = document.getElementById('address').value.trim();
-
-    let isValid = true;
-
-    // Validate full name
-    if (!fullName) {
-        setFieldError('fullName', 'Full name is required');
-        isValid = false;
-    }
-
-    // Validate phone
-    if (!phone) {
-        setFieldError('phone', 'Phone number is required');
-        isValid = false;
-    } else if (!validatePhone(phone)) {
-        isValid = false;
-    }
-
-    // Validate address
-    if (!address) {
-        setFieldError('address', 'Address is required');
-        isValid = false;
-    }
-
-    return isValid;
-}
-
-/**
- * Set field error
- */
-function setFieldError(fieldId, message) {
-    const errorEl = document.getElementById(`${fieldId}Error`);
-    const inputEl = document.getElementById(fieldId);
-
-    if (errorEl && inputEl) {
-        errorEl.textContent = message;
-        inputEl.classList.add('error');
-    }
-}
-
-/**
- * Clear field error
- */
-function clearFieldError(fieldId) {
-    const errorEl = document.getElementById(`${fieldId}Error`);
-    const inputEl = document.getElementById(fieldId);
-
-    if (errorEl && inputEl) {
-        errorEl.textContent = '';
-        inputEl.classList.remove('error');
-    }
-}
-
-/**
- * Show error container
- */
-function showErrorContainer(message) {
-    errorText.textContent = message;
-    errorContainer.style.display = 'flex';
-    
-    // Scroll to error
-    errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-
-/**
- * Hide error container
- */
-function hideErrorContainer() {
-    errorContainer.style.display = 'none';
-}
-
-/**
- * Handle checkout form submission
- */
-async function handleCheckoutSubmit(e) {
-    e.preventDefault();
-
-    console.log('📝 Form submitted');
-
-    // Validate form
-    if (!validateForm()) {
-        console.log('❌ Form validation failed');
-        showErrorContainer('Please fill in all required fields correctly');
-        return;
-    }
-
-    // Check if user is logged in
-    const auth = window.firebaseAuth;
-    const user = auth.currentUser;
-
-    if (!user) {
-        console.log('❌ User not logged in');
-        showErrorContainer('Please log in to continue');
-        setTimeout(() => {
-            window.location.href = '/pages/login_page.html';
-        }, 2000);
-        return;
-    }
-
-    // Get form data
-    const formData = {
-        productId: currentProduct.id,
-        quantity: productQuantity,
-        shippingAddress: {
-            fullName: document.getElementById('fullName').value.trim(),
-            phone: document.getElementById('phone').value.trim(),
-            address: document.getElementById('address').value.trim(),
-            city: document.getElementById('city').value.trim(),
-            postalCode: document.getElementById('postalCode').value.trim()
-        }
-    };
-
-    console.log('📦 Order data:', formData);
-    console.log('💳 Selected payment method:', selectedPaymentMethod);
-
-    // Show loading state
-    setLoadingState(true);
-
-    try {
-        // Get user ID token
-        const idToken = await user.getIdToken();
-
-        if (selectedPaymentMethod === 'momo') {
-            // MoMo Payment Flow
-            await handleMoMoPayment(formData, idToken);
-        } else if (selectedPaymentMethod === 'stripe') {
-            // Stripe Payment Flow
-            await handleStripePayment(formData, idToken);
-        }
-
-    } catch (error) {
-        console.error('❌ Checkout failed:', error);
-        
-        setLoadingState(false);
-        
-        // Show error message
-        let errorMessage = 'Sorry, we could not initiate the payment. Please check your details and try again.';
-        
-        if (error.message.includes('Product unavailable')) {
-            errorMessage = 'This product is no longer available.';
-        } else if (error.message.includes('Insufficient quantity')) {
-            errorMessage = 'Not enough items in stock.';
-        } else if (error.message.includes('network') || error.message.includes('fetch')) {
-            errorMessage = 'Network error. Please check your connection and try again.';
-        }
-
-        showErrorContainer(errorMessage);
-    }
-}
-
-/**
- * Handle MoMo payment flow
- */
-async function handleMoMoPayment(formData, idToken) {
-    console.log('💳 Processing MoMo payment...');
-
-    // Call backend to create order and get payment URL
-    const response = await fetch(`${API_BASE}/api/orders/create-and-checkout`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${idToken}`
-        },
-        body: JSON.stringify(formData)
-    });
-
-    const result = await response.json();
-    console.log('📥 MoMo response:', result);
-
-    if (!response.ok || !result.success) {
-        throw new Error(result.message || result.error || 'Failed to create order');
-    }
-
-    // Success! Redirect to MoMo payment
-    console.log('✅ Payment URL received:', result.payUrl);
-    console.log('📦 Order ID:', result.orderId);
-
-    // Save order ID to localStorage for success page
-    localStorage.setItem('pendingOrderId', result.orderId);
-
-    // Redirect to MoMo payment page
-    console.log('🚀 Redirecting to MoMo payment page...');
-    window.location.href = result.payUrl;
-}
-
-/**
- * Handle Stripe payment flow
- */
-async function handleStripePayment(formData, idToken) {
-    console.log('💳 Processing Stripe payment...');
-
-    try {
-        // Step 1: Create order first
-        const orderResponse = await fetch(`${API_BASE}/api/orders`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${idToken}`
-            },
-            body: JSON.stringify(formData)
-        });
-
-        const orderResult = await orderResponse.json();
-        console.log('📥 Order created:', orderResult);
-
-        if (!orderResponse.ok || !orderResult.success) {
-            throw new Error(orderResult.message || 'Failed to create order');
-        }
-
-        const orderId = orderResult.orderId;
-        const orderTotal = orderResult.order.totalAmount;
-
-        // Step 2: Create Stripe Payment Intent
-        const paymentResponse = await fetch(`${API_BASE}/api/payments/stripe/create`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${idToken}`
-            },
-            body: JSON.stringify({
-                orderId: orderId,
-                amount: Math.round(orderTotal), // VND doesn't use decimals
-                currency: 'vnd',
-                description: `Payment for ${currentProduct.name}`
-            })
-        });
-
-        const paymentResult = await paymentResponse.json();
-        console.log('📥 Stripe payment intent created:', paymentResult);
-
-        if (!paymentResponse.ok || !paymentResult.success) {
-            throw new Error(paymentResult.error || 'Failed to create payment intent');
-        }
-
-        // Step 3: Save order ID and show message
-        localStorage.setItem('pendingOrderId', orderId);
-
-        // For now, show alert since Stripe UI is not implemented yet
-        setLoadingState(false);
-        alert('⚠️ Stripe payment UI is not yet implemented.\n\nYour order has been created (Order ID: ' + orderId + ').\n\nPlease contact support to complete payment via Stripe.\n\nClient Secret: ' + paymentResult.clientSecret);
-
-        // TODO: Implement Stripe.js UI here
-        // - Load Stripe.js library
-        // - Create card element
-        // - Confirm payment with clientSecret
-        // - Handle result and redirect to success page
-
-        console.log('⚠️ Stripe UI not implemented. Order created but payment pending.');
-        console.log('Client Secret:', paymentResult.clientSecret);
-
-    } catch (error) {
-        console.error('❌ Stripe payment failed:', error);
-        setLoadingState(false);
-        throw error;
-    }
-}
-
-/**
- * Set loading state for submit button
- */
-function setLoadingState(isLoading) {
-    const btnText = submitBtn.querySelector('.btn-text');
-    const btnLoader = submitBtn.querySelector('.btn-loader');
-
-    if (isLoading) {
-        btnText.style.display = 'none';
-        btnLoader.style.display = 'flex';
-        submitBtn.disabled = true;
-    } else {
-        btnText.style.display = 'block';
-        btnLoader.style.display = 'none';
-        submitBtn.disabled = false;
-    }
-}
-
-/**
- * Show error state (product not found)
- */
-function showError(message) {
-    console.error('❌ Error:', message);
+  try {
+    const res = await fetch(`${API_BASE}/products/${productId}`);
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    currentProduct = data;
+    displayProduct(data);
     loadingEl.style.display = 'none';
-    mainContentEl.style.display = 'none';
-    errorStateEl.style.display = 'block';
+    mainContentEl.style.display = 'block';
+  } catch {
+    showError('Failed to load product details');
+  }
 }
 
-/**
- * Monitor auth state
- */
-window.addEventListener('load', () => {
-    const auth = window.firebaseAuth;
-    
-    if (auth) {
-        auth.onAuthStateChanged((user) => {
-            if (!user) {
-                console.log('⚠️ User not authenticated');
-                // Don't redirect immediately, let user fill form
-                // Will be caught on submit
-            } else {
-                console.log('✅ User authenticated:', user.email);
-            }
-        });
-    }
-});
+function displayProduct(p) {
+  const subtotal = p.price * productQuantity;
+  productSummaryEl.innerHTML = `
+    <div class="product-card">
+      <img src="${p.imageUrl || '/img/placeholder.svg'}" alt="${p.name}" class="product-image" onerror="this.src='/img/placeholder.svg'">
+      <div class="product-details">
+        <div class="product-name">${p.name}</div>
+        <div class="product-condition">${p.condition || 'New'}</div>
+        <div class="product-price">${formatPrice(p.price)}</div>
+        <div class="product-quantity">Quantity: ${productQuantity}</div>
+      </div>
+    </div>`;
+  subtotalEl.textContent = formatPrice(subtotal);
+  totalEl.textContent = formatPrice(subtotal);
+}
 
+function formatPrice(price) {
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+}
+
+function setupPaymentMethodSelection() {
+  document.querySelectorAll('input[name="paymentMethod"]').forEach(opt => {
+    opt.addEventListener('change', e => selectedPaymentMethod = e.target.value);
+  });
+}
+
+function setupFormValidation() {
+  const phone = document.getElementById('phone');
+  const name = document.getElementById('fullName');
+  const addr = document.getElementById('address');
+  phone.addEventListener('blur', () => validatePhone(phone.value));
+  [name, phone, addr].forEach(i => i.addEventListener('input', () => {
+    clearFieldError(i.id);
+    hideErrorContainer();
+  }));
+}
+
+function validatePhone(p) {
+  const r = /^[0-9]{10,11}$/;
+  const e = document.getElementById('phoneError');
+  const i = document.getElementById('phone');
+  if (!p) return true;
+  if (!r.test(p)) {
+    e.textContent = 'Phone number must be 10-11 digits';
+    i.classList.add('error');
+    return false;
+  }
+  e.textContent = '';
+  i.classList.remove('error');
+  return true;
+}
+
+function validateForm() {
+  const f = document.getElementById('fullName').value.trim();
+  const p = document.getElementById('phone').value.trim();
+  const a = document.getElementById('address').value.trim();
+  let v = true;
+  if (!f) { setFieldError('fullName', 'Full name is required'); v = false; }
+  if (!p) { setFieldError('phone', 'Phone is required'); v = false; }
+  else if (!validatePhone(p)) v = false;
+  if (!a) { setFieldError('address', 'Address is required'); v = false; }
+  return v;
+}
+
+function setFieldError(id, msg) {
+  const e = document.getElementById(`${id}Error`);
+  const i = document.getElementById(id);
+  if (e && i) { e.textContent = msg; i.classList.add('error'); }
+}
+
+function clearFieldError(id) {
+  const e = document.getElementById(`${id}Error`);
+  const i = document.getElementById(id);
+  if (e && i) { e.textContent = ''; i.classList.remove('error'); }
+}
+
+function showErrorContainer(m) {
+  errorText.textContent = m;
+  errorContainer.style.display = 'flex';
+  errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function hideErrorContainer() {
+  errorContainer.style.display = 'none';
+}
+
+async function handleCheckoutSubmit(e) {
+  e.preventDefault();
+  if (!validateForm()) return showErrorContainer('Please fill in all required fields correctly');
+  const auth = window.firebaseAuth;
+  const user = auth.currentUser;
+  if (!user) {
+    showErrorContainer('Please log in to continue');
+    setTimeout(() => window.location.href = '/pages/login_page.html', 2000);
+    return;
+  }
+  const data = {
+    productId: currentProduct.id,
+    quantity: productQuantity,
+    shippingAddress: {
+      fullName: document.getElementById('fullName').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      address: document.getElementById('address').value.trim(),
+      city: document.getElementById('city').value.trim(),
+      postalCode: document.getElementById('postalCode').value.trim()
+    }
+  };
+  setLoadingState(true);
+  try {
+    const token = await user.getIdToken();
+    const res = await fetch(`${API_BASE}/api/orders/create-and-checkout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify(data)
+    });
+    const d = await res.json();
+    if (!res.ok || !d.success) throw new Error(d.message || 'Failed to create order');
+    const { orderId, totalAmount } = d;
+    if (selectedPaymentMethod === 'momo') await handleMoMoPayment(orderId, totalAmount, token);
+    else if (selectedPaymentMethod === 'zalopay') await handleZaloPayment(orderId, token);
+    else if (selectedPaymentMethod === 'stripe') await handleStripePayment(orderId, totalAmount, token);
+    else throw new Error('Invalid payment method');
+  } catch (err) {
+    showErrorContainer(err.message || 'Payment failed');
+    setLoadingState(false);
+  }
+}
+
+async function handleMoMoPayment(orderId, amount, token) {
+  const res = await fetch(`${API_BASE}/api/payments/momo/create`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ orderId, amount })
+  });
+  const d = await res.json();
+  if (!res.ok || !d.payUrl) throw new Error(d.message || 'Failed to create MoMo payment');
+  localStorage.setItem('pendingOrderId', orderId);
+  window.location.href = d.payUrl;
+}
+
+async function handleZaloPayment(orderId, token) {
+  const res = await fetch(`${API_BASE}/api/payments/create-order`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ orderId })
+  });
+  const d = await res.json();
+  if (res.ok && d.zaloPayResponse?.order_url) {
+    localStorage.setItem('pendingOrderId', orderId);
+    localStorage.setItem('paymentProvider', 'zalopay');
+    window.location.href = d.zaloPayResponse.order_url;
+  } else throw new Error(d.message || 'Failed to create ZaloPay order');
+}
+
+async function handleStripePayment(orderId, amount, token) {
+  const res = await fetch(`${API_BASE}/api/payments/stripe/create`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({
+      orderId,
+      amount: Math.round(amount),
+      currency: 'vnd',
+      description: `Payment for ${currentProduct.name}`
+    })
+  });
+  const d = await res.json();
+  if (!res.ok || !d.clientSecret) throw new Error(d.error || 'Failed to create Stripe payment');
+  setLoadingState(false);
+  alert(`Stripe Payment Intent created. Order ID: ${orderId}\nClient Secret: ${d.clientSecret}`);
+}
+
+function setLoadingState(isLoading) {
+  const text = submitBtn.querySelector('.btn-text');
+  const loader = submitBtn.querySelector('.btn-loader');
+  text.style.display = isLoading ? 'none' : 'block';
+  loader.style.display = isLoading ? 'flex' : 'none';
+  submitBtn.disabled = isLoading;
+}
+
+function showError(m) {
+  loadingEl.style.display = 'none';
+  mainContentEl.style.display = 'none';
+  errorStateEl.style.display = 'block';
+}
+
+window.addEventListener('load', () => {
+  const auth = window.firebaseAuth;
+  if (auth) auth.onAuthStateChanged(u => console.log(u ? 'User authenticated' : 'User not authenticated'));
+});

@@ -81,13 +81,13 @@ router.post('/create-and-checkout', requireAuth, async (req, res) => {
       });
     }
 
-    if (product.quantity < quantity) {
-      return res.status(400).json({
-        success: false,
-        error: 'Insufficient quantity',
-        message: `Only ${product.quantity} item(s) available`
-      });
-    }
+    // if (product.quantity < quantity) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     error: 'Insufficient quantity',
+    //     message: `Only ${product.quantity} item(s) available`
+    //   });
+    // }
 
     // Step 3: Calculate total amount
     const totalAmount = product.price * quantity;
