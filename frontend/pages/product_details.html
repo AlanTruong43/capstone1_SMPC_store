@@ -11,6 +11,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@300;400;500;700&display=swap"
         rel="stylesheet" />
     <title>Product Detail</title>
+    
+    <!-- Initialize auth before other scripts -->
+    <script type="module">
+        import { initAuth } from '../js/auth_manager.js';
+        initAuth();
+    </script>
 </head>
 
 <body>
@@ -182,6 +188,16 @@
             .catch(err => console.error("Error loading footer:", err));
     </script>
 
+    <!-- Protect Buy Now buttons BEFORE product_detail.js attaches its handler -->
+    <script type="module">
+        import { protectActionButtons } from '../js/auth_manager.js';
+        
+        // Set up protection immediately - use capture phase to intercept first
+        setTimeout(() => {
+            protectActionButtons('.product_detail_btn_buynow', 'You need to log in to buy this product');
+        }, 50);
+    </script>
+    
     <script src="../js/product_detail.js"></script>
 </body>
 

@@ -111,6 +111,30 @@
       .catch(err => console.error("Error loading footer:", err));
   </script>
 
+  <!-- Protect Buy Now buttons -->
+  <script type="module">
+    import { protectActionButtons } from '../js/auth_manager.js';
+    
+    // Wait for products to be loaded, then protect buttons
+    // Use MutationObserver to detect when product cards are added
+    const observer = new MutationObserver(() => {
+      protectActionButtons('.btn-add, .buy-now-btn', 'You need to log in to buy this product');
+    });
+    
+    // Observe the products container
+    const productsContainer = document.querySelector('.product_page_2_1');
+    if (productsContainer) {
+      observer.observe(productsContainer, { childList: true, subtree: true });
+    }
+    
+    // Also protect any existing buttons on page load
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        protectActionButtons('.btn-add, .buy-now-btn', 'You need to log in to buy this product');
+      }, 500); // Small delay to ensure products are rendered
+    });
+  </script>
+
   <script src="../js/product_list.js"></script>
 </body>
 

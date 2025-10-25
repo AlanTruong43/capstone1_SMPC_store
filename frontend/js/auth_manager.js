@@ -265,6 +265,233 @@ export function showAuthLoading(loadingElementId = 'authLoading') {
   });
 }
 
+/**
+ * Show login required modal
+ * Used to block protected actions for non-authenticated users
+ */
+export function showLoginRequiredModal(message = 'You need to log in to buy this product') {
+  // Remove existing modal if any
+  const existingModal = document.getElementById('loginRequiredModal');
+  if (existingModal) {
+    existingModal.remove();
+  }
+
+  // Create modal HTML
+  const modalHTML = `
+    <div id="loginRequiredModal" style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      animation: fadeIn 0.2s ease-out;
+    ">
+      <div style="
+        background: white;
+        border-radius: 12px;
+        padding: 32px;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.3s ease-out;
+      ">
+        <div style="
+          width: 64px;
+          height: 64px;
+          background: #FEE2E2;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 20px;
+        ">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2">
+            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+            <path d="M12 8v4M12 16h.01"/>
+          </svg>
+        </div>
+        
+        <h3 style="
+          margin: 0 0 12px;
+          font-size: 20px;
+          font-weight: 600;
+          color: #111827;
+          text-align: center;
+        ">Login Required</h3>
+        
+        <p style="
+          margin: 0 0 24px;
+          font-size: 14px;
+          color: #6B7280;
+          text-align: center;
+          line-height: 1.5;
+        ">${message}</p>
+        
+        <div style="display: flex; gap: 12px;">
+          <button id="loginModalCancel" style="
+            flex: 1;
+            padding: 12px 24px;
+            border: 2px solid #E5E7EB;
+            background: white;
+            color: #374151;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+          ">Cancel</button>
+          
+          <button id="loginModalConfirm" style="
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            background: #2563EB;
+            color: white;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+          ">Go to Login</button>
+        </div>
+      </div>
+    </div>
+    
+    <style>
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      
+      @keyframes slideUp {
+        from { 
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to { 
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      #loginModalCancel:hover {
+        background: #F3F4F6;
+        border-color: #D1D5DB;
+      }
+      
+      #loginModalConfirm:hover {
+        background: #1D4ED8;
+      }
+    </style>
+  `;
+
+  // Insert modal into page
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+  // Get modal and buttons
+  const modal = document.getElementById('loginRequiredModal');
+  const cancelBtn = document.getElementById('loginModalCancel');
+  const confirmBtn = document.getElementById('loginModalConfirm');
+
+  // Close modal function
+  const closeModal = () => {
+    modal.style.animation = 'fadeOut 0.2s ease-out';
+    setTimeout(() => modal.remove(), 200);
+  };
+
+  // Cancel button - just close modal
+  cancelBtn.addEventListener('click', closeModal);
+
+  // Confirm button - redirect to login
+  confirmBtn.addEventListener('click', () => {
+    window.location.href = '/login';
+  });
+
+  // Click outside to close
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+
+  // ESC key to close
+  const escHandler = (e) => {
+    if (e.key === 'Escape') {
+      closeModal();
+      document.removeEventListener('keydown', escHandler);
+    }
+  };
+  document.addEventListener('keydown', escHandler);
+}
+
+/**
+ * Protect action buttons (Buy Now, Add to Cart, etc.)
+ * Checks if user is authenticated before allowing action
+ * @param {string} buttonSelector - CSS selector for buttons to protect
+ * @param {string} message - Custom message to show in modal
+ */
+export function protectActionButtons(buttonSelector = '.btn-add, .buy-now-btn', message = 'You need to log in to buy this product') {
+  // Wait for auth state to be ready
+  onAuthReady(() => {
+    // Find all buttons matching selector
+    const buttons = document.querySelectorAll(buttonSelector);
+    
+    buttons.forEach(button => {
+      // Skip if already protected
+      if (button.dataset.authProtected === 'true') {
+        return;
+      }
+      button.dataset.authProtected = 'true';
+      
+      // Clone the button to remove ALL existing event listeners
+      const newButton = button.cloneNode(true);
+      button.parentNode.replaceChild(newButton, button);
+      
+      // Get the new button reference
+      const protectedButton = newButton;
+      
+      // Store original attributes
+      const originalHref = protectedButton.getAttribute('href');
+      
+      // Add click interceptor with capture phase AND high priority
+      protectedButton.addEventListener('click', (e) => {
+        // Check CURRENT auth state (not captured closure)
+        const currentUser = getCurrentUser();
+        
+        if (!currentUser) {
+          // User not logged in - block action completely
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          showLoginRequiredModal(message);
+          return false;
+        }
+        
+        // User is logged in - allow normal behavior by letting event continue
+      }, { capture: true, passive: false }); // Use capture phase, non-passive
+      
+      // If button is a link, also protect href navigation
+      if (originalHref && originalHref !== '#') {
+        protectedButton.addEventListener('click', (e) => {
+          const currentUser = getCurrentUser();
+          if (!currentUser) {
+            e.preventDefault();
+          }
+        }, { capture: true });
+      }
+      
+      console.log(`[Auth] Button protected with cloned node approach: ${protectedButton.className}`);
+    });
+    
+    console.log(`[Auth] Protected ${buttons.length} action buttons with selector: ${buttonSelector}`);
+  });
+}
+
 // Auto-initialize if this script is loaded
 // This ensures backward compatibility
 if (typeof window !== 'undefined') {

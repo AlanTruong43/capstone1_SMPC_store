@@ -310,13 +310,16 @@
 
   <!-- Authentication Module -->
   <script type="module">
-    import { initAuth, onAuthReady, isAdmin, logout } from '../js/auth_manager.js';
+    import { initAuth, onAuthReady, isAdmin, logout, protectActionButtons } from '../js/auth_manager.js';
 
     // Initialize Firebase authentication
     initAuth();
 
     // Handle auth state changes
     onAuthReady((user, claims) => {
+      // Protect "Buy Now" buttons after auth state is ready
+      protectActionButtons('.btn-add', 'You need to log in to buy this product');
+      
       const userIcon = document.querySelector('.info_shop li:nth-child(2)');
       
       if (user) {
