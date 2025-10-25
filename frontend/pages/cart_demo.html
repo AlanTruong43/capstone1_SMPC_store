@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/cart_demo.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@300;400;500;700&display=swap"
+        rel="stylesheet" />
+    <title>Shopping Cart - SMPC</title>
+    
+    <!-- Initialize auth before other scripts -->
+    <script type="module">
+        import { initAuth } from '../js/auth_manager.js';
+        initAuth();
+    </script>
+</head>
+
+<body style="background-color: #DBEAFE;">
+    <header>
+        <nav>
+            <a href="/pages/index.html" class="home_icon">
+                <p class="logo_1">SMPC</p>
+                <p class="logo_2">Second-hand Marketplace</p>
+            </a>
+            <ul class="nav_menu">
+                <li><a href="/pages/index.html">Home</a></li>
+                <li><a href="/pages/product_list.html">Product</a></li>
+                <li><a href="/pages/customer_products.html">My Products</a></li>
+                <li><a href="/pages/about.html">How It Works</a></li>
+            </ul>
+            <ul class="info_shop">
+                <li><img src="/img/icon/search.png" alt="search"></li>
+                <li><img src="/img/icon/user.png" alt="user"></li>
+                <li><a href="/pages/cart_demo.html" class="cart"><img src="/img/icon/cart.png" alt="cart"></a></li>
+                <li class="sellnow"><a href="/pages/sell_product.html"><button>+ SELL NOW</button></a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Loading State -->
+    <div id="loadingState" class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>Loading your cart...</p>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent" style="display: none;">
+        <section class="cart_1">
+            <h1>Shopping Cart</h1>
+            <p id="cartItemCount">0 items in your cart</p>
+        </section>
+
+        <section class="cart_2">
+            <!-- Left Side: Cart Items -->
+            <div class="cart_2_left">
+                <div class="cart_2_left_1">
+                    <input type="checkbox" id="selectAllCheckbox">
+                    <p>Select All (<span id="selectAllCount">0</span> items)</p>
+                </div>
+                
+                <!-- Cart Items Container -->
+                <div class="cart_2_left_2" id="cartItemsContainer">
+                    <!-- Items will be dynamically inserted here -->
+                </div>
+
+                <!-- Empty Cart State -->
+                <div id="emptyCartState" class="empty-cart-state" style="display: none;">
+                    <img src="/img/icon/cart.png" alt="Empty Cart" style="width: 120px; opacity: 0.3; margin-bottom: 20px;">
+                    <h3>Your cart is empty</h3>
+                    <p>Add some products to get started!</p>
+                    <a href="/pages/product_list.html" class="continue-shopping-link">
+                        <button class="seller_3_btn_1">Browse Products</button>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right Side: Order Summary -->
+            <div class="cart_2_right">
+                <h3>Order Summary</h3>
+                <div class="cart_2_right_1">
+                    <p>Subtotal (<span id="summaryItemCount">0</span> items):</p>
+                    <p><span id="summarySubtotal">0</span> ₫</p>
+                </div>
+                <div class="cart_2_right_2">
+                    <p>Shipping Fee:</p>
+                    <p><span id="summaryShipping">50,000</span> ₫</p>
+                </div>
+                <div class="cart_2_right_3">
+                    <h3>Total:</h3>
+                    <p class="product_price"><span id="summaryTotal">50,000</span> ₫</p>
+                </div>
+                <button class="seller_3_btn_1" id="checkoutBtn">Proceed to Checkout <span id="checkoutCount">(0)</span></button>
+                <a href="/pages/product_list.html">
+                    <button class="seller_3_btn_2" style="color: #2563EB;">Continue Shopping</button>
+                </a>
+                <div class="cart_2_right_policy_1">
+                    <img src="/img/icon/tick yellow.png" alt="">
+                    <p>Secure payment processing</p>
+                </div>
+                <div class="cart_2_right_policy_2">
+                    <img src="/img/icon/tick yellow.png" alt="">
+                    <p>Fast & reliable delivery</p>
+                </div>
+                <div class="cart_2_right_policy_3">
+                    <img src="/img/icon/tick yellow.png" alt="">
+                    <p>Easy returns & refunds</p>
+                </div>
+
+                <!-- Test Controls -->
+                <div class="test-controls">
+                    <h4 style="margin-top: 30px; margin-bottom: 15px; color: #374151;">Test Controls</h4>
+                    <button class="test-btn" id="clearCartBtn">Clear Cart</button>
+                    <button class="test-btn" id="refreshCartBtn">Refresh Cart</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toastNotification" class="toast-notification">
+        <div class="toast-content">
+            <span id="toastMessage"></span>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+    <script>
+        // Load footer dynamically
+        fetch("footer.html")
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("footer-placeholder").innerHTML = data;
+            })
+            .catch(err => console.error("Error loading footer:", err));
+    </script>
+    
+    <script type="module" src="../js/cart_demo.js"></script>
+</body>
+
+</html>
+

@@ -268,18 +268,31 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 🛒 Add to Cart Button (Optional - for future implementation)
+    // 🛒 Add to Cart Button
     const addToCartBtn = document.querySelector('.product_detail_btn_addcart');
     
     if (addToCartBtn) {
-        addToCartBtn.addEventListener('click', function() {
-            // For now, show alert - cart functionality to be implemented
-            alert('🛒 Cart functionality coming soon!\n\nFor now, please use the "Buy Now" button for direct purchase.');
+        addToCartBtn.addEventListener('click', async function() {
+            const productId = getQueryId();
+            const quantity = parseInt(quantityInput.value) || 1;
             
-            // Future: Add to cart logic here
-            // const productId = getQueryId();
-            // const quantity = parseInt(quantityInput.value) || 1;
-            // addToCart(productId, quantity);
+            if (!productId) {
+                alert('Product not found. Please refresh the page.');
+                return;
+            }
+
+            // Import and call addToCart function
+            try {
+                const { addToCart } = await import('./cart_demo.js');
+                const success = await addToCart(productId, quantity);
+                
+                if (success) {
+                    console.log('✅ Item added to cart successfully');
+                }
+            } catch (error) {
+                console.error('Error adding to cart:', error);
+                alert('Failed to add item to cart. Please try again.');
+            }
         });
     }
 });

@@ -67,6 +67,10 @@ app.use('/api/payments/stripe', stripeRoutes);
 const zalopayRoutes = require('./modules/zalopay/zalopay.routes');
 app.use('/api/payments', zalopayRoutes);
 
+// routes cart
+const cartRoutes = require('./modules/cart/cart_routes');
+app.use('/api/cart', cartRoutes);
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, async () => {
   console.log(`API listening on http://localhost:${PORT}`);
