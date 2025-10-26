@@ -85,10 +85,6 @@
         console.error(err);
       }
     });
-  
-    /* Link “Create one” → về trang đăng ký (route /) */
-    const createLink = document.querySelector('.signup-link a');
-    if (createLink) createLink.setAttribute('href', '/');
   </script>
   
 <body>
@@ -163,7 +159,7 @@
 
             <div class="signup-link">
                 <span>No account? </span>
-                <a href="/">Create one</a>
+                <a href="/register">Create one</a>
             </div>
 
             <div class="success-message" id="successMessage">

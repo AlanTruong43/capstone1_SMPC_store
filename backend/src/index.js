@@ -23,9 +23,14 @@ app.get('/', (_req, res) => {
   res.sendFile(path.join(FRONTEND_DIR, 'pages/index.html'));
 });
 
-// route /register: trả về register_page.html
+// route /login: trả về login_page.html
 app.get('/login', (_req, res) => {
   res.sendFile(path.join(FRONTEND_DIR, 'pages/login_page.html'));
+});
+
+// route /register: trả về register_page.html
+app.get('/register', (_req, res) => {
+  res.sendFile(path.join(FRONTEND_DIR, 'pages/register_page.html'));
 });
 
 // (tuỳ chọn) route health
