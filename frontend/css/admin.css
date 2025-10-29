@@ -246,6 +246,17 @@ ul.info_shop li.sellnow a button{
     transition: all 0.3s ease;
 }
 
+.export_menu{
+    background-color: #16A34A;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
 .user_management_1_1 p{
     margin-top: 20px;
     color: #6B7280;
@@ -387,6 +398,12 @@ tr:hover {
     background-color: #FEF08A;
 }
 
+.refunded p{
+        color: #B91C1C;
+    font-weight: 600;
+    background-color: #FECACA;
+}
+
 .nonactive p {
     color: #B91C1C;
     font-weight: 600;
@@ -414,6 +431,11 @@ tr:hover {
 }
 
 .delivered p{
+    color: #15803D;
+    background-color: #BBF7D0;
+}
+
+.collected p{
     color: #15803D;
     background-color: #BBF7D0;
 }
@@ -618,3 +640,52 @@ tr:hover {
     background-color: #F0FDF4;
 }
 
+.order_management_1{
+    width: 90%;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    padding: 20px;
+}
+
+.order_management_1_2{
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.order_management_1_2_bar{
+    background-color: white;
+    width: calc(33.33% - 20px);
+    border-radius: 8px;
+    padding: 20px;
+    margin-right: 20px;
+    background-color: #BBF7D0;
+}
+
+.order_management_1_2_total_bar{
+    display: flex;
+    justify-content: space-between;
+}
+
+.order_management_1_2_total_bar img{
+    width: 48px;
+    height: 48px;
+    /* background-color: #F0FDF4; */
+}
+
+.order_management_1_2_total_bar_title{
+    color: black;
+    font-weight: 700;
+}
+
+.order_management_1_2_total_bar_price{
+    font-size: 34px;
+    font-weight: 700;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    color: #16A34A;
+}
