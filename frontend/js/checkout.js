@@ -161,6 +161,7 @@ async function handleCheckoutSubmit(e) {
     if (selectedPaymentMethod === 'momo') await handleMoMoPayment(orderId, totalAmount, token);
     else if (selectedPaymentMethod === 'zalopay') await handleZaloPayment(orderId, token);
     else if (selectedPaymentMethod === 'stripe') await handleStripePayment(orderId, totalAmount, token);
+    else if (selectedPaymentMethod === 'payos') await handlePayOSPayment(orderId, totalAmount, token);
     else throw new Error('Invalid payment method');
   } catch (err) {
     showErrorContainer(err.message || 'Payment failed');
@@ -209,6 +210,19 @@ async function handleStripePayment(orderId, amount, token) {
   if (!res.ok || !d.clientSecret) throw new Error(d.error || 'Failed to create Stripe payment');
   setLoadingState(false);
   alert(`Stripe Payment Intent created. Order ID: ${orderId}\nClient Secret: ${d.clientSecret}`);
+}
+
+async function handlePayOSPayment(orderId, amount, token) {
+  const res = await fetch(`${API_BASE}/api/payments/payos/create`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ orderId, amount })
+  });
+  const d = await res.json();
+  if (!res.ok || !d.checkoutUrl) throw new Error(d.message || 'Failed to create PayOS payment');
+  localStorage.setItem('pendingOrderId', orderId);
+  localStorage.setItem('paymentProvider', 'payos');
+  window.location.href = d.checkoutUrl;
 }
 
 function setLoadingState(isLoading) {

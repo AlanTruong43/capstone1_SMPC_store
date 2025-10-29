@@ -72,6 +72,10 @@ app.use('/api/payments/stripe', stripeRoutes);
 const zalopayRoutes = require('./modules/zalopay/zalopay.routes');
 app.use('/api/payments', zalopayRoutes);
 
+// routes payos (PayOS)
+const payosRoutes = require('./modules/payos/payos_routes');
+app.use('/api/payments/payos', payosRoutes);
+
 // routes cart
 const cartRoutes = require('./modules/cart/cart_routes');
 app.use('/api/cart', cartRoutes);
