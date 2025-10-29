@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { db } = require('../../config/firebase');
+const { db, admin } = require('../../config/firebase');
 const { requireAuth } = require('../../middlewares/auth_middleware');
 const { createPaymentRequest, queryTransactionStatus } = require('../momo/momo_service');
 const { 
@@ -135,6 +135,7 @@ router.post('/create-and-checkout', requireAuth, async (req, res) => {
       return res.status(200).json({
         success: true,
         orderId: orderId,
+        totalAmount: totalAmount,
         payUrl: paymentResult.payUrl,
         deeplink: paymentResult.deeplink,
         qrCodeUrl: paymentResult.qrCodeUrl
@@ -199,7 +200,7 @@ router.get('/:orderId/verify-payment', async (req, res) => {
     console.log('📦 [Orders] Order found, current status:', order.status);
 
     // Step 2: If already paid, return immediately
-    if (order.status === 'paid') {
+    if (order.status === 'paid' || order.paymentStatus === 'paid') {
       return res.json({
         success: true,
         orderId: orderId,
@@ -209,7 +210,73 @@ router.get('/:orderId/verify-payment', async (req, res) => {
       });
     }
 
-    // Step 3: Query MoMo for transaction status
+    // Step 3: Check payment provider and query appropriate service
+    const paymentMethod = order.paymentMethod || 'momo'; // Default to momo for backward compatibility
+    
+    if (paymentMethod === 'payos') {
+      // For PayOS, query PayOS API for payment status
+      console.log('💳 [Orders] PayOS payment - querying PayOS API');
+      
+      try {
+        const payosService = require('../payos/payos');
+        const paymentInfo = await payosService.getPaymentLinkInfo(order.payosOrderCode);
+        
+        console.log('📥 [Orders] PayOS payment info:', paymentInfo);
+        
+        // Check if payment is successful
+        if (paymentInfo.status === 'PAID') {
+          console.log('✅ [Orders] PayOS payment confirmed');
+          
+          // Update order to paid
+          const orderRef = db.collection('orders').doc(orderId);
+          await orderRef.update({
+            paymentStatus: 'paid',
+            status: 'confirmed',
+            paidAt: admin.firestore.FieldValue.serverTimestamp(),
+            paymentDetails: {
+              ...order.paymentDetails,
+              transactionId: paymentInfo.id,
+              paidAmount: paymentInfo.amountPaid,
+              paymentMethod: 'payos',
+              completedAt: admin.firestore.FieldValue.serverTimestamp()
+            },
+            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+          });
+          
+          const updatedOrder = await getOrderById(orderId);
+          
+          return res.json({
+            success: true,
+            orderId: orderId,
+            status: 'paid',
+            order: updatedOrder,
+            message: 'Payment verified and confirmed'
+          });
+        } else {
+          // Payment still pending or cancelled
+          return res.json({
+            success: true,
+            orderId: orderId,
+            status: paymentInfo.status === 'CANCELLED' ? 'failed' : 'pending',
+            order: order,
+            message: paymentInfo.status === 'CANCELLED' ? 'Payment cancelled' : 'Payment is still processing'
+          });
+        }
+      } catch (payosError) {
+        console.error('❌ [Orders] PayOS query failed:', payosError.message);
+        
+        // Return current order status if query fails
+        return res.json({
+          success: true,
+          orderId: orderId,
+          status: order.paymentStatus || order.status,
+          order: order,
+          message: 'Could not verify with PayOS, showing cached status'
+        });
+      }
+    }
+
+    // Step 4: Query MoMo for transaction status (only for MoMo payments)
     try {
       console.log('🔍 [Orders] Querying MoMo transaction status...');
       

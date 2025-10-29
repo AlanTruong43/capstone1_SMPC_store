@@ -403,6 +403,10 @@ body {
     fill: #635BFF;
 }
 
+.payos-icon svg rect:first-child {
+    fill: #00C853;
+}
+
 .payment-info {
     flex: 1;
 }
@@ -436,6 +440,10 @@ body {
 
 .payment-badge.zalopay-badge {
     background: linear-gradient(135deg, #0068FF 0%, #00D4FF 100%);
+}
+
+.payment-badge.recommended {
+    background: linear-gradient(135deg, #00C853 0%, #00E676 100%);
 }
 
 /* Security Note */

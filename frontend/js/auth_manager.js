@@ -448,18 +448,9 @@ export function protectActionButtons(buttonSelector = '.btn-add, .buy-now-btn', 
       }
       button.dataset.authProtected = 'true';
       
-      // Clone the button to remove ALL existing event listeners
-      const newButton = button.cloneNode(true);
-      button.parentNode.replaceChild(newButton, button);
-      
-      // Get the new button reference
-      const protectedButton = newButton;
-      
-      // Store original attributes
-      const originalHref = protectedButton.getAttribute('href');
-      
-      // Add click interceptor with capture phase AND high priority
-      protectedButton.addEventListener('click', (e) => {
+      // Add click interceptor with capture phase to run BEFORE other handlers
+      // This runs first and stops propagation if user not logged in
+      button.addEventListener('click', (e) => {
         // Check CURRENT auth state (not captured closure)
         const currentUser = getCurrentUser();
         
@@ -473,19 +464,10 @@ export function protectActionButtons(buttonSelector = '.btn-add, .buy-now-btn', 
         }
         
         // User is logged in - allow normal behavior by letting event continue
-      }, { capture: true, passive: false }); // Use capture phase, non-passive
+        console.log('[Auth] User authenticated, allowing action');
+      }, { capture: true, passive: false }); // Use capture phase to intercept first
       
-      // If button is a link, also protect href navigation
-      if (originalHref && originalHref !== '#') {
-        protectedButton.addEventListener('click', (e) => {
-          const currentUser = getCurrentUser();
-          if (!currentUser) {
-            e.preventDefault();
-          }
-        }, { capture: true });
-      }
-      
-      console.log(`[Auth] Button protected with cloned node approach: ${protectedButton.className}`);
+      console.log(`[Auth] Button protected: ${button.className}`);
     });
     
     console.log(`[Auth] Protected ${buttons.length} action buttons with selector: ${buttonSelector}`);

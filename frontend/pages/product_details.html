@@ -188,17 +188,18 @@
             .catch(err => console.error("Error loading footer:", err));
     </script>
 
-    <!-- Protect Buy Now buttons BEFORE product_detail.js attaches its handler -->
+    <!-- Load product_detail.js first, then protect buttons AFTER handlers are attached -->
+    <script src="../js/product_detail.js"></script>
+    
+    <!-- Protect Buy Now buttons AFTER product_detail.js attaches its handler -->
     <script type="module">
         import { protectActionButtons } from '../js/auth_manager.js';
         
-        // Set up protection immediately - use capture phase to intercept first
+        // Wait for product_detail.js to attach its handlers first
         setTimeout(() => {
             protectActionButtons('.product_detail_btn_buynow', 'You need to log in to buy this product');
-        }, 50);
+        }, 100);
     </script>
-    
-    <script src="../js/product_detail.js"></script>
 </body>
 
 </html>
