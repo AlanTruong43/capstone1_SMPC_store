@@ -53,7 +53,7 @@ async function createOrder(orderData) {
     // Validate input data
     validateOrderData(orderData);
 
-    // Prepare order document
+    // Prepare order document with new schema
     const order = {
       productId: orderData.productId,
       productName: orderData.productName,
@@ -69,10 +69,39 @@ async function createOrder(orderData) {
         city: orderData.shippingAddress.city || '',
         postalCode: orderData.shippingAddress.postalCode || ''
       },
-      status: 'pending', // Initial status
+      // New order lifecycle fields
+      orderStatus: 'pending', // pending, paid, processing, delivered, completed, cancelled
+      paymentStatus: 'pending', // pending, paid, failed
+      shippingStatus: 'not_shipped', // not_shipped, delivered
+      
+      // Payment details
+      paymentMethod: null, // Will be set when payment initiated
       paymentDetails: null, // Will be populated after payment
+      
+      // Timestamps
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      paidAt: null,
+      sellerConfirmedAt: null,
+      deliveredAt: null,
+      completedAt: null,
+      
+      // Cancellation
+      cancelledBy: null,
+      cancelledAt: null,
+      cancellationReason: null,
+      
+      // Notes
+      sellerNotes: null,
+      buyerNotes: null,
+      
+      // Status history
+      statusHistory: [{
+        status: 'pending',
+        changedBy: orderData.buyerId,
+        changedAt: admin.firestore.Timestamp.now(),
+        notes: 'Order created'
+      }]
     };
 
     console.log('📝 [Orders Service] Creating order:', order);
@@ -231,12 +260,105 @@ async function ensureUserDocument(uid, email) {
   }
 }
 
+/**
+ * Updates order status with history tracking
+ * @param {string} orderId - Order ID
+ * @param {string} newStatus - New order status
+ * @param {string} changedBy - User ID who made the change
+ * @param {string} notes - Optional notes about the change
+ * @returns {Promise<void>}
+ */
+async function updateOrderStatusWithHistory(orderId, newStatus, changedBy, notes = '') {
+  try {
+    const orderRef = db.collection('orders').doc(orderId);
+    const orderSnap = await orderRef.get();
+
+    if (!orderSnap.exists) {
+      throw new Error('Order not found');
+    }
+
+    const orderData = orderSnap.data();
+    const statusHistory = orderData.statusHistory || [];
+
+    // Add new status to history
+    statusHistory.push({
+      status: newStatus,
+      changedBy: changedBy,
+      changedAt: admin.firestore.Timestamp.now(),
+      notes: notes
+    });
+
+    // Update order
+    await orderRef.update({
+      orderStatus: newStatus,
+      statusHistory: statusHistory,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    console.log(`✅ [Orders Service] Order ${orderId} status updated to '${newStatus}'`);
+  } catch (error) {
+    console.error('❌ [Orders Service] Failed to update order status:', error.message);
+    throw error;
+  }
+}
+
+/**
+ * Check if user is authorized to perform action on order
+ * @param {Object} order - Order data
+ * @param {string} userId - User ID attempting action
+ * @param {string} role - Required role ('buyer' or 'seller')
+ * @returns {boolean}
+ */
+function isAuthorizedForOrder(order, userId, role) {
+  if (role === 'buyer') {
+    return order.buyerId === userId;
+  } else if (role === 'seller') {
+    return order.sellerId === userId;
+  }
+  return false;
+}
+
+/**
+ * Validate status transition
+ * @param {string} currentStatus - Current order status
+ * @param {string} newStatus - Desired new status
+ * @param {string} role - Role attempting transition ('buyer' or 'seller')
+ * @returns {Object} { valid: boolean, reason: string }
+ */
+function validateStatusTransition(currentStatus, newStatus, role) {
+  // Define allowed transitions
+  const transitions = {
+    buyer: {
+      paid: ['cancelled'], // Buyer can cancel paid orders
+      delivered: ['completed'] // Buyer can confirm delivery
+    },
+    seller: {
+      paid: ['processing', 'cancelled'], // Seller can accept or cancel
+      processing: ['delivered', 'cancelled'] // Seller can mark delivered or cancel
+    }
+  };
+
+  const allowedTransitions = transitions[role]?.[currentStatus] || [];
+
+  if (!allowedTransitions.includes(newStatus)) {
+    return {
+      valid: false,
+      reason: `Cannot transition from '${currentStatus}' to '${newStatus}' as ${role}`
+    };
+  }
+
+  return { valid: true, reason: '' };
+}
+
 module.exports = {
   createOrder,
   getOrderById,
   getOrdersByBuyer,
   getOrdersBySeller,
   updateOrderStatus,
-  ensureUserDocument
+  ensureUserDocument,
+  updateOrderStatusWithHistory,
+  isAuthorizedForOrder,
+  validateStatusTransition
 };
 
