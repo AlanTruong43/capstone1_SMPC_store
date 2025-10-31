@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - Buyer Dashboard | SmartShopAI</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/order_demo_manage.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header_1">
+            <div class="header_logo">
+                <a href="index.html">
+                    <img src="../img/icon/logo.png" alt="SmartShopAI Logo">
+                </a>
+            </div>
+            <nav class="header_nav">
+                <a href="index.html">Home</a>
+                <a href="product_list.html">Products</a>
+                <a href="sell_product.html">Sell</a>
+                <a href="customer_products.html">My Products</a>
+                <a href="seller_orders.html">My Sales</a>
+                <a href="buyer_orders.html" class="active">My Orders</a>
+            </nav>
+            <div class="header_actions">
+                <a href="cart_demo.html"><img src="../img/icon/cart.png" alt="Cart"></a>
+                <a href="#"><img src="../img/icon/user.png" alt="User" id="userIcon"></a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="order-management-container">
+        <div class="page-header">
+            <h1>My Orders</h1>
+            <p class="subtitle">Track your purchases and delivery status</p>
+        </div>
+
+        <!-- Status Tabs -->
+        <div class="status-tabs">
+            <button class="tab-btn active" data-status="all">
+                All Orders <span class="tab-badge" id="countAll">0</span>
+            </button>
+            <button class="tab-btn" data-status="paid">
+                Paid <span class="tab-badge paid" id="countPaid">0</span>
+            </button>
+            <button class="tab-btn" data-status="processing">
+                Processing <span class="tab-badge processing" id="countProcessing">0</span>
+            </button>
+            <button class="tab-btn" data-status="delivered">
+                Delivered <span class="tab-badge delivered" id="countDelivered">0</span>
+            </button>
+            <button class="tab-btn" data-status="completed">
+                Completed <span class="tab-badge completed" id="countCompleted">0</span>
+            </button>
+            <button class="tab-btn" data-status="cancelled">
+                Cancelled <span class="tab-badge cancelled" id="countCancelled">0</span>
+            </button>
+        </div>
+
+        <!-- Orders Container -->
+        <div class="orders-container" id="ordersContainer">
+            <!-- Loading state -->
+            <div class="loading-state" id="loadingState">
+                <div class="spinner"></div>
+                <p>Loading your orders...</p>
+            </div>
+
+            <!-- Empty state -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-icon">🛍️</div>
+                <h3>No orders found</h3>
+                <p>You don't have any orders in this category yet.</p>
+                <a href="product_list.html" class="btn btn-primary">Browse Products</a>
+            </div>
+
+            <!-- Orders grid -->
+            <div class="orders-grid" id="ordersGrid" style="display: none;">
+                <!-- Orders will be rendered here by JavaScript -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Order Detail Modal -->
+    <div class="modal" id="orderDetailModal">
+        <div class="modal-overlay" onclick="closeOrderDetailModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Order Details</h2>
+                <button class="modal-close" onclick="closeOrderDetailModal()">×</button>
+            </div>
+            <div class="modal-body" id="orderDetailBody">
+                <!-- Order details will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Delivery Modal -->
+    <div class="modal" id="confirmDeliveryModal">
+        <div class="modal-overlay" onclick="closeConfirmDeliveryModal()"></div>
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Confirm Receipt</h2>
+                <button class="modal-close" onclick="closeConfirmDeliveryModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <p>Have you received this order in good condition?</p>
+                <p class="info-text">💡 By confirming, you acknowledge that the product has been delivered and you're satisfied with the condition.</p>
+
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="closeConfirmDeliveryModal()">Not Yet</button>
+                    <button class="btn btn-primary" onclick="confirmReceipt()" id="confirmReceiptBtn">
+                        Yes, I Received It
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel Order Modal -->
+    <div class="modal" id="cancelModal">
+        <div class="modal-overlay" onclick="closeCancelModal()"></div>
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Cancel Order</h2>
+                <button class="modal-close" onclick="closeCancelModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <p class="warning-text">⚠️ Are you sure you want to cancel this order?</p>
+                
+                <div class="form-group">
+                    <label for="cancellationReason">Cancellation Reason *</label>
+                    <textarea id="cancellationReason" rows="3" placeholder="Please provide a reason for cancellation..." required></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="closeCancelModal()">Keep Order</button>
+                    <button class="btn btn-danger" onclick="confirmCancel()" id="confirmCancelBtn">
+                        Cancel Order
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Scripts -->
+    <script type="module" src="../js/auth_manager.js"></script>
+    <script type="module" src="../js/buyer_orders.js"></script>
+</body>
+</html>
+

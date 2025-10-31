@@ -200,7 +200,7 @@ router.get('/:orderId/verify-payment', async (req, res) => {
     console.log('📦 [Orders] Order found, current status:', order.status);
 
     // Step 2: If already paid, return immediately
-    if (order.status === 'paid' || order.paymentStatus === 'paid') {
+    if (order.orderStatus === 'paid' || order.paymentStatus === 'paid') {
       return res.json({
         success: true,
         orderId: orderId,
@@ -227,11 +227,20 @@ router.get('/:orderId/verify-payment', async (req, res) => {
         if (paymentInfo.status === 'PAID') {
           console.log('✅ [Orders] PayOS payment confirmed');
           
-          // Update order to paid
+          // Get current status history
+          const statusHistory = order.statusHistory || [];
+          statusHistory.push({
+            status: 'paid',
+            changedBy: 'system',
+            changedAt: admin.firestore.Timestamp.now(),
+            notes: 'Payment verified via PayOS query'
+          });
+          
+          // Update order to paid (NEW SCHEMA)
           const orderRef = db.collection('orders').doc(orderId);
           await orderRef.update({
             paymentStatus: 'paid',
-            status: 'confirmed',
+            orderStatus: 'paid', // NEW: Changed from 'confirmed' to 'paid'
             paidAt: admin.firestore.FieldValue.serverTimestamp(),
             paymentDetails: {
               ...order.paymentDetails,
@@ -240,6 +249,7 @@ router.get('/:orderId/verify-payment', async (req, res) => {
               paymentMethod: 'payos',
               completedAt: admin.firestore.FieldValue.serverTimestamp()
             },
+            statusHistory: statusHistory, // NEW: Track status changes
             updatedAt: admin.firestore.FieldValue.serverTimestamp()
           });
           
@@ -291,17 +301,30 @@ router.get('/:orderId/verify-payment', async (req, res) => {
         // Payment successful
         console.log('✅ [Orders] Payment confirmed by MoMo');
 
+        // Get current status history
+        const statusHistory = order.statusHistory || [];
+        statusHistory.push({
+          status: 'paid',
+          changedBy: 'system',
+          changedAt: admin.firestore.Timestamp.now(),
+          notes: 'Payment verified via MoMo query'
+        });
+
         const orderRef = db.collection('orders').doc(orderId);
         await orderRef.update({
-          status: 'paid',
+          orderStatus: 'paid', // NEW: Use orderStatus
+          paymentStatus: 'paid',
+          paidAt: admin.firestore.FieldValue.serverTimestamp(),
           paymentDetails: {
             transId: momoResult.transId,
             payType: momoResult.payType,
             paidAt: new Date(),
             resultCode: momoResult.resultCode,
-            amount: momoResult.amount
+            amount: momoResult.amount,
+            paymentMethod: 'momo'
           },
-          updatedAt: new Date()
+          statusHistory: statusHistory, // NEW: Track status changes
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
         });
 
         // Update product quantity
@@ -355,12 +378,26 @@ router.get('/:orderId/verify-payment', async (req, res) => {
         // Payment failed
         console.warn('⚠️ [Orders] Payment failed:', momoResult.message);
         
+        // Get current status history
+        const statusHistory = order.statusHistory || [];
+        statusHistory.push({
+          status: 'cancelled',
+          changedBy: 'system',
+          changedAt: admin.firestore.Timestamp.now(),
+          notes: `Payment failed: ${momoResult.message || 'Unknown error'}`
+        });
+        
         const orderRef = db.collection('orders').doc(orderId);
         await orderRef.update({
-          status: 'failed',
+          orderStatus: 'cancelled', // NEW: Use orderStatus
+          paymentStatus: 'failed',
+          cancelledBy: 'system',
+          cancelledAt: admin.firestore.FieldValue.serverTimestamp(),
+          cancellationReason: momoResult.message || 'Payment failed',
           paymentFailureReason: momoResult.message,
           paymentResultCode: momoResult.resultCode,
-          updatedAt: new Date()
+          statusHistory: statusHistory, // NEW: Track status changes
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
         });
 
         const updatedOrder = await getOrderById(orderId);
@@ -443,11 +480,20 @@ router.get('/:orderId', requireAuth, async (req, res) => {
 /**
  * GET /api/orders/buyer/my-orders
  * Get all orders for the authenticated buyer
+ * Query params: ?status=paid&status=processing (filter by status)
  */
 router.get('/buyer/my-orders', requireAuth, async (req, res) => {
   try {
     const userId = req.user.uid;
-    const orders = await getOrdersByBuyer(userId);
+    const { status } = req.query;
+    
+    let orders = await getOrdersByBuyer(userId);
+
+    // Filter by status if provided
+    if (status) {
+      const statusFilters = Array.isArray(status) ? status : [status];
+      orders = orders.filter(order => statusFilters.includes(order.orderStatus));
+    }
 
     return res.json({
       success: true,
@@ -467,11 +513,20 @@ router.get('/buyer/my-orders', requireAuth, async (req, res) => {
 /**
  * GET /api/orders/seller/my-sales
  * Get all orders for the authenticated seller
+ * Query params: ?status=paid&status=processing (filter by status)
  */
 router.get('/seller/my-sales', requireAuth, async (req, res) => {
   try {
     const userId = req.user.uid;
-    const orders = await getOrdersBySeller(userId);
+    const { status } = req.query;
+    
+    let orders = await getOrdersBySeller(userId);
+
+    // Filter by status if provided
+    if (status) {
+      const statusFilters = Array.isArray(status) ? status : [status];
+      orders = orders.filter(order => statusFilters.includes(order.orderStatus));
+    }
 
     return res.json({
       success: true,
@@ -481,6 +536,359 @@ router.get('/seller/my-sales', requireAuth, async (req, res) => {
 
   } catch (error) {
     console.error('❌ [Orders] Get seller orders failed:', error.message);
+    return res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * PUT /api/orders/:orderId/seller/accept
+ * Seller accepts a paid order and moves it to processing
+ */
+router.put('/:orderId/seller/accept', requireAuth, async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const sellerId = req.user.uid;
+
+    // Get order
+    const order = await getOrderById(orderId);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        error: 'Order not found'
+      });
+    }
+
+    // Verify seller owns this order
+    const { isAuthorizedForOrder, validateStatusTransition } = require('./orders_service');
+    if (!isAuthorizedForOrder(order, sellerId, 'seller')) {
+      return res.status(403).json({
+        success: false,
+        error: 'Unauthorized: You do not own this order'
+      });
+    }
+
+    // Validate status transition
+    const validation = validateStatusTransition(order.orderStatus, 'processing', 'seller');
+    if (!validation.valid) {
+      return res.status(400).json({
+        success: false,
+        error: validation.reason
+      });
+    }
+
+    // Update order status
+    const { updateOrderStatusWithHistory } = require('./orders_service');
+    await updateOrderStatusWithHistory(orderId, 'processing', sellerId, 'Seller accepted order');
+
+    // Update sellerConfirmedAt timestamp
+    await db.collection('orders').doc(orderId).update({
+      sellerConfirmedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    const updatedOrder = await getOrderById(orderId);
+
+    return res.json({
+      success: true,
+      message: 'Order accepted successfully',
+      order: updatedOrder
+    });
+
+  } catch (error) {
+    console.error('❌ [Orders] Accept order failed:', error.message);
+    return res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * PUT /api/orders/:orderId/seller/deliver
+ * Seller marks order as delivered
+ */
+router.put('/:orderId/seller/deliver', requireAuth, async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const sellerId = req.user.uid;
+    const { notes } = req.body;
+
+    // Get order
+    const order = await getOrderById(orderId);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        error: 'Order not found'
+      });
+    }
+
+    // Verify seller owns this order
+    const { isAuthorizedForOrder, validateStatusTransition } = require('./orders_service');
+    if (!isAuthorizedForOrder(order, sellerId, 'seller')) {
+      return res.status(403).json({
+        success: false,
+        error: 'Unauthorized: You do not own this order'
+      });
+    }
+
+    // Validate status transition
+    const validation = validateStatusTransition(order.orderStatus, 'delivered', 'seller');
+    if (!validation.valid) {
+      return res.status(400).json({
+        success: false,
+        error: validation.reason
+      });
+    }
+
+    // Update order status
+    const { updateOrderStatusWithHistory } = require('./orders_service');
+    await updateOrderStatusWithHistory(
+      orderId, 
+      'delivered', 
+      sellerId, 
+      notes || 'Seller marked as delivered'
+    );
+
+    // Update delivery timestamp and shipping status
+    await db.collection('orders').doc(orderId).update({
+      deliveredAt: admin.firestore.FieldValue.serverTimestamp(),
+      shippingStatus: 'delivered',
+      sellerNotes: notes || null
+    });
+
+    const updatedOrder = await getOrderById(orderId);
+
+    return res.json({
+      success: true,
+      message: 'Order marked as delivered',
+      order: updatedOrder
+    });
+
+  } catch (error) {
+    console.error('❌ [Orders] Mark delivered failed:', error.message);
+    return res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * PUT /api/orders/:orderId/seller/cancel
+ * Seller cancels an order (only if not yet delivered)
+ */
+router.put('/:orderId/seller/cancel', requireAuth, async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const sellerId = req.user.uid;
+    const { reason } = req.body;
+
+    if (!reason || reason.trim() === '') {
+      return res.status(400).json({
+        success: false,
+        error: 'Cancellation reason is required'
+      });
+    }
+
+    // Get order
+    const order = await getOrderById(orderId);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        error: 'Order not found'
+      });
+    }
+
+    // Verify seller owns this order
+    const { isAuthorizedForOrder, validateStatusTransition } = require('./orders_service');
+    if (!isAuthorizedForOrder(order, sellerId, 'seller')) {
+      return res.status(403).json({
+        success: false,
+        error: 'Unauthorized: You do not own this order'
+      });
+    }
+
+    // Validate status transition
+    const validation = validateStatusTransition(order.orderStatus, 'cancelled', 'seller');
+    if (!validation.valid) {
+      return res.status(400).json({
+        success: false,
+        error: validation.reason
+      });
+    }
+
+    // Update order status
+    const { updateOrderStatusWithHistory } = require('./orders_service');
+    await updateOrderStatusWithHistory(
+      orderId, 
+      'cancelled', 
+      sellerId, 
+      `Cancelled by seller: ${reason}`
+    );
+
+    // Update cancellation fields
+    await db.collection('orders').doc(orderId).update({
+      cancelledBy: 'seller',
+      cancelledAt: admin.firestore.FieldValue.serverTimestamp(),
+      cancellationReason: reason
+    });
+
+    const updatedOrder = await getOrderById(orderId);
+
+    return res.json({
+      success: true,
+      message: 'Order cancelled successfully',
+      order: updatedOrder
+    });
+
+  } catch (error) {
+    console.error('❌ [Orders] Cancel order failed:', error.message);
+    return res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * PUT /api/orders/:orderId/buyer/confirm-delivery
+ * Buyer confirms receipt of product
+ */
+router.put('/:orderId/buyer/confirm-delivery', requireAuth, async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const buyerId = req.user.uid;
+
+    // Get order
+    const order = await getOrderById(orderId);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        error: 'Order not found'
+      });
+    }
+
+    // Verify buyer owns this order
+    const { isAuthorizedForOrder, validateStatusTransition } = require('./orders_service');
+    if (!isAuthorizedForOrder(order, buyerId, 'buyer')) {
+      return res.status(403).json({
+        success: false,
+        error: 'Unauthorized: This is not your order'
+      });
+    }
+
+    // Validate status transition
+    const validation = validateStatusTransition(order.orderStatus, 'completed', 'buyer');
+    if (!validation.valid) {
+      return res.status(400).json({
+        success: false,
+        error: validation.reason
+      });
+    }
+
+    // Update order status
+    const { updateOrderStatusWithHistory } = require('./orders_service');
+    await updateOrderStatusWithHistory(
+      orderId, 
+      'completed', 
+      buyerId, 
+      'Buyer confirmed receipt'
+    );
+
+    // Update completion timestamp
+    await db.collection('orders').doc(orderId).update({
+      completedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    const updatedOrder = await getOrderById(orderId);
+
+    return res.json({
+      success: true,
+      message: 'Order completed successfully',
+      order: updatedOrder
+    });
+
+  } catch (error) {
+    console.error('❌ [Orders] Confirm delivery failed:', error.message);
+    return res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * PUT /api/orders/:orderId/buyer/cancel
+ * Buyer cancels an order (only if not yet delivered)
+ */
+router.put('/:orderId/buyer/cancel', requireAuth, async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const buyerId = req.user.uid;
+    const { reason } = req.body;
+
+    if (!reason || reason.trim() === '') {
+      return res.status(400).json({
+        success: false,
+        error: 'Cancellation reason is required'
+      });
+    }
+
+    // Get order
+    const order = await getOrderById(orderId);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        error: 'Order not found'
+      });
+    }
+
+    // Verify buyer owns this order
+    const { isAuthorizedForOrder, validateStatusTransition } = require('./orders_service');
+    if (!isAuthorizedForOrder(order, buyerId, 'buyer')) {
+      return res.status(403).json({
+        success: false,
+        error: 'Unauthorized: This is not your order'
+      });
+    }
+
+    // Validate status transition
+    const validation = validateStatusTransition(order.orderStatus, 'cancelled', 'buyer');
+    if (!validation.valid) {
+      return res.status(400).json({
+        success: false,
+        error: validation.reason
+      });
+    }
+
+    // Update order status
+    const { updateOrderStatusWithHistory } = require('./orders_service');
+    await updateOrderStatusWithHistory(
+      orderId, 
+      'cancelled', 
+      buyerId, 
+      `Cancelled by buyer: ${reason}`
+    );
+
+    // Update cancellation fields
+    await db.collection('orders').doc(orderId).update({
+      cancelledBy: 'buyer',
+      cancelledAt: admin.firestore.FieldValue.serverTimestamp(),
+      cancellationReason: reason
+    });
+
+    const updatedOrder = await getOrderById(orderId);
+
+    return res.json({
+      success: true,
+      message: 'Order cancelled successfully',
+      order: updatedOrder
+    });
+
+  } catch (error) {
+    console.error('❌ [Orders] Cancel order failed:', error.message);
     return res.status(500).json({
       success: false,
       error: error.message

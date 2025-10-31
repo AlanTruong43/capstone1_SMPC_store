@@ -167,10 +167,19 @@ router.post('/webhook', express.json(), async (req, res) => {
     if (code === '00') {
       console.log('✅ [PayOS Webhook] Payment successful');
 
-      // Update order to paid
+      // Get current status history
+      const statusHistory = orderData.statusHistory || [];
+      statusHistory.push({
+        status: 'paid',
+        changedBy: 'system',
+        changedAt: admin.firestore.Timestamp.now(),
+        notes: 'Payment confirmed via PayOS webhook'
+      });
+
+      // Update order to paid (NEW SCHEMA)
       await db.collection('orders').doc(orderId).update({
         paymentStatus: 'paid',
-        status: 'confirmed',
+        orderStatus: 'paid', // NEW: Changed from 'confirmed' to 'paid'
         paidAt: admin.firestore.FieldValue.serverTimestamp(),
         paymentDetails: {
           ...orderData.paymentDetails,
@@ -179,6 +188,7 @@ router.post('/webhook', express.json(), async (req, res) => {
           paymentMethod: 'payos',
           completedAt: admin.firestore.FieldValue.serverTimestamp()
         },
+        statusHistory: statusHistory, // NEW: Track status changes
         updatedAt: admin.firestore.FieldValue.serverTimestamp()
       });
 
@@ -189,15 +199,28 @@ router.post('/webhook', express.json(), async (req, res) => {
     } else {
       console.log('❌ [PayOS Webhook] Payment failed or cancelled');
 
-      // Update order to failed
+      // Get current status history
+      const statusHistory = orderData.statusHistory || [];
+      statusHistory.push({
+        status: 'cancelled',
+        changedBy: 'system',
+        changedAt: admin.firestore.Timestamp.now(),
+        notes: `Payment failed: ${desc || 'Unknown reason'}`
+      });
+
+      // Update order to failed (NEW SCHEMA)
       await db.collection('orders').doc(orderId).update({
         paymentStatus: 'failed',
-        status: 'cancelled',
+        orderStatus: 'cancelled', // NEW: Use orderStatus
+        cancelledBy: 'system',
+        cancelledAt: admin.firestore.FieldValue.serverTimestamp(),
+        cancellationReason: desc || 'Payment failed',
         paymentDetails: {
           ...orderData.paymentDetails,
           failureReason: desc || 'Payment failed',
           failedAt: admin.firestore.FieldValue.serverTimestamp()
         },
+        statusHistory: statusHistory, // NEW: Track status changes
         updatedAt: admin.firestore.FieldValue.serverTimestamp()
       });
 
