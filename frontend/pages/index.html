@@ -387,6 +387,74 @@
       }
     });
   </script>
+  
+  <!-- Quick Access Buttons for Orders (non-intrusive addition) -->
+  <script type="module">
+    import { onAuthReady } from '../js/auth_manager.js';
+
+    onAuthReady((user) => {
+      const infoShop = document.querySelector('.info_shop');
+      if (!infoShop) return;
+
+      const existingBuyer = document.getElementById('buyerOrdersBtn');
+      const existingSeller = document.getElementById('sellerOrdersBtn');
+
+      const removeIfExists = (el) => { if (el && el.parentNode) el.parentNode.removeChild(el); };
+
+      if (user) {
+        // Insert before the user icon if possible, else append to the end
+        const userIcon = infoShop.querySelector('li:nth-child(2)');
+
+        if (!existingBuyer) {
+          const buyerLi = document.createElement('li');
+          buyerLi.id = 'buyerOrdersBtn';
+          buyerLi.innerHTML = `
+            <a href="/pages/buyer_orders.html" style="
+              background: #0EA5E9;
+              color: white;
+              padding: 8px 12px;
+              border-radius: 6px;
+              text-decoration: none;
+              font-weight: 500;
+              display: inline-block;
+            ">🛒 My Orders</a>
+          `;
+          if (userIcon && userIcon.parentNode) {
+            userIcon.parentNode.insertBefore(buyerLi, userIcon);
+          } else {
+            infoShop.appendChild(buyerLi);
+          }
+        }
+
+        if (!existingSeller) {
+          const sellerLi = document.createElement('li');
+          sellerLi.id = 'sellerOrdersBtn';
+          sellerLi.innerHTML = `
+            <a href="/pages/seller_orders.html" style="
+              background: #16A34A;
+              color: white;
+              padding: 8px 12px;
+              border-radius: 6px;
+              text-decoration: none;
+              font-weight: 500;
+              display: inline-block;
+              margin-right: 8px;
+            ">📦 My Sales</a>
+          `;
+          const insertBefore = document.getElementById('buyerOrdersBtn') || userIcon;
+          if (insertBefore && insertBefore.parentNode) {
+            insertBefore.parentNode.insertBefore(sellerLi, insertBefore);
+          } else {
+            infoShop.appendChild(sellerLi);
+          }
+        }
+      } else {
+        // Remove buttons when logged out
+        removeIfExists(existingBuyer);
+        removeIfExists(existingSeller);
+      }
+    });
+  </script>
 </body>
 <script src="../js/index_search.js"></script>
 <script src="../js/index_categories.js"></script>
