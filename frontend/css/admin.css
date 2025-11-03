@@ -689,3 +689,25 @@ tr:hover {
     margin-bottom: 20px;
     color: #16A34A;
 }
+
+.product_management_button_1{
+    background-color: #2563EB;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.product_management_button_2{
+    background-color: none;
+    color: #2563EB;
+    border: 2px solid #2563EB;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}

@@ -7,7 +7,7 @@
   <title>Products - Admin</title>
   
   <!-- Auth Protection Script -->
-  <script type="module">
+  <!-- <script type="module">
     import { requireAdmin, logout } from '../js/auth_manager.js';
     
     // Protect this page - redirect if not admin
@@ -34,7 +34,7 @@
         });
       }
     });
-  </script>
+  </script> -->
 </head>
 <body>
     <header>
@@ -59,11 +59,213 @@
     </header>
 
     <section class="body">
+        <section class="menu">
+            <a href="/admin/dashboard.html">
+                <div class="dashboard">
+                    <img src="/img/icon/icons8-dashboard-48.png" alt="">
+                    <p>Dashboard</p>
+                </div>
+            </a>
+            <a href="/admin/user_management.html">
+                <div class="user_management">
+                    <img src="/img/icon/icons8-users-settings-32 (1).png" alt="">
+                    <p>User Management</p>
+                </div>
+            </a>
+            <a href="/admin/order_management.html">
+                <div class="order_management">
+                    <img src="/img/icon/icons8-order-management-66.png" alt="">
+                    <p>Order Management</p>
+                </div>
+            </a>
+            <a href="/admin/commission.html">
+                <div class="commission">
+                    <img src="/img/icon/icons8-commission-64.png" alt="">
+                    <p>Commission</p>
+                </div>
+            </a>
+            <a href="/admin/demo_product_management.html">
+                <div class="products active_menu">
+                    <img src="/img/icon/active icon admin menu/icons8-product-50.png" alt="">
+                    <p>Products</p>
+                </div>
+            </a>
+            <a href="/admin/analytics.html">
+                <div class="analytics">
+                    <img src="/img/icon/icons8-analytic-64.png" alt="">
+                    <p>Analytics</p>
+                </div>
+            </a>
+            <a href="/admin/setting.html">
+                <div class="setting">
+                    <img src="/img/icon/icons8-setting-50.png" alt="">
+                    <p>Setting</p>
+                </div>
+            </a>
+        </section>
+
         <section class="content">
-            <h1>Products</h1>
-            <p>Products management page - Under construction</p>
+            <div class="user_management_1">
+                <div class="user_management_1_1">
+                    <h3>Product Management</h3>
+                    <p>Manage and moderate marketplace products</p>
+                </div>
+                <div class="product_management_button">
+                  <button class="product_management_button_2">Export Product</button>
+                  <button class="product_management_button_1">Add Product</button>
+                </div>
+            </div>
+            <div class="order_management_1">
+                <div class="order_management_1_1">
+                </div>
+                <div class="order_management_1_2">
+                  <div class="order_management_1_2_bar">
+                    <div class="order_management_1_2_total_bar">
+                      <img src="/img/product_management/icons8-p-50.png" alt="">
+                        <div class="order_management_1_2_total_bar_1">
+                            <p class="order_management_1_2_total_bar_title">Total Product</p>
+                            <p class="order_management_1_2_total_bar_price">2,847</p>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="order_management_1_2_bar">
+                    <div class="order_management_1_2_total_bar">
+                        <img src="/img/product_management/icons8-tick-box-50.png" alt="">
+                        <div class="order_management_1_2_total_bar_1">
+                            <p class="order_management_1_2_total_bar_title">Active Products</p>
+                            <p class="order_management_1_2_total_bar_price">2,156</p>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="order_management_1_2_bar">
+                    <div class="order_management_1_2_total_bar">
+                        <img src="/img/product_management/icons8-clock-50.png" alt="">
+                        <div class="order_management_1_2_total_bar_1">
+                            <p class="order_management_1_2_total_bar_title">Pending Review</p>
+                            <p class="order_management_1_2_total_bar_price">124</p>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="order_management_1_2_bar">
+                    <div class="order_management_1_2_total_bar">
+                        <img src="/img/product_management/icons8-flag-50.png" alt="">
+                        <div class="order_management_1_2_total_bar_1">
+                            <p class="order_management_1_2_total_bar_title">Reported</p>
+                            <p class="order_management_1_2_total_bar_price">12</p>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="user_management_2">
+                <input type="search" placeholder="Search Order ID or Buyer name" class="search_user">
+                <select name="" id="" class="roles">
+                    <option value="status">status</option>
+                    <option value="active">Active</option>
+                    <option value="pending">Pending</option>
+                    <option value="suspended">Suspended</option>
+                </select>
+                <select name="" id="" class="roles">
+                    <option value="category">Category</option>
+                    <option value="status">Delivered</option>
+                    <option value="shipped">Shipped</option>
+                    <option value="processing">Processing</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+                <select name="" id="" class="roles">
+                    <option value="sortby">Sort By</option>
+                    <option value="latest">latest</option>
+                    <option value="oldest">oldest</option>
+                    <option value="view">view</option>
+                </select>
+            </div>
+            <div class="user_management_3">
+                <div class="user_management_3_1">
+                  <!-- thay số lượng sản phẩm trong thẻ span -->
+                    <p class="user_management_3_1_1"><span>5</span> Product</p>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Seller</th>
+                            <th>Price</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Performance</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- mỗi order ID là 1 thẻ tr -->
+                        <tr>
+                            <td>
+                                 <div class="user-info">
+                                  <!-- thay img sản phẩm ở đây -->
+                                    <img src="/img/icon/user.png" alt="">
+                                    <div class="user-info-2">
+                                        <div class="user-name">Iphone 15 promax</div>
+                                        <div class="user-email">like new</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                 <div class="user-info">
+                                    <div class="user-info-2">
+                                        <div class="user-name">Nguyen Van A</div>
+                                        <div class="user-email">nguyenvan@gmail.com</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><p style="font-weight: 700; color: black;">₫18,500,000</p></td>
+                            <!-- không sửa css categroy -->
+                            <td class="form_table collected"><p>Electronic</p></td> 
+                            <!-- thay css thứ 2 thành active hoặc nonactive -->
+                            <td class="form_table active"><p>Active</p></td>  
+                            <td>
+                                 <div class="user-info">
+                                    <div class="user-info-2">
+                                      <!-- sửa view và like trong thẻ span -->
+                                        <div class="user-name"><span>100</span> view</div>
+                                        <div class="user-email"><span>20</span> like</div>
+                                    </div>
+                                </div>
+                            </td>                  
+                            <td class="table_action">
+                                <img src="/img/icon/icons8-edit-50.png" alt="">
+                                <img src="/img/icon/icons8-view-24.png" alt="">
+                                <img src="/img/icon/icons8-delete-user-male-24.png" alt="">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="user_management_4">
+                    <p>Showing 1 to 5 of <span>5</span> results</p>
+                    <div class="user_management_4_page">
+                        <button class="user_management_4_page_prev">Previous</button>
+                        <!-- trang nào được hiển thị sẽ thêm class active_page -->
+                        <button class="user_management_4_page_number active_page">1</button>
+                        <button class="user_management_4_page_number">2</button>
+                        <button class="user_management_4_page_next">Next</button>
+                    </div>
+                </div>
+            </div>
         </section>
     </section>
+
+    <style>
+      .order_management_1_2_total_bar_price{
+        color: #4B5563;
+
+      }
+      .order_management_1_2_total_bar{
+        justify-content:flex-start;
+      }
+
+      .order_management_1_2_total_bar img{
+        margin-right: 10px;
+      }
+    </style>
 </body>
 </html>
 
