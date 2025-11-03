@@ -1,14 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const { db, admin } = require('../../config/firebase');
-const { requireAuth } = require('../../middlewares/auth_middleware');
+const { requireAuth, requireAdmin } = require('../../middlewares/auth_middleware');
 const { createPaymentRequest, queryTransactionStatus } = require('../momo/momo_service');
 const { 
   createOrder, 
   getOrderById, 
   getOrdersByBuyer, 
   getOrdersBySeller,
-  ensureUserDocument 
+  ensureUserDocument,
+  getAllOrdersAdmin,
+  getOrderByIdWithUsers,
+  updateOrderStatusAdmin,
+  cancelOrderAdmin,
+  updateShippingAddressAdmin
 } = require('./orders_service');
 
 /**
@@ -889,6 +894,223 @@ router.put('/:orderId/buyer/cancel', requireAuth, async (req, res) => {
 
   } catch (error) {
     console.error('❌ [Orders] Cancel order failed:', error.message);
+    return res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * ============================================
+ * ADMIN ROUTES - Order Management
+ * ============================================
+ */
+
+/**
+ * GET /api/orders/admin/all
+ * Get all orders with filters, pagination, and user data (Admin only)
+ * Query params: orderStatus, paymentStatus, search, page, limit
+ */
+router.get('/admin/all', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { orderStatus, paymentStatus, search, page, limit } = req.query;
+
+    const filters = {
+      orderStatus: orderStatus || null,
+      paymentStatus: paymentStatus || null,
+      search: search || null,
+      page: page || 1,
+      limit: limit || 5
+    };
+
+    console.log('📊 [Admin Orders] Fetching orders with filters:', filters);
+
+    const result = await getAllOrdersAdmin(filters);
+
+    return res.json({
+      success: true,
+      orders: result.orders,
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages
+    });
+
+  } catch (error) {
+    console.error('❌ [Admin Orders] Get all orders failed:', error.message);
+    return res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/orders/admin/:orderId
+ * Get order details with user information (Admin only)
+ */
+router.get('/admin/:orderId', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    console.log('📦 [Admin Orders] Fetching order:', orderId);
+
+    const order = await getOrderByIdWithUsers(orderId);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        error: 'Order not found'
+      });
+    }
+
+    return res.json({
+      success: true,
+      order: order
+    });
+
+  } catch (error) {
+    console.error('❌ [Admin Orders] Get order failed:', error.message);
+    return res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * PUT /api/orders/admin/:orderId/status
+ * Update order status (Admin only)
+ * Body: { orderStatus, notes? }
+ */
+router.put('/admin/:orderId/status', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { orderStatus, notes } = req.body;
+    const adminId = req.user.uid;
+
+    if (!orderStatus) {
+      return res.status(400).json({
+        success: false,
+        error: 'orderStatus is required'
+      });
+    }
+
+    // Validate status
+    const validStatuses = ['pending', 'paid', 'processing', 'delivered', 'completed', 'cancelled'];
+    if (!validStatuses.includes(orderStatus)) {
+      return res.status(400).json({
+        success: false,
+        error: `Invalid orderStatus. Must be one of: ${validStatuses.join(', ')}`
+      });
+    }
+
+    console.log('📝 [Admin Orders] Updating order status:', { orderId, orderStatus, adminId });
+
+    const updatedOrder = await updateOrderStatusAdmin(orderId, orderStatus, adminId, notes);
+
+    return res.json({
+      success: true,
+      message: 'Order status updated successfully',
+      order: updatedOrder
+    });
+
+  } catch (error) {
+    console.error('❌ [Admin Orders] Update status failed:', error.message);
+    return res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * PUT /api/orders/admin/:orderId/cancel
+ * Cancel order (Admin only, only when status is 'processing')
+ * Body: { cancellationReason }
+ */
+router.put('/admin/:orderId/cancel', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { cancellationReason } = req.body;
+    const adminId = req.user.uid;
+
+    if (!cancellationReason || cancellationReason.trim() === '') {
+      return res.status(400).json({
+        success: false,
+        error: 'cancellationReason is required'
+      });
+    }
+
+    console.log('❌ [Admin Orders] Cancelling order:', { orderId, adminId });
+
+    const updatedOrder = await cancelOrderAdmin(orderId, adminId, cancellationReason);
+
+    return res.json({
+      success: true,
+      message: 'Order cancelled successfully',
+      order: updatedOrder
+    });
+
+  } catch (error) {
+    console.error('❌ [Admin Orders] Cancel order failed:', error.message);
+    
+    // Check if it's a validation error
+    if (error.message.includes('Cannot cancel order')) {
+      return res.status(400).json({
+        success: false,
+        error: error.message
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * PUT /api/orders/admin/:orderId/shipping-address
+ * Update shipping address (Admin only, only when status is 'processing')
+ * Body: { shippingAddress: { fullName, address, phone, city?, postalCode? } }
+ */
+router.put('/admin/:orderId/shipping-address', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { shippingAddress } = req.body;
+    const adminId = req.user.uid;
+
+    if (!shippingAddress) {
+      return res.status(400).json({
+        success: false,
+        error: 'shippingAddress is required'
+      });
+    }
+
+    console.log('📮 [Admin Orders] Updating shipping address:', { orderId, adminId });
+
+    const updatedOrder = await updateShippingAddressAdmin(orderId, shippingAddress, adminId);
+
+    return res.json({
+      success: true,
+      message: 'Shipping address updated successfully',
+      order: updatedOrder
+    });
+
+  } catch (error) {
+    console.error('❌ [Admin Orders] Update shipping address failed:', error.message);
+    
+    // Check if it's a validation error
+    if (error.message.includes('Cannot update shipping address') || 
+        error.message.includes('must include')) {
+      return res.status(400).json({
+        success: false,
+        error: error.message
+      });
+    }
+
     return res.status(500).json({
       success: false,
       error: error.message

@@ -111,34 +111,37 @@
         <section class="content">
             <div class="user_management_1">
                 <div class="user_management_1_1">
-                    <h3>User Management</h3>
-                    <p>Manage all users and their account status</p>
+                    <h3>Order Management</h3>
+                    <p>Manage all orders and their status</p>
                 </div>
                 <button class="export_menu">+ Export Orders</button>
             </div>
+            <div id="errorState" style="display: none;"></div>
+            <div id="loadingState" style="display: none; text-align: center; padding: 20px;">
+                <p>Loading orders...</p>
+            </div>
             <div class="user_management_2">
-                <input type="search" placeholder="Search Order ID or Buyer name" class="search_user">
-                <select name="" id="" class="roles">
-                    <option value="status">status</option>
-                    <option value="delivered">Delivered</option>
-                    <option value="shipped">Shipped</option>
+                <input type="search" id="searchInput" placeholder="Search by buyer or seller name/email" class="search_user">
+                <select id="orderStatusFilter" class="roles">
+                    <option value="">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="paid">Paid</option>
                     <option value="processing">Processing</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="completed">Completed</option>
                     <option value="cancelled">Cancelled</option>
                 </select>
-                <select name="" id="" class="status_user">
-                    <option value="payment">Payment</option>
-                    <option value="paid">Paid</option>
+                <select id="paymentStatusFilter" class="status_user">
+                    <option value="">All Payment</option>
                     <option value="pending">Pending</option>
+                    <option value="paid">Paid</option>
                     <option value="failed">Failed</option>
                 </select>
             </div>
             <div class="user_management_3">
                 <div class="user_management_3_1">
                     <p class="user_management_3_1_1"><span>5</span> Orders</p>
-                    <div class="user_management_3_1_2">
-                        <button class="user_management_3_1_2_filter"><img src="/img/icon/icons8-filter-24.png" alt="">Filters</button>
-                        <button class="user_management_3_1_2_export"><img src="/img/icon/icons8-refresh-30.png" alt="">Exports</button>
-                    </div>
+                    
                 </div>
                 <table>
                     <thead>
@@ -150,51 +153,192 @@
                             <th>Total</th>
                             <th>Payment</th>
                             <th>Status</th>
-                            <th>Commission</th>
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- mỗi order ID là 1 thẻ tr -->
+                    <tbody id="ordersTableBody">
                         <tr>
-                            <td><p>12321312</p></td>
-                            <td><p>14-12-2025</p></td>                            
-                            <td>
-                                 <div class="user-info">
-                                    <img src="/img/icon/user.png" alt="">
-                                    <div class="user-info-2">
-                                        <div class="user-name">Nguyen Van A</div>
-                                        <div class="user-email">nguyenvan@gmail.com</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>Macbook</td>
-                            <td>₫18,500,000</td>
-                            <!-- thay class thứ 2 với các trạng thái active | pending | nonactive để đổi css -->
-                            <td class="form_table active"><p>Paid</p></td>
-                            <!-- thay class thứ 2 với các trạng thái delivered | shipped | processing | cancelled để đổi css -->
-                            <td class="form_table delivered"><p>Delivered</p></td>
-                            <td style="color: #16A34A; font-weight: 500;"><p>₫925,000</p></td>
-                            <td class="table_action">
-                                <img src="/img/icon/icons8-edit-50.png" alt="">
-                                <img src="/img/icon/icons8-view-24.png" alt="">
-                                <img src="/img/icon/icons8-delete-user-male-24.png" alt="">
+                            <td colspan="8" style="text-align: center; padding: 40px; color: #6B7280;">
+                                Loading orders...
                             </td>
                         </tr>
                     </tbody>
                 </table>
                 <div class="user_management_4">
-                    <p>Showing 1 to 5 of <span>5</span> results</p>
+                    <p id="paginationInfo">Showing 0 to 0 of 0 results</p>
                     <div class="user_management_4_page">
-                        <button class="user_management_4_page_prev">Previous</button>
-                        <!-- trang nào được hiển thị sẽ thêm class active_page -->
-                        <button class="user_management_4_page_number active_page">1</button>
-                        <button class="user_management_4_page_number">2</button>
-                        <button class="user_management_4_page_next">Next</button>
+                        <button id="prevPageBtn" class="user_management_4_page_prev" disabled>Previous</button>
+                        <div id="pageNumbers" style="display: inline-flex; gap: 5px;"></div>
+                        <button id="nextPageBtn" class="user_management_4_page_next" disabled>Next</button>
                     </div>
                 </div>
             </div>
         </section>
     </section>
+
+    <!-- Modals will be created dynamically by JavaScript -->
+    
+    <!-- Add CSS for modals -->
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+        }
+        
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            position: relative;
+            background: white;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-content.modal-large {
+            max-width: 800px;
+        }
+        
+        .modal-content h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #111827;
+        }
+        
+        .modal-content h4 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #374151;
+        }
+        
+        .order-details {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .detail-section {
+            padding: 15px;
+            background: #F9FAFB;
+            border-radius: 8px;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-row strong {
+            color: #6B7280;
+            font-weight: 500;
+        }
+        
+        .detail-row span {
+            color: #111827;
+            text-align: right;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #374151;
+            font-size: 14px;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3B82F6;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-primary {
+            padding: 10px 20px;
+            background-color: #3B82F6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2563EB;
+        }
+        
+        .btn-secondary {
+            padding: 10px 20px;
+            background-color: #6B7280;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #4B5563;
+        }
+    </style>
+
+    <script src="../js/order_management.js" type="module"></script>
 </body>
 </html>
