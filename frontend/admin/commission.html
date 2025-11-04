@@ -107,8 +107,8 @@
         <section class="content">
             <div class="user_management_1">
                 <div class="user_management_1_1">
-                    <h3>User Management</h3>
-                    <p>Manage all users and their account status</p>
+                    <h3>Commission Management</h3>
+                    <p>View commissions from completed and paid orders</p>
                 </div>
                 <button class="export_menu">+ Export Report</button>
             </div>
@@ -168,19 +168,19 @@
                   </div>
                 </div>
             </div>
+            <div id="errorState" style="display: none;"></div>
+            <div id="loadingState" style="display: none; text-align: center; padding: 20px;">
+                <p>Loading commissions...</p>
+            </div>
             <div class="user_management_2">
-                <input type="search" placeholder="Search Order ID or Buyer name" class="search_user">
-                <select name="" id="" class="roles">
+                <input type="search" id="searchInput" placeholder="Search Order ID or Buyer name" class="search_user">
+                <select name="" id="" class="roles" style="display: none;">
                     <option value="status">status</option>
-                    <option value="delivered">Delivered</option>
-                    <option value="shipped">Shipped</option>
-                    <option value="processing">Processing</option>
-                    <option value="cancelled">Cancelled</option>
                 </select>
             </div>
             <div class="user_management_3">
                 <div class="user_management_3_1">
-                    <p class="user_management_3_1_1"><span>5</span> commissions</p>
+                    <p class="user_management_3_1_1"><span>0</span> commissions</p>
                     <div class="user_management_3_1_2">
                         <button class="user_management_3_1_2_filter"><img src="/img/icon/icons8-filter-24.png" alt="">Filters</button>
                         <button class="user_management_3_1_2_export"><img src="/img/icon/icons8-refresh-30.png" alt="">Exports</button>
@@ -199,46 +199,27 @@
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- mỗi order ID là 1 thẻ tr -->
+                    <tbody id="commissionsTableBody">
                         <tr>
-                            <td><p>12321312</p></td>
-                            <td><p style="font-weight: bold;">₫18,500,000</p></td>    
-                            <td><p>5%</p></td>     
-                            <td><p style="font-weight: 700; color: #16A34A;">₫18,500,000</p></td>
-                            <td><p>14-12-2025</p></td>
-                            <!-- thay class thứ 2 với các trạng thái collected | pending | refunded để đổi css -->
-                            <td class="form_table collected"><p>Collected</p></td>                    
-                            <td>
-                                 <div class="user-info">
-                                    <img src="/img/icon/user.png" alt="">
-                                    <div class="user-info-2">
-                                        <div class="user-name">Nguyen Van A</div>
-                                        <div class="user-email">nguyenvan@gmail.com</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="table_action">
-                                <img src="/img/icon/icons8-edit-50.png" alt="">
-                                <img src="/img/icon/icons8-view-24.png" alt="">
-                                <img src="/img/icon/icons8-delete-user-male-24.png" alt="">
+                            <td colspan="8" style="text-align: center; padding: 40px; color: #6B7280;">
+                                Loading commissions...
                             </td>
                         </tr>
                     </tbody>
                 </table>
                 <div class="user_management_4">
-                    <p>Showing 1 to 5 of <span>5</span> results</p>
+                    <p id="paginationInfo">Showing 0 to 0 of <span>0</span> results</p>
                     <div class="user_management_4_page">
-                        <button class="user_management_4_page_prev">Previous</button>
-                        <!-- trang nào được hiển thị sẽ thêm class active_page -->
-                        <button class="user_management_4_page_number active_page">1</button>
-                        <button class="user_management_4_page_number">2</button>
-                        <button class="user_management_4_page_next">Next</button>
+                        <button id="prevPageBtn" class="user_management_4_page_prev" disabled>Previous</button>
+                        <div id="pageNumbers" style="display: inline-flex; gap: 5px;"></div>
+                        <button id="nextPageBtn" class="user_management_4_page_next" disabled>Next</button>
                     </div>
                 </div>
             </div>
         </section>
     </section>
+
+    <script src="../js/commission.js" type="module"></script>
 </body>
 </html>
 
