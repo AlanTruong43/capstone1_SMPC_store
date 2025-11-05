@@ -283,7 +283,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Import and call addToCart function
             try {
-                const { addToCart } = await import('./cart_demo.js');
+                const { addToCart } = await import('./cart.js');
                 const success = await addToCart(productId, quantity);
                 
                 if (success) {
