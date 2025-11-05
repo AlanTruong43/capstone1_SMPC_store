@@ -30,17 +30,22 @@ async function createPaymentLink({ orderId, amount, description, buyerName, retu
     const payosOrderCode = Number(Date.now().toString().slice(-9)); // Last 9 digits of timestamp
 
     // Prepare payment data for PayOS
+    // PayOS requires description to be max 25 characters
+    const maxDescLength = 25;
+    const fallbackDescription = `Order ${orderId}`.substring(0, maxDescLength);
+    const finalDescription = (description || fallbackDescription).substring(0, maxDescLength);
+    
     const paymentData = {
       orderCode: payosOrderCode,
       amount: Math.round(amount), // Ensure integer
-      description: description || `Payment for order ${orderId}`,
+      description: finalDescription,
       buyerName: buyerName || 'Customer',
       buyerEmail: '', // Optional
       buyerPhone: '', // Optional
       buyerAddress: '', // Optional
       items: [
         {
-          name: description || `Order ${orderId}`,
+          name: finalDescription,
           quantity: 1,
           price: Math.round(amount)
         }

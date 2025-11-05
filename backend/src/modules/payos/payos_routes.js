@@ -56,10 +56,27 @@ router.post('/create', requireAuth, async (req, res) => {
     }
 
     // Create payment link with PayOS
+    // PayOS requires description to be max 25 characters
+    const maxDescLength = 25;
+    const productName = orderData.productName || '';
+    
+    // Build description: prefer product name if short enough, otherwise use order ID
+    let description;
+    if (productName && productName.length <= 12) {
+      description = `Order ${productName}`;
+    } else {
+      // Use order ID (truncate if needed to fit)
+      const orderIdShort = orderId.length > 19 ? orderId.substring(0, 19) : orderId;
+      description = `Order ${orderIdShort}`;
+    }
+    
+    // Ensure description never exceeds 25 characters
+    description = description.substring(0, maxDescLength);
+    
     const paymentResult = await payosService.createPaymentLink({
       orderId: orderId,
       amount: amount,
-      description: `Payment for ${orderData.productName || 'product'}`,
+      description: description,
       buyerName: orderData.shippingAddress?.fullName || 'Customer',
       returnUrl: `${process.env.FRONTEND_URL || 'http://localhost:4000'}/pages/order-success.html?orderId=${orderId}`,
       cancelUrl: `${process.env.FRONTEND_URL || 'http://localhost:4000'}/pages/checkout.html?productId=${orderData.productId}`
