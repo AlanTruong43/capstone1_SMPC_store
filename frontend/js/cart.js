@@ -360,8 +360,8 @@ function handleCheckout() {
     return;
   }
 
-  // Redirect to checkout page
-  window.location.href = '/pages/checkout.html';
+  // Redirect to checkout page with cart flag
+  window.location.href = '/pages/checkout.html?fromCart=true';
 }
 
 /**

@@ -94,8 +94,8 @@ async function getCart(userId) {
       return {
         items: [],
         subtotal: 0,
-        shippingFee: 50000,
-        total: 50000,
+        shippingFee: 5000,
+        total: 5000,
         itemCount: 0
       };
     }
@@ -107,8 +107,8 @@ async function getCart(userId) {
       return {
         items: [],
         subtotal: 0,
-        shippingFee: 50000,
-        total: 50000,
+        shippingFee: 5000,
+        total: 5000,
         itemCount: 0
       };
     }
@@ -126,10 +126,11 @@ async function getCart(userId) {
           const productData = productDoc.data();
 
           // Fetch seller information
+          const sellerId = productData.sellerId || productData.userId; // Support both field names
           let sellerName = 'Unknown Seller';
-          if (productData.userId) {
+          if (sellerId) {
             try {
-              const sellerDoc = await db.collection('users').doc(productData.userId).get();
+              const sellerDoc = await db.collection('users').doc(sellerId).get();
               if (sellerDoc.exists) {
                 const sellerData = sellerDoc.data();
                 sellerName = sellerData.displayName || sellerData.email || 'Unknown Seller';
@@ -150,6 +151,7 @@ async function getCart(userId) {
               condition: productData.condition,
               status: productData.status,
               location: productData.location,
+              sellerId: sellerId, // Include sellerId for order creation
               sellerName: sellerName
             },
             itemTotal: productData.price * item.quantity
@@ -166,7 +168,7 @@ async function getCart(userId) {
 
     // Calculate totals
     const subtotal = validItems.reduce((sum, item) => sum + item.itemTotal, 0);
-    const shippingFee = 50000; // Fixed shipping fee
+    const shippingFee = 5000; // Fixed shipping fee
     const total = subtotal + shippingFee;
     const itemCount = validItems.reduce((sum, item) => sum + item.quantity, 0);
 

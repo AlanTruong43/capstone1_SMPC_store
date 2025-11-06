@@ -60,9 +60,10 @@ app.use('/users', usersRoutes);
 const ordersRoutes = require('./modules/orders/orders_routes');
 app.use('/api/orders', ordersRoutes);
 
-// routes payment (MoMo webhook)
+// routes payment (MoMo webhook and create)
 const momoRoutes = require('./modules/momo/momo_routes');
-app.use('/api/payment', momoRoutes);
+app.use('/api/payment', momoRoutes); // Keep for IPN webhook compatibility
+app.use('/api/payments/momo', momoRoutes); // For create endpoint
 
 // routes payment (Stripe)
 const stripeRoutes = require('./modules/stripe/stripe.routes');

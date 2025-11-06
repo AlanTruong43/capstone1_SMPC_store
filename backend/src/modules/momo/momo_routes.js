@@ -1,8 +1,133 @@
 const express = require('express');
 const router = express.Router();
-const { verifyIpnSignature } = require('./momo_service');
+const { verifyIpnSignature, createPaymentRequest } = require('./momo_service');
 const { db } = require('../../config/firebase');
 const admin = require('../../config/firebase').admin;
+const { requireAuth } = require('../../middlewares/auth_middleware');
+
+/**
+ * POST /api/payments/momo/create
+ * Creates a MoMo payment link for an order or transaction
+ * Requires authentication
+ */
+router.post('/create', requireAuth, async (req, res) => {
+  try {
+    console.log('💳 [MoMo Routes] Create payment request:', req.body);
+    const { orderId, amount } = req.body;
+    const userId = req.user.uid;
+
+    // Validate input
+    if (!orderId || !amount) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields: orderId, amount'
+      });
+    }
+
+    // Check if orderId is a transactionId (cart checkout) or orderId (single product)
+    // Try to find order(s) to get shipping address for return URL
+    let orderData = null;
+    let isTransactionId = false;
+    
+    // Try document lookup first
+    const orderRef = db.collection('orders').doc(orderId);
+    const orderSnap = await orderRef.get();
+    
+    if (orderSnap.exists) {
+      orderData = orderSnap.data();
+      // Verify ownership
+      if (orderData.buyerId !== userId) {
+        return res.status(403).json({
+          success: false,
+          message: 'Unauthorized: Order does not belong to user'
+        });
+      }
+    } else {
+      // Try transactionId query
+      const ordersSnapshot = await db.collection('orders')
+        .where('transactionId', '==', orderId)
+        .limit(1)
+        .get();
+      
+      if (!ordersSnapshot.empty) {
+        isTransactionId = true;
+        const doc = ordersSnapshot.docs[0];
+        orderData = doc.data();
+        // Verify ownership
+        if (orderData.buyerId !== userId) {
+          return res.status(403).json({
+            success: false,
+            message: 'Unauthorized: Transaction does not belong to user'
+          });
+        }
+      }
+    }
+
+    // Build URLs
+    const baseUrl = process.env.BASE_URL || 'http://localhost:4000';
+    const returnUrl = isTransactionId
+      ? `${baseUrl}/pages/order-success.html?transactionId=${orderId}`
+      : `${baseUrl}/pages/order-success.html?orderId=${orderId}`;
+    const ipnUrl = process.env.MOMO_IPN_URL || `${baseUrl}/api/payment/momo_ipn`;
+
+    // Build order info
+    const orderInfo = orderData?.productName 
+      ? `Payment for ${orderData.productName}`.substring(0, 250)
+      : `Payment for order ${orderId}`.substring(0, 250);
+
+    console.log('💳 [MoMo Routes] Creating payment link');
+    console.log('🔗 [MoMo Routes] Return URL:', returnUrl);
+    console.log('🔗 [MoMo Routes] IPN URL:', ipnUrl);
+
+    const paymentResult = await createPaymentRequest({
+      orderId: orderId,
+      amount: amount,
+      orderInfo: orderInfo,
+      redirectUrl: returnUrl,
+      ipnUrl: ipnUrl
+    });
+
+    console.log('✅ [MoMo Routes] Payment URL generated');
+
+    // Update order(s) with payment method
+    if (isTransactionId) {
+      // Update all orders with this transactionId
+      const ordersSnapshot = await db.collection('orders')
+        .where('transactionId', '==', orderId)
+        .get();
+      
+      const batch = db.batch();
+      ordersSnapshot.forEach(doc => {
+        batch.update(doc.ref, {
+          paymentMethod: 'momo',
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+      });
+      await batch.commit();
+    } else {
+      // Update single order
+      await orderRef.update({
+        paymentMethod: 'momo',
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      payUrl: paymentResult.payUrl,
+      deeplink: paymentResult.deeplink,
+      qrCodeUrl: paymentResult.qrCodeUrl,
+      message: 'Payment link created successfully'
+    });
+
+  } catch (error) {
+    console.error('❌ [MoMo Routes] Create payment error:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to create payment link'
+    });
+  }
+});
 
 /**
  * MoMo IPN (Instant Payment Notification) Webhook

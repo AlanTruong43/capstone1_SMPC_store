@@ -26,77 +26,126 @@ router.post('/create', requireAuth, async (req, res) => {
       });
     }
 
-    // Verify order exists and belongs to user
+    let orders = [];
+    let isMultipleOrders = false;
+    let firstOrderData = null;
+    let firstOrderId = null;
+
+    // Step 1: Try to find order by document ID (single product checkout)
     const orderRef = db.collection('orders').doc(orderId);
     const orderSnap = await orderRef.get();
 
-    if (!orderSnap.exists) {
-      return res.status(404).json({
-        success: false,
-        message: 'Order not found'
-      });
-    }
-
-    const orderData = orderSnap.data();
-
-    // Verify the user owns this order
-    if (orderData.buyerId !== userId) {
-      return res.status(403).json({
-        success: false,
-        message: 'Unauthorized: Order does not belong to user'
-      });
-    }
-
-    // Check if order is already paid
-    if (orderData.paymentStatus === 'paid') {
-      return res.status(400).json({
-        success: false,
-        message: 'Order is already paid'
-      });
-    }
-
-    // Create payment link with PayOS
-    // PayOS requires description to be max 25 characters
-    const maxDescLength = 25;
-    const productName = orderData.productName || '';
-    
-    // Build description: prefer product name if short enough, otherwise use order ID
-    let description;
-    if (productName && productName.length <= 12) {
-      description = `Order ${productName}`;
+    if (orderSnap.exists) {
+      // Single order case
+      console.log('📦 [PayOS Routes] Found single order by document ID');
+      firstOrderData = orderSnap.data();
+      firstOrderId = orderSnap.id;
+      orders = [{ id: firstOrderId, data: firstOrderData }];
     } else {
-      // Use order ID (truncate if needed to fit)
-      const orderIdShort = orderId.length > 19 ? orderId.substring(0, 19) : orderId;
-      description = `Order ${orderIdShort}`;
+      // Step 2: Try to find orders by transactionId field (cart checkout)
+      console.log('📦 [PayOS Routes] Document not found, querying by transactionId field');
+      const ordersSnapshot = await db.collection('orders')
+        .where('transactionId', '==', orderId)
+        .get();
+
+      if (ordersSnapshot.empty) {
+        return res.status(404).json({
+          success: false,
+          message: 'Order not found'
+        });
+      }
+
+      // Multiple orders case
+      console.log(`📦 [PayOS Routes] Found ${ordersSnapshot.size} orders by transactionId`);
+      isMultipleOrders = true;
+      
+      ordersSnapshot.forEach(doc => {
+        orders.push({ id: doc.id, data: doc.data() });
+      });
+
+      firstOrderData = orders[0].data;
+      firstOrderId = orders[0].id;
+    }
+
+    // Step 3: Validate all orders belong to user
+    for (const order of orders) {
+      if (order.data.buyerId !== userId) {
+        return res.status(403).json({
+          success: false,
+          message: 'Unauthorized: Order does not belong to user'
+        });
+      }
+
+      // Check if any order is already paid
+      if (order.data.paymentStatus === 'paid') {
+        return res.status(400).json({
+          success: false,
+          message: 'One or more orders are already paid'
+        });
+      }
+    }
+
+    // Step 4: Build description for PayOS (max 25 characters)
+    const maxDescLength = 25;
+    let description;
+    
+    if (isMultipleOrders) {
+      // For cart checkout, use generic description
+      const itemCount = orders.length;
+      description = `Cart: ${itemCount} item${itemCount > 1 ? 's' : ''}`;
+    } else {
+      // For single order, use product name if available
+      const productName = firstOrderData.productName || '';
+      if (productName && productName.length <= 12) {
+        description = `Order ${productName}`;
+      } else {
+        const orderIdShort = firstOrderId.length > 19 ? firstOrderId.substring(0, 19) : firstOrderId;
+        description = `Order ${orderIdShort}`;
+      }
     }
     
     // Ensure description never exceeds 25 characters
     description = description.substring(0, maxDescLength);
+
+    // Step 5: Create PayOS payment link
+    const baseUrl = process.env.FRONTEND_URL || 'http://localhost:4000';
+    const returnUrl = isMultipleOrders 
+      ? `${baseUrl}/pages/order-success.html?transactionId=${orderId}`
+      : `${baseUrl}/pages/order-success.html?orderId=${firstOrderId}`;
     
+    const cancelUrl = isMultipleOrders
+      ? `${baseUrl}/pages/cart.html`
+      : `${baseUrl}/pages/checkout.html?productId=${firstOrderData.productId}`;
+
     const paymentResult = await payosService.createPaymentLink({
-      orderId: orderId,
+      orderId: orderId, // Use transactionId for cart, orderId for single
       amount: amount,
       description: description,
-      buyerName: orderData.shippingAddress?.fullName || 'Customer',
-      returnUrl: `${process.env.FRONTEND_URL || 'http://localhost:4000'}/pages/order-success.html?orderId=${orderId}`,
-      cancelUrl: `${process.env.FRONTEND_URL || 'http://localhost:4000'}/pages/checkout.html?productId=${orderData.productId}`
+      buyerName: firstOrderData.shippingAddress?.fullName || 'Customer',
+      returnUrl: returnUrl,
+      cancelUrl: cancelUrl
     });
 
-    // Update order with PayOS order code and payment details
-    await orderRef.update({
-      payosOrderCode: paymentResult.payosOrderCode,
-      paymentMethod: 'payos',
-      paymentStatus: 'pending',
-      paymentDetails: {
-        provider: 'payos',
-        orderCode: paymentResult.payosOrderCode,
-        amount: paymentResult.amount,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
-      },
-      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    // Step 6: Update all orders with PayOS order code and payment details
+    const batch = db.batch();
+    orders.forEach(order => {
+      const orderRef = db.collection('orders').doc(order.id);
+      batch.update(orderRef, {
+        payosOrderCode: paymentResult.payosOrderCode,
+        paymentMethod: 'payos',
+        paymentStatus: 'pending',
+        paymentDetails: {
+          provider: 'payos',
+          orderCode: paymentResult.payosOrderCode,
+          amount: paymentResult.amount,
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
+        },
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
     });
+    await batch.commit();
 
-    console.log('✅ [PayOS Routes] Payment link created and order updated');
+    console.log(`✅ [PayOS Routes] Payment link created and ${orders.length} order(s) updated`);
 
     // Return payment URL to frontend
     return res.status(200).json({
@@ -104,6 +153,8 @@ router.post('/create', requireAuth, async (req, res) => {
       checkoutUrl: paymentResult.checkoutUrl,
       payosOrderCode: paymentResult.payosOrderCode,
       qrCode: paymentResult.qrCode,
+      orderCount: orders.length,
+      isMultipleOrders: isMultipleOrders,
       message: 'Payment link created successfully'
     });
 

@@ -77,6 +77,7 @@ async function createOrder(orderData) {
       // Payment details
       paymentMethod: null, // Will be set when payment initiated
       paymentDetails: null, // Will be populated after payment
+      transactionId: orderData.transactionId || null, // For grouping multiple orders in cart checkout
       
       // Timestamps
       createdAt: admin.firestore.FieldValue.serverTimestamp(),

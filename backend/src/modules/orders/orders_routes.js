@@ -3,6 +3,7 @@ const router = express.Router();
 const { db, admin } = require('../../config/firebase');
 const { requireAuth, requireAdmin } = require('../../middlewares/auth_middleware');
 const { createPaymentRequest, queryTransactionStatus } = require('../momo/momo_service');
+const { getCart } = require('../cart/cart_service');
 const { 
   createOrder, 
   getOrderById, 
@@ -94,9 +95,13 @@ router.post('/create-and-checkout', requireAuth, async (req, res) => {
     //   });
     // }
 
-    // Step 3: Calculate total amount
-    const totalAmount = product.price * quantity;
-    console.log('💰 [Orders] Total amount:', totalAmount, 'VND');
+    // Step 3: Calculate subtotal and total with shipping
+    const subtotal = product.price * quantity;
+    const shippingFee = 5000; // Fixed shipping fee
+    const finalTotal = subtotal + shippingFee;
+    console.log('💰 [Orders] Subtotal:', subtotal, 'VND');
+    console.log('🚚 [Orders] Shipping fee:', shippingFee, 'VND');
+    console.log('💰 [Orders] Total amount:', finalTotal, 'VND');
 
     // Step 4: Create order in Firestore with status 'pending'
     const orderData = {
@@ -106,7 +111,7 @@ router.post('/create-and-checkout', requireAuth, async (req, res) => {
       sellerId: product.sellerId,
       buyerId: buyerId,
       quantity: quantity,
-      totalAmount: totalAmount,
+      totalAmount: subtotal, // Store subtotal in order (shipping handled separately)
       shippingAddress: shippingAddress
     };
 
@@ -128,7 +133,7 @@ router.post('/create-and-checkout', requireAuth, async (req, res) => {
 
       const paymentResult = await createPaymentRequest({
         orderId: orderId,
-        amount: totalAmount,
+        amount: finalTotal, // Use final total including shipping
         orderInfo: `Payment for ${product.name}`,
         redirectUrl: `${returnUrl}?orderId=${orderId}`,
         ipnUrl: ipnUrl
@@ -140,7 +145,9 @@ router.post('/create-and-checkout', requireAuth, async (req, res) => {
       return res.status(200).json({
         success: true,
         orderId: orderId,
-        totalAmount: totalAmount,
+        subtotal: subtotal,
+        shippingFee: shippingFee,
+        totalAmount: finalTotal,
         payUrl: paymentResult.payUrl,
         deeplink: paymentResult.deeplink,
         qrCodeUrl: paymentResult.qrCodeUrl
@@ -173,6 +180,158 @@ router.post('/create-and-checkout', requireAuth, async (req, res) => {
 });
 
 /**
+ * POST /api/orders/create-from-cart
+ * Creates multiple orders from cart and initiates payment
+ * 
+ * Request body:
+ * {
+ *   shippingAddress: {
+ *     fullName: string,
+ *     address: string,
+ *     phone: string,
+ *     city: string (optional),
+ *     postalCode: string (optional)
+ *   }
+ * }
+ * 
+ * Response:
+ * {
+ *   success: true,
+ *   transactionId: string,
+ *   orderIds: [string],
+ *   totalAmount: number,
+ *   payUrl: string
+ * }
+ */
+router.post('/create-from-cart', requireAuth, async (req, res) => {
+  try {
+    console.log('🛒 [Orders] Create from cart request received');
+    console.log('👤 [Orders] User:', req.user.uid, req.user.email);
+
+    const { shippingAddress } = req.body;
+    const buyerId = req.user.uid;
+    const buyerEmail = req.user.email;
+
+    // Validate input
+    if (!shippingAddress || !shippingAddress.fullName || !shippingAddress.address || !shippingAddress.phone) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields',
+        message: 'shippingAddress with fullName, address, and phone are required'
+      });
+    }
+
+    // Ensure user document exists
+    await ensureUserDocument(buyerId, buyerEmail);
+
+    // Get user's cart
+    console.log('🛒 [Orders] Fetching cart for user:', buyerId);
+    const cart = await getCart(buyerId);
+
+    if (!cart.items || cart.items.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Cart is empty',
+        message: 'Cannot checkout with an empty cart'
+      });
+    }
+
+    // Generate transaction ID to group all orders
+    const transactionId = `TXN_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    console.log('🆔 [Orders] Transaction ID:', transactionId);
+
+    // Create orders for each cart item
+    const orders = [];
+    const orderIds = [];
+    let totalAmount = 0;
+    const productNames = [];
+
+    for (const item of cart.items) {
+      const product = item.product;
+      
+      // Validate product still exists and is available
+      if (product.status !== 'available') {
+        console.warn(`⚠️ [Orders] Product ${item.productId} is not available, skipping`);
+        continue; // Skip unavailable products
+      }
+
+      const itemTotal = product.price * item.quantity;
+      totalAmount += itemTotal;
+      productNames.push(`${product.name} (x${item.quantity})`);
+
+      // Create order data
+      const orderData = {
+        productId: item.productId,
+        productName: product.name,
+        productPrice: product.price,
+        sellerId: product.sellerId, // sellerId is now included in cart product data
+        buyerId: buyerId,
+        quantity: item.quantity,
+        totalAmount: itemTotal,
+        shippingAddress: shippingAddress,
+        transactionId: transactionId // Link orders together
+      };
+
+      try {
+        const order = await createOrder(orderData);
+        orders.push(order);
+        orderIds.push(order.id);
+        console.log(`✅ [Orders] Order created: ${order.id} for product ${product.name}`);
+      } catch (orderError) {
+        console.error(`❌ [Orders] Failed to create order for product ${item.productId}:`, orderError);
+        // Continue with other products, but log the error
+      }
+    }
+
+    if (orders.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'No valid orders created',
+        message: 'All products in cart are unavailable or failed to create orders'
+      });
+    }
+
+    // Add shipping fee
+    const shippingFee = 5000;
+    const finalTotal = totalAmount + shippingFee;
+
+    console.log(`💰 [Orders] Total amount: ${finalTotal} VND (${orders.length} orders)`);
+
+    // Update all orders with transactionId (payment method will be set when payment is initiated)
+    const batch = db.batch();
+    orders.forEach(order => {
+      const orderRef = db.collection('orders').doc(order.id);
+      batch.update(orderRef, {
+        transactionId: transactionId,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    });
+    await batch.commit();
+
+    // Return success response (frontend will handle payment method selection)
+    return res.status(200).json({
+      success: true,
+      transactionId: transactionId,
+      orderIds: orderIds,
+      subtotal: totalAmount,
+      shippingFee: shippingFee,
+      totalAmount: finalTotal,
+      orderCount: orders.length
+    });
+
+  } catch (error) {
+    console.error('❌ [Orders] Create from cart failed:', error.message);
+    console.error(error.stack);
+
+    return res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: error.message
+    });
+  }
+});
+
+/**
  * GET /api/orders/:orderId/verify-payment
  * Verifies payment status by querying MoMo API
  * This is the HYBRID approach - works without IPN for local testing
@@ -189,30 +348,67 @@ router.get('/:orderId/verify-payment', async (req, res) => {
   try {
     const { orderId } = req.params;
 
-    console.log('🔍 [Orders] Verifying payment for order:', orderId);
+    console.log('🔍 [Orders] Verifying payment for order/transaction:', orderId);
 
-    // Step 1: Get order from Firestore
-    const order = await getOrderById(orderId);
+    // Step 1: Try to get order by document ID first (single product checkout)
+    let order = await getOrderById(orderId);
+    let orders = [];
+    let isTransactionId = false;
+    let transactionId = null;
 
     if (!order) {
-      return res.status(404).json({
-        success: false,
-        error: 'Order not found',
-        message: 'The requested order does not exist'
+      // Step 1b: Try to find orders by transactionId field (cart checkout)
+      console.log('📦 [Orders] Document not found, querying by transactionId field');
+      const ordersSnapshot = await db.collection('orders')
+        .where('transactionId', '==', orderId)
+        .get();
+
+      if (ordersSnapshot.empty) {
+        return res.status(404).json({
+          success: false,
+          error: 'Order not found',
+          message: 'The requested order or transaction does not exist'
+        });
+      }
+
+      // Multiple orders case
+      isTransactionId = true;
+      transactionId = orderId;
+      ordersSnapshot.forEach(doc => {
+        orders.push({ id: doc.id, ...doc.data() });
       });
+      
+      // Use first order for payment method check
+      order = orders[0];
+      console.log(`📦 [Orders] Found ${orders.length} orders by transactionId`);
+    } else {
+      // Single order case
+      orders = [order];
+      console.log('📦 [Orders] Found single order by document ID');
     }
 
-    console.log('📦 [Orders] Order found, current status:', order.status);
-
-    // Step 2: If already paid, return immediately
-    if (order.orderStatus === 'paid' || order.paymentStatus === 'paid') {
-      return res.json({
-        success: true,
-        orderId: orderId,
-        status: 'paid',
-        order: order,
-        message: 'Payment already confirmed'
-      });
+    // Step 2: Check if all orders are already paid
+    const allPaid = orders.every(o => o.orderStatus === 'paid' || o.paymentStatus === 'paid');
+    if (allPaid) {
+      if (isTransactionId) {
+        return res.json({
+          success: true,
+          transactionId: transactionId,
+          orderIds: orders.map(o => o.id),
+          status: 'paid',
+          orders: orders,
+          isMultipleOrders: true,
+          message: 'Payment already confirmed'
+        });
+      } else {
+        return res.json({
+          success: true,
+          orderId: orderId,
+          status: 'paid',
+          order: order,
+          message: 'Payment already confirmed'
+        });
+      }
     }
 
     // Step 3: Check payment provider and query appropriate service
@@ -232,62 +428,119 @@ router.get('/:orderId/verify-payment', async (req, res) => {
         if (paymentInfo.status === 'PAID') {
           console.log('✅ [Orders] PayOS payment confirmed');
           
-          // Get current status history
-          const statusHistory = order.statusHistory || [];
-          statusHistory.push({
-            status: 'paid',
-            changedBy: 'system',
-            changedAt: admin.firestore.Timestamp.now(),
-            notes: 'Payment verified via PayOS query'
-          });
+          // Update all orders
+          const batch = db.batch();
+          const updatedOrders = [];
           
-          // Update order to paid (NEW SCHEMA)
-          const orderRef = db.collection('orders').doc(orderId);
-          await orderRef.update({
-            paymentStatus: 'paid',
-            orderStatus: 'paid', // NEW: Changed from 'confirmed' to 'paid'
-            paidAt: admin.firestore.FieldValue.serverTimestamp(),
-            paymentDetails: {
-              ...order.paymentDetails,
-              transactionId: paymentInfo.id,
-              paidAmount: paymentInfo.amountPaid,
-              paymentMethod: 'payos',
-              completedAt: admin.firestore.FieldValue.serverTimestamp()
-            },
-            statusHistory: statusHistory, // NEW: Track status changes
-            updatedAt: admin.firestore.FieldValue.serverTimestamp()
-          });
+          for (const o of orders) {
+            const statusHistory = o.statusHistory || [];
+            statusHistory.push({
+              status: 'paid',
+              changedBy: 'system',
+              changedAt: admin.firestore.Timestamp.now(),
+              notes: 'Payment verified via PayOS query'
+            });
+            
+            const orderRef = db.collection('orders').doc(o.id);
+            batch.update(orderRef, {
+              paymentStatus: 'paid',
+              orderStatus: 'paid',
+              paidAt: admin.firestore.FieldValue.serverTimestamp(),
+              paymentDetails: {
+                ...o.paymentDetails,
+                transactionId: paymentInfo.id,
+                paidAmount: paymentInfo.amountPaid,
+                paymentMethod: 'payos',
+                completedAt: admin.firestore.FieldValue.serverTimestamp()
+              },
+              statusHistory: statusHistory,
+              updatedAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+            
+            // Update product quantities
+            const productRef = db.collection('products').doc(o.productId);
+            const productSnap = await productRef.get();
+            if (productSnap.exists) {
+              const productData = productSnap.data();
+              const newQuantity = (productData.quantity || 1) - (o.quantity || 1);
+              batch.update(productRef, {
+                quantity: Math.max(0, newQuantity),
+                status: newQuantity <= 0 ? 'sold' : productData.status
+              });
+            }
+            
+            updatedOrders.push({ id: o.id, ...o, orderStatus: 'paid', paymentStatus: 'paid' });
+          }
           
-          const updatedOrder = await getOrderById(orderId);
+          await batch.commit();
           
-          return res.json({
-            success: true,
-            orderId: orderId,
-            status: 'paid',
-            order: updatedOrder,
-            message: 'Payment verified and confirmed'
-          });
+          // Fetch updated orders
+          const finalOrders = await Promise.all(orders.map(o => getOrderById(o.id)));
+          
+          if (isTransactionId) {
+            return res.json({
+              success: true,
+              transactionId: transactionId,
+              orderIds: orders.map(o => o.id),
+              status: 'paid',
+              orders: finalOrders,
+              isMultipleOrders: true,
+              message: 'Payment verified and confirmed'
+            });
+          } else {
+            return res.json({
+              success: true,
+              orderId: orderId,
+              status: 'paid',
+              order: finalOrders[0],
+              message: 'Payment verified and confirmed'
+            });
+          }
         } else {
           // Payment still pending or cancelled
-          return res.json({
-            success: true,
-            orderId: orderId,
-            status: paymentInfo.status === 'CANCELLED' ? 'failed' : 'pending',
-            order: order,
-            message: paymentInfo.status === 'CANCELLED' ? 'Payment cancelled' : 'Payment is still processing'
-          });
+          if (isTransactionId) {
+            return res.json({
+              success: true,
+              transactionId: transactionId,
+              orderIds: orders.map(o => o.id),
+              status: paymentInfo.status === 'CANCELLED' ? 'failed' : 'pending',
+              orders: orders,
+              isMultipleOrders: true,
+              message: paymentInfo.status === 'CANCELLED' ? 'Payment cancelled' : 'Payment is still processing'
+            });
+          } else {
+            return res.json({
+              success: true,
+              orderId: orderId,
+              status: paymentInfo.status === 'CANCELLED' ? 'failed' : 'pending',
+              order: order,
+              message: paymentInfo.status === 'CANCELLED' ? 'Payment cancelled' : 'Payment is still processing'
+            });
+          }
         }
       } catch (payosError) {
         console.error('❌ [Orders] PayOS query failed:', payosError.message);
         
         // Return current order status if query fails
-        return res.json({
-          success: true,
-          orderId: orderId,
-          status: order.paymentStatus || order.status,
-          order: order,
-          message: 'Could not verify with PayOS, showing cached status'
-        });
+        if (isTransactionId) {
+          return res.json({
+            success: true,
+            transactionId: transactionId,
+            orderIds: orders.map(o => o.id),
+            status: orders[0].paymentStatus || orders[0].status,
+            orders: orders,
+            isMultipleOrders: true,
+            message: 'Could not verify with PayOS, showing cached status'
+          });
+        } else {
+          return res.json({
+            success: true,
+            orderId: orderId,
+            status: order.paymentStatus || order.status,
+            order: order,
+            message: 'Could not verify with PayOS, showing cached status'
+          });
+        }
       }
     }
 
@@ -301,132 +554,193 @@ router.get('/:orderId/verify-payment', async (req, res) => {
 
       console.log('📥 [Orders] MoMo query result:', momoResult);
 
-      // Step 4: Update order based on MoMo response
+      // Step 4: Update order(s) based on MoMo response
       if (momoResult.resultCode === 0) {
         // Payment successful
         console.log('✅ [Orders] Payment confirmed by MoMo');
 
-        // Get current status history
-        const statusHistory = order.statusHistory || [];
-        statusHistory.push({
-          status: 'paid',
-          changedBy: 'system',
-          changedAt: admin.firestore.Timestamp.now(),
-          notes: 'Payment verified via MoMo query'
-        });
+        // Update all orders
+        const batch = db.batch();
+        const totalAmount = orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+        
+        for (const o of orders) {
+          const statusHistory = o.statusHistory || [];
+          statusHistory.push({
+            status: 'paid',
+            changedBy: 'system',
+            changedAt: admin.firestore.Timestamp.now(),
+            notes: 'Payment verified via MoMo query'
+          });
 
-        const orderRef = db.collection('orders').doc(orderId);
-        await orderRef.update({
-          orderStatus: 'paid', // NEW: Use orderStatus
-          paymentStatus: 'paid',
-          paidAt: admin.firestore.FieldValue.serverTimestamp(),
-          paymentDetails: {
-            transId: momoResult.transId,
-            payType: momoResult.payType,
-            paidAt: new Date(),
-            resultCode: momoResult.resultCode,
-            amount: momoResult.amount,
-            paymentMethod: 'momo'
-          },
-          statusHistory: statusHistory, // NEW: Track status changes
-          updatedAt: admin.firestore.FieldValue.serverTimestamp()
-        });
+          const orderRef = db.collection('orders').doc(o.id);
+          batch.update(orderRef, {
+            orderStatus: 'paid',
+            paymentStatus: 'paid',
+            paidAt: admin.firestore.FieldValue.serverTimestamp(),
+            paymentDetails: {
+              transId: momoResult.transId,
+              payType: momoResult.payType,
+              paidAt: new Date(),
+              resultCode: momoResult.resultCode,
+              amount: momoResult.amount,
+              paymentMethod: 'momo'
+            },
+            statusHistory: statusHistory,
+            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+          });
 
-        // Update product quantity
-        const productRef = db.collection('products').doc(order.productId);
-        const productSnap = await productRef.get();
-        if (productSnap.exists) {
-          const productData = productSnap.data();
-          const newQuantity = (productData.quantity || 1) - (order.quantity || 1);
-          await productRef.update({
-            quantity: Math.max(0, newQuantity),
-            status: newQuantity <= 0 ? 'sold' : productData.status
+          // Update product quantity
+          const productRef = db.collection('products').doc(o.productId);
+          const productSnap = await productRef.get();
+          if (productSnap.exists) {
+            const productData = productSnap.data();
+            const newQuantity = (productData.quantity || 1) - (o.quantity || 1);
+            batch.update(productRef, {
+              quantity: Math.max(0, newQuantity),
+              status: newQuantity <= 0 ? 'sold' : productData.status
+            });
+          }
+
+          // Create transaction record for each order
+          batch.set(db.collection('transactions').doc(), {
+            orderId: o.id,
+            amount: Number(momoResult.amount) / orders.length, // Split amount evenly
+            currency: 'VND',
+            paymentMethod: 'VNPAY',
+            payeeId: o.sellerId,
+            payerId: o.buyerId,
+            status: 'pending',
+            externalTransactionId: `GW-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`,
+            txnDate: new Date(),
+            address: o.shippingAddress || null
           });
         }
 
-        // Create transaction record
-        await db.collection('transactions').add({
-          orderId: orderId,
-          amount: Number(momoResult.amount),
-          currency: 'VND',
-          paymentMethod: 'VNPAY',
-          payeeId: order.sellerId,
-          payerId: order.buyerId,
-          status: 'pending',
-          externalTransactionId: `GW-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`,
-          txnDate: new Date(),
-          address: order.shippingAddress || null
-        });
+        await batch.commit();
 
-        // Get updated order
-        const updatedOrder = await getOrderById(orderId);
+        // Get updated orders
+        const finalOrders = await Promise.all(orders.map(o => getOrderById(o.id)));
 
-        return res.json({
-          success: true,
-          orderId: orderId,
-          status: 'paid',
-          order: updatedOrder,
-          message: 'Payment verified and confirmed'
-        });
+        if (isTransactionId) {
+          return res.json({
+            success: true,
+            transactionId: transactionId,
+            orderIds: orders.map(o => o.id),
+            status: 'paid',
+            orders: finalOrders,
+            isMultipleOrders: true,
+            message: 'Payment verified and confirmed'
+          });
+        } else {
+          return res.json({
+            success: true,
+            orderId: orderId,
+            status: 'paid',
+            order: finalOrders[0],
+            message: 'Payment verified and confirmed'
+          });
+        }
 
       } else if (momoResult.resultCode === 1006) {
         // Transaction not found or still pending
-        return res.json({
-          success: true,
-          orderId: orderId,
-          status: 'pending',
-          order: order,
-          message: 'Payment is still processing'
-        });
+        if (isTransactionId) {
+          return res.json({
+            success: true,
+            transactionId: transactionId,
+            orderIds: orders.map(o => o.id),
+            status: 'pending',
+            orders: orders,
+            isMultipleOrders: true,
+            message: 'Payment is still processing'
+          });
+        } else {
+          return res.json({
+            success: true,
+            orderId: orderId,
+            status: 'pending',
+            order: order,
+            message: 'Payment is still processing'
+          });
+        }
 
       } else {
         // Payment failed
         console.warn('⚠️ [Orders] Payment failed:', momoResult.message);
         
-        // Get current status history
-        const statusHistory = order.statusHistory || [];
-        statusHistory.push({
-          status: 'cancelled',
-          changedBy: 'system',
-          changedAt: admin.firestore.Timestamp.now(),
-          notes: `Payment failed: ${momoResult.message || 'Unknown error'}`
-        });
+        // Update all orders to failed status
+        const batch = db.batch();
         
-        const orderRef = db.collection('orders').doc(orderId);
-        await orderRef.update({
-          orderStatus: 'cancelled', // NEW: Use orderStatus
-          paymentStatus: 'failed',
-          cancelledBy: 'system',
-          cancelledAt: admin.firestore.FieldValue.serverTimestamp(),
-          cancellationReason: momoResult.message || 'Payment failed',
-          paymentFailureReason: momoResult.message,
-          paymentResultCode: momoResult.resultCode,
-          statusHistory: statusHistory, // NEW: Track status changes
-          updatedAt: admin.firestore.FieldValue.serverTimestamp()
-        });
+        for (const o of orders) {
+          const statusHistory = o.statusHistory || [];
+          statusHistory.push({
+            status: 'cancelled',
+            changedBy: 'system',
+            changedAt: admin.firestore.Timestamp.now(),
+            notes: `Payment failed: ${momoResult.message || 'Unknown error'}`
+          });
+          
+          const orderRef = db.collection('orders').doc(o.id);
+          batch.update(orderRef, {
+            orderStatus: 'cancelled',
+            paymentStatus: 'failed',
+            cancelledBy: 'system',
+            cancelledAt: admin.firestore.FieldValue.serverTimestamp(),
+            cancellationReason: momoResult.message || 'Payment failed',
+            paymentFailureReason: momoResult.message,
+            paymentResultCode: momoResult.resultCode,
+            statusHistory: statusHistory,
+            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+          });
+        }
+        
+        await batch.commit();
+        
+        const updatedOrders = await Promise.all(orders.map(o => getOrderById(o.id)));
 
-        const updatedOrder = await getOrderById(orderId);
-
-        return res.json({
-          success: true,
-          orderId: orderId,
-          status: 'failed',
-          order: updatedOrder,
-          message: momoResult.message || 'Payment failed'
-        });
+        if (isTransactionId) {
+          return res.json({
+            success: true,
+            transactionId: transactionId,
+            orderIds: orders.map(o => o.id),
+            status: 'failed',
+            orders: updatedOrders,
+            isMultipleOrders: true,
+            message: momoResult.message || 'Payment failed'
+          });
+        } else {
+          return res.json({
+            success: true,
+            orderId: orderId,
+            status: 'failed',
+            order: updatedOrders[0],
+            message: momoResult.message || 'Payment failed'
+          });
+        }
       }
 
     } catch (queryError) {
       console.error('❌ [Orders] MoMo query failed:', queryError.message);
       
       // If MoMo query fails, return current order status
-      return res.json({
-        success: true,
-        orderId: orderId,
-        status: order.status,
-        order: order,
-        message: 'Could not verify with payment gateway, showing cached status'
-      });
+      if (isTransactionId) {
+        return res.json({
+          success: true,
+          transactionId: transactionId,
+          orderIds: orders.map(o => o.id),
+          status: orders[0].status,
+          orders: orders,
+          isMultipleOrders: true,
+          message: 'Could not verify with payment gateway, showing cached status'
+        });
+      } else {
+        return res.json({
+          success: true,
+          orderId: orderId,
+          status: order.status,
+          order: order,
+          message: 'Could not verify with payment gateway, showing cached status'
+        });
+      }
     }
 
   } catch (error) {

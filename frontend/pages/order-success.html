@@ -318,18 +318,25 @@
         let checkCount = 0;
         const MAX_CHECKS = 10; // Maximum 10 checks (20 seconds)
 
-        // Get order ID from URL or localStorage
+        // Get order ID or transaction ID from URL or localStorage
         const urlParams = new URLSearchParams(window.location.search);
         const orderIdFromUrl = urlParams.get('orderId');
+        const transactionIdFromUrl = urlParams.get('transactionId');
         const orderIdFromStorage = localStorage.getItem('pendingOrderId');
+        const transactionIdFromStorage = localStorage.getItem('pendingTransactionId');
+        
         const orderId = orderIdFromUrl || orderIdFromStorage;
+        const transactionId = transactionIdFromUrl || transactionIdFromStorage;
+        const identifier = orderId || transactionId;
 
         console.log('🔍 Order ID from URL:', orderIdFromUrl);
+        console.log('🔍 Transaction ID from URL:', transactionIdFromUrl);
         console.log('🔍 Order ID from storage:', orderIdFromStorage);
-        console.log('📦 Using Order ID:', orderId);
+        console.log('🔍 Transaction ID from storage:', transactionIdFromStorage);
+        console.log('📦 Using identifier:', identifier);
 
-        if (orderId) {
-            currentOrderId = orderId;
+        if (identifier) {
+            currentOrderId = identifier;
             // Start verification process
             verifyPayment();
         } else {
@@ -372,16 +379,23 @@
          * Handle payment verification result
          */
         function handlePaymentResult(result) {
-            const { status, order } = result;
+            const { status, order, orders, isMultipleOrders } = result;
 
             console.log('💳 Payment status:', status);
+            console.log('📦 Is multiple orders:', isMultipleOrders);
 
             if (status === 'paid') {
                 // Payment successful
-                displaySuccess(order);
+                if (isMultipleOrders && orders) {
+                    displaySuccessMultiple(orders, result.transactionId, result.orderIds);
+                } else {
+                    displaySuccess(order);
+                }
                 
-                // Clear pending order from localStorage
+                // Clear pending order/transaction from localStorage
                 localStorage.removeItem('pendingOrderId');
+                localStorage.removeItem('pendingTransactionId');
+                localStorage.removeItem('pendingOrderIds');
                 
             } else if (status === 'pending') {
                 // Payment still processing, check again
@@ -391,18 +405,28 @@
                     setTimeout(verifyPayment, 2000);
                 } else {
                     // Max attempts reached, show pending state
-                    displayPending(order);
+                    if (isMultipleOrders && orders) {
+                        displayPendingMultiple(orders);
+                    } else {
+                        displayPending(order);
+                    }
                 }
                 
             } else if (status === 'failed') {
                 // Payment failed
-                displayFailed(order);
+                if (isMultipleOrders && orders) {
+                    displayFailedMultiple(orders);
+                } else {
+                    displayFailed(order);
+                }
                 localStorage.removeItem('pendingOrderId');
+                localStorage.removeItem('pendingTransactionId');
+                localStorage.removeItem('pendingOrderIds');
             }
         }
 
         /**
-         * Display success state
+         * Display success state (single order)
          */
         function displaySuccess(order) {
             document.getElementById('loadingState').style.display = 'none';
@@ -441,13 +465,105 @@
             // Setup view order button
             document.getElementById('viewOrderBtn').onclick = (e) => {
                 e.preventDefault();
-                // For now, just show order ID
-                alert('Order ID: ' + currentOrderId + '\n\nOrder history feature coming soon!');
+                window.location.href = '/pages/buyer_orders.html';
             };
         }
 
         /**
-         * Display pending state
+         * Display success state (multiple orders)
+         */
+        function displaySuccessMultiple(orders, transactionId, orderIds) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('successState').style.display = 'block';
+
+            const orderInfoEl = document.getElementById('orderInfo');
+            const noteContainer = document.getElementById('noteContainer');
+
+            const totalAmount = orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+            const itemCount = orders.length;
+
+            orderInfoEl.innerHTML = `
+                <div class="info-row">
+                    <span class="info-label">Transaction ID:</span>
+                    <span class="info-value">${transactionId || 'N/A'}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Status:</span>
+                    <span class="status-badge paid">✓ Paid</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Items:</span>
+                    <span class="info-value">${itemCount} item${itemCount > 1 ? 's' : ''}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Total Amount:</span>
+                    <span class="info-value" style="color: #667eea; font-weight: 700;">
+                        ${formatPrice(totalAmount)}
+                    </span>
+                </div>
+                <div class="info-row" style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #e9ecef;">
+                    <span class="info-label" style="font-size: 0.9rem; color: #666;">Order IDs:</span>
+                    <span class="info-value" style="font-size: 0.85rem; word-break: break-all;">
+                        ${orderIds ? orderIds.join(', ') : orders.map(o => o.id).join(', ')}
+                    </span>
+                </div>
+            `;
+
+            noteContainer.style.display = 'block';
+
+            // Setup view order button
+            document.getElementById('viewOrderBtn').onclick = (e) => {
+                e.preventDefault();
+                window.location.href = '/pages/buyer_orders.html';
+            };
+        }
+
+        /**
+         * Display pending state (multiple orders)
+         */
+        function displayPendingMultiple(orders) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('successState').style.display = 'block';
+
+            const statusIcon = document.getElementById('statusIcon');
+            const statusTitle = document.getElementById('statusTitle');
+            const statusSubtitle = document.getElementById('statusSubtitle');
+            const orderInfoEl = document.getElementById('orderInfo');
+
+            statusIcon.classList.add('pending');
+            statusIcon.textContent = '⏳';
+            statusTitle.textContent = 'Payment Processing';
+            statusSubtitle.textContent = 'Your payment is being verified';
+
+            const totalAmount = orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+
+            orderInfoEl.innerHTML = `
+                <div class="info-row">
+                    <span class="info-label">Items:</span>
+                    <span class="info-value">${orders.length} item${orders.length > 1 ? 's' : ''}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Status:</span>
+                    <span class="status-badge pending">⏳ Processing</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Total Amount:</span>
+                    <span class="info-value">${formatPrice(totalAmount)}</span>
+                </div>
+            `;
+
+            document.getElementById('noteContainer').innerHTML = 
+                '💡 <strong>Note:</strong> Your payment is being processed. Please check back in a few minutes or contact support if the issue persists.';
+            document.getElementById('noteContainer').style.display = 'block';
+            
+            // Show test payment button for development (localhost only)
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                document.getElementById('testPaymentBtn').style.display = 'block';
+            }
+        }
+
+        /**
+         * Display pending state (single order)
          */
         function displayPending(order) {
             document.getElementById('loadingState').style.display = 'none';
@@ -518,7 +634,25 @@
         }
 
         /**
-         * Display failed state
+         * Display failed state (multiple orders)
+         */
+        function displayFailedMultiple(orders) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorState').style.display = 'block';
+
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = orders[0]?.paymentFailureReason || 'Payment was declined or cancelled.';
+
+            // Setup retry button
+            document.getElementById('retryBtn').onclick = (e) => {
+                e.preventDefault();
+                // Go back to cart
+                window.location.href = '/pages/cart.html';
+            };
+        }
+
+        /**
+         * Display failed state (single order)
          */
         function displayFailed(order) {
             document.getElementById('loadingState').style.display = 'none';

@@ -149,6 +149,13 @@ body {
     margin-top: 5px;
 }
 
+.product-total {
+    font-size: 1rem;
+    color: #333;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
 /* Summary Totals */
 .summary-totals {
     border-top: 2px solid #e9ecef;
