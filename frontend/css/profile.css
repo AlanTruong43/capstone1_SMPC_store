@@ -1,0 +1,347 @@
+/* Profile Page Styles - Modern Brutalist Design */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: #f5f5f5;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    line-height: 1.4;
+}
+
+.profile-container {
+    width: 100%;
+    max-width: 600px;
+}
+
+.profile-card {
+    background: #ffffff;
+    border: 3px solid #000000;
+    border-radius: 0;
+    padding: 40px;
+    box-shadow: 8px 8px 0 #000000;
+    transition: all 0.2s ease;
+}
+
+.profile-card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 10px 10px 0 #000000;
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.logo-square {
+    width: 48px;
+    height: 48px;
+    color: #000;
+}
+
+.profile-header h2 {
+    color: #000000;
+    font-size: 1.75rem;
+    font-weight: 900;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.profile-header p {
+    color: #666666;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Info Section */
+.info-section {
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 2px solid #000000;
+}
+
+.info-section h3 {
+    color: #000000;
+    font-size: 1.25rem;
+    font-weight: 900;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    font-weight: 700;
+    color: #000000;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+
+.info-value {
+    color: #666666;
+    font-weight: 500;
+}
+
+/* Password Section */
+.password-section {
+    margin-bottom: 24px;
+}
+
+.password-section h3 {
+    color: #000000;
+    font-size: 1.25rem;
+    font-weight: 900;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Form Styles */
+.profile-form {
+    margin-top: 24px;
+}
+
+.form-group {
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #000000;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.input-wrapper {
+    position: relative;
+    border: 2px solid #000000;
+    background: #ffffff;
+}
+
+.input-wrapper input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 12px 16px;
+    color: #000000;
+    font-size: 16px;
+    font-weight: 500;
+    outline: none;
+    font-family: inherit;
+}
+
+.input-wrapper input::placeholder {
+    color: #999999;
+}
+
+.password-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    flex: 1;
+    padding-right: 60px;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 8px;
+    background: transparent;
+    border: none;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #000000;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+}
+
+.password-toggle:hover {
+    background: #000000;
+    color: #ffffff;
+}
+
+.error-message {
+    display: block;
+    color: #DC2626;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 4px;
+    text-transform: uppercase;
+}
+
+/* Button Styles */
+.profile-btn {
+    width: 100%;
+    padding: 16px;
+    background: #000000;
+    color: #ffffff;
+    border: 2px solid #000000;
+    font-size: 14px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+    margin-top: 8px;
+}
+
+.profile-btn:hover {
+    background: #ffffff;
+    color: #000000;
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 #000000;
+}
+
+.profile-btn.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.profile-btn.loading .btn-text {
+    opacity: 0;
+}
+
+.btn-loader {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    gap: 4px;
+}
+
+.profile-btn.loading .btn-loader {
+    display: flex;
+}
+
+.loader-bar {
+    width: 4px;
+    height: 20px;
+    background: #000000;
+    animation: loader 0.8s infinite;
+}
+
+.loader-bar:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.loader-bar:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes loader {
+    0%, 100% {
+        transform: scaleY(1);
+    }
+    50% {
+        transform: scaleY(0.5);
+    }
+}
+
+/* Success/Error Messages */
+.success-message {
+    display: none;
+    background: #D1FAE5;
+    border: 2px solid #10B981;
+    color: #065F46;
+    padding: 16px;
+    margin-top: 16px;
+    border-radius: 0;
+    text-align: center;
+}
+
+.success-icon {
+    width: 48px;
+    height: 48px;
+    background: #10B981;
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 900;
+    margin: 0 auto 12px;
+}
+
+.success-message p {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.error-message {
+    display: none;
+    background: #FEE2E2;
+    border: 2px solid #DC2626;
+    color: #DC2626;
+    padding: 16px;
+    margin-top: 16px;
+    border-radius: 0;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+/* Profile Actions */
+.profile-actions {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.back-link {
+    color: #000000;
+    font-weight: 700;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .profile-card {
+        padding: 24px;
+    }
+
+    .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+}
+

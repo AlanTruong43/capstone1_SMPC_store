@@ -33,6 +33,21 @@ app.get('/register', (_req, res) => {
   res.sendFile(path.join(FRONTEND_DIR, 'pages/register_page.html'));
 });
 
+// route /forgot-password: trả về forgot_password.html
+app.get('/forgot-password', (_req, res) => {
+  res.sendFile(path.join(FRONTEND_DIR, 'pages/forgot_password.html'));
+});
+
+// route /profile: trả về profile.html
+app.get('/profile', (_req, res) => {
+  res.sendFile(path.join(FRONTEND_DIR, 'pages/profile.html'));
+});
+
+// route /verify-email: trả về verify_email.html (for email verification redirects)
+app.get('/verify-email', (_req, res) => {
+  res.sendFile(path.join(FRONTEND_DIR, 'pages/verify_email.html'));
+});
+
 // (tuỳ chọn) route health
 app.get('/health', (_req, res) => {
   res.json({ ok: true, time: new Date().toISOString() });

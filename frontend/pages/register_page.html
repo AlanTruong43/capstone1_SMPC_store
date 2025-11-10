@@ -12,7 +12,7 @@
 <script type="module">
     /* 1) Import SDK từ CDN */
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, updateProfile, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, updateProfile, setPersistence, browserLocalPersistence, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
     /* 👇 THÊM Firestore để ghi users/{uid} */
     import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
   
@@ -69,6 +69,44 @@
           isActive: true
         });
 
+        // 5.3 Send email verification
+        try {
+          console.log('[Register] User created:', cred.user.uid);
+          console.log('[Register] User email:', cred.user.email);
+          console.log('[Register] Email verified status:', cred.user.emailVerified);
+          console.log('[Register] Attempting to send verification email...');
+          
+          // Configure action code settings for email verification
+          const actionCodeSettings = {
+            url: `${window.location.origin}/verify-email`,
+            handleCodeInApp: false, // Open link in browser, not app
+          };
+          
+          console.log('[Register] Action code settings:', actionCodeSettings);
+          
+          await sendEmailVerification(cred.user, actionCodeSettings);
+          
+          console.log('[Register] ✅ Email verification sent successfully!');
+          console.log('[Register] Check your inbox (and spam folder) for the verification email.');
+          console.log('[Register] Verification link will redirect to:', actionCodeSettings.url);
+        } catch (verifyError) {
+          console.error('[Register] ❌ FAILED to send verification email');
+          console.error('[Register] Error details:', verifyError);
+          console.error('[Register] Error code:', verifyError.code);
+          console.error('[Register] Error message:', verifyError.message);
+          
+          // Show error to user
+          const errorMsg = document.createElement('div');
+          errorMsg.id = 'verificationError';
+          errorMsg.style.cssText = 'background: #FEE2E2; border: 2px solid #DC2626; color: #DC2626; padding: 12px; margin-top: 16px; border-radius: 0; font-weight: 600; font-size: 12px;';
+          errorMsg.innerHTML = `
+            <strong>Warning:</strong> Could not send verification email.<br>
+            Error: ${verifyError.message || verifyError.code || 'Unknown error'}<br>
+            <small>Please check Firebase Console → Authentication → Templates</small>
+          `;
+          form.appendChild(errorMsg);
+        }
+
         // (Tuỳ chọn) phần cũ: verify token với backend nếu bạn vẫn dùng
         try {
           const idToken = await cred.user.getIdToken();
@@ -81,9 +119,15 @@
           // Bỏ qua nếu backend không chạy
         }
   
-        // 5.3 Thông báo & điều hướng
-        if (successBox) successBox.style.display = 'block';
-        setTimeout(() => { window.location.href = '/login'; }, 800);
+        // 5.4 Thông báo & điều hướng
+        if (successBox) {
+          successBox.style.display = 'block';
+          const successText = successBox.querySelector('p');
+          if (successText) {
+            successText.textContent = 'Account created! Please check your email to verify your account.';
+          }
+        }
+        setTimeout(() => { window.location.href = '/login'; }, 3000);
       } catch (err) {
         const code = (err.code || '').toString();
         if (code.includes('email-already-in-use')) emailErr.textContent = 'Email đã tồn tại';

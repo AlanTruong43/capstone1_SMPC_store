@@ -10,7 +10,7 @@
 <!-- Firebase Auth for LOGIN page -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+  import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
   
     const firebaseConfig = {
   apiKey: "AIzaSyDI1V6BaKvdeLo2kbXAREWweZyiGAF4508",
@@ -65,7 +65,14 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ idToken })
         });
-  
+
+        // Check if email is verified - show popup but allow login
+        if (!cred.user.emailVerified) {
+          // Show verification popup
+          showVerificationPopup(cred.user.email);
+          // Continue with login flow (don't block)
+        }
+
         if (successBox) successBox.style.display = 'block';
         
         // Conditional redirect based on admin claim
@@ -78,13 +85,49 @@
         }, 800);
       } catch (err) {
         const code = (err.code || '').toString();
-        if (code.includes('invalid-email'))     emailErr.textContent = 'Email không hợp lệ';
-        else if (code.includes('user-not-found')) emailErr.textContent = 'Email không tồn tại';
-        else if (code.includes('wrong-password')) passErr.textContent = 'Sai mật khẩu';
-        else passErr.textContent = 'Đăng nhập thất bại';
+        if (code.includes('invalid-email'))     emailErr.textContent = 'Invalid email';
+        else if (code.includes('user-not-found')) emailErr.textContent = 'Email not found';
+        else if (code.includes('wrong-password')) passErr.textContent = 'Wrong password';
+        else passErr.textContent = 'Login failed';
         console.error(err);
       }
     });
+
+    // Show verification popup
+    function showVerificationPopup(email) {
+      const popup = document.getElementById('verificationPopup');
+      const emailSpan = document.getElementById('verificationEmail');
+      if (emailSpan) emailSpan.textContent = email;
+      if (popup) popup.style.display = 'flex';
+    }
+
+    // Close verification popup
+    function closeVerificationPopup() {
+      const popup = document.getElementById('verificationPopup');
+      if (popup) popup.style.display = 'none';
+    }
+
+    // Resend verification email
+    async function resendVerification() {
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          const actionCodeSettings = {
+            url: `${window.location.origin}/verify-email`,
+            handleCodeInApp: false,
+          };
+          await sendEmailVerification(user, actionCodeSettings);
+          alert('Verification email sent! Please check your inbox.');
+        }
+      } catch (err) {
+        alert('Failed to send verification email. Please try again.');
+        console.error(err);
+      }
+    }
+
+    // Make functions available globally
+    window.closeVerificationPopup = closeVerificationPopup;
+    window.resendVerification = resendVerification;
   </script>
   
 <body>
@@ -131,7 +174,7 @@
                             <span>Remember me</span>
                         </label>
                     </div>
-                    <a href="#" class="forgot-link">Forgot password?</a>
+                    <a href="/forgot-password" class="forgot-link">Forgot password?</a>
                 </div>
 
                 <button type="submit" class="login-btn">
@@ -166,6 +209,24 @@
                 <div class="success-icon">✓</div>
                 <h3>Success</h3>
                 <p>Redirecting...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Verification Popup -->
+    <div id="verificationPopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 10000; align-items: center; justify-content: center;">
+        <div style="background: white; border: 3px solid #000000; padding: 40px; max-width: 500px; width: 90%; box-shadow: 8px 8px 0 #000000; text-align: center;">
+            <h2 style="color: #000000; font-size: 1.5rem; font-weight: 900; margin-bottom: 16px; text-transform: uppercase;">Verify Your Email</h2>
+            <p style="color: #666666; margin-bottom: 24px; line-height: 1.6;">
+                Please verify your email address before logging in. A verification email has been sent to <strong id="verificationEmail"></strong>
+            </p>
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button onclick="resendVerification()" style="padding: 12px 24px; border: 2px solid #000000; background: white; color: #000000; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: all 0.2s;">
+                    Resend Email
+                </button>
+                <button onclick="closeVerificationPopup()" style="padding: 12px 24px; border: 2px solid #000000; background: #000000; color: white; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: all 0.2s;">
+                    Close
+                </button>
             </div>
         </div>
     </div>

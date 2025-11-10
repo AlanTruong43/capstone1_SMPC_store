@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="../css/profile.css">
+    <link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css" />
+</head>
+<!-- Firebase Auth for PROFILE page -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+  import { initAuth, getCurrentUser, getIdToken, requireAuth, logout } from "../js/auth_manager.js";
+  
+  const firebaseConfig = {
+    apiKey: "AIzaSyDI1V6BaKvdeLo2kbXAREWweZyiGAF4508",
+    authDomain: "smartshopai-45959.firebaseapp.com",
+    projectId: "smartshopai-45959",
+    storageBucket: "smartshopai-45959.firebasestorage.app",
+    messagingSenderId: "550339763780",
+    appId: "1:550339763780:web:b9b8957b1597ef09d5a611"
+  };
+  
+  const app = initializeApp(firebaseConfig);
+  initAuth();
+
+  // Protect page - require authentication
+  await requireAuth();
+
+  // Load user info
+  const user = getCurrentUser();
+  if (user) {
+    document.getElementById('userEmail').textContent = user.email || 'N/A';
+    document.getElementById('userDisplayName').textContent = user.displayName || 'N/A';
+    document.getElementById('emailVerified').textContent = user.emailVerified ? 'Verified' : 'Not Verified';
+    document.getElementById('emailVerified').style.color = user.emailVerified ? '#10B981' : '#EF4444';
+  }
+
+  // Change password form handler
+  const changePasswordForm = document.getElementById('changePasswordForm');
+  const currentPasswordEl = document.getElementById('currentPassword');
+  const newPasswordEl = document.getElementById('newPassword');
+  const confirmPasswordEl = document.getElementById('confirmPassword');
+  const currentPasswordErr = document.getElementById('currentPasswordError');
+  const newPasswordErr = document.getElementById('newPasswordError');
+  const confirmPasswordErr = document.getElementById('confirmPasswordError');
+  const successBox = document.getElementById('successMessage');
+  const errorBox = document.getElementById('errorMessage');
+
+  changePasswordForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    currentPasswordErr.textContent = '';
+    newPasswordErr.textContent = '';
+    confirmPasswordErr.textContent = '';
+    successBox.style.display = 'none';
+    errorBox.style.display = 'none';
+
+    const currentPassword = currentPasswordEl.value;
+    const newPassword = newPasswordEl.value;
+    const confirmPassword = confirmPasswordEl.value;
+
+    // Validation
+    if (!currentPassword) {
+      currentPasswordErr.textContent = 'Current password is required';
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      newPasswordErr.textContent = 'Password must be at least 6 characters';
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      confirmPasswordErr.textContent = 'Passwords do not match';
+      return;
+    }
+
+    try {
+      const idToken = await getIdToken();
+      const response = await fetch('http://localhost:4000/auth/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`
+        },
+        body: JSON.stringify({
+          currentPassword,
+          newPassword
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to change password');
+      }
+
+      successBox.style.display = 'block';
+      successBox.textContent = 'Password changed successfully!';
+      changePasswordForm.reset();
+
+      // Logout after password change (security best practice)
+      setTimeout(async () => {
+        await logout('/login');
+      }, 2000);
+    } catch (err) {
+      errorBox.style.display = 'block';
+      errorBox.textContent = err.message || 'Failed to change password. Please try again.';
+      console.error(err);
+    }
+  });
+</script>
+
+<body>
+    <div class="profile-container">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="logo-square" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="9" cy="21" r="1"></circle>
+                      <circle cx="20" cy="21" r="1"></circle>
+                      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                </div>
+                <h2>Profile</h2>
+                <p>Manage your account</p>
+            </div>
+
+            <!-- User Info Section -->
+            <div class="info-section">
+                <h3>Account Information</h3>
+                <div class="info-item">
+                    <span class="info-label">Email:</span>
+                    <span class="info-value" id="userEmail">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Display Name:</span>
+                    <span class="info-value" id="userDisplayName">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Email Status:</span>
+                    <span class="info-value" id="emailVerified">Loading...</span>
+                </div>
+            </div>
+
+            <!-- Change Password Section -->
+            <div class="password-section">
+                <h3>Change Password</h3>
+                <form class="profile-form" id="changePasswordForm" novalidate>
+                    <div class="form-group">
+                        <label for="currentPassword" class="form-label">Current Password</label>
+                        <div class="input-wrapper password-wrapper">
+                            <input type="password" id="currentPassword" name="currentPassword" required autocomplete="current-password">
+                            <button type="button" class="password-toggle" id="currentPasswordToggle" aria-label="Toggle password visibility">
+                                <span class="toggle-text">SHOW</span>
+                            </button>
+                        </div>
+                        <span class="error-message" id="currentPasswordError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newPassword" class="form-label">New Password</label>
+                        <div class="input-wrapper password-wrapper">
+                            <input type="password" id="newPassword" name="newPassword" required autocomplete="new-password" minlength="6">
+                            <button type="button" class="password-toggle" id="newPasswordToggle" aria-label="Toggle password visibility">
+                                <span class="toggle-text">SHOW</span>
+                            </button>
+                        </div>
+                        <span class="error-message" id="newPasswordError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                        <div class="input-wrapper password-wrapper">
+                            <input type="password" id="confirmPassword" name="confirmPassword" required autocomplete="new-password" minlength="6">
+                            <button type="button" class="password-toggle" id="confirmPasswordToggle" aria-label="Toggle password visibility">
+                                <span class="toggle-text">SHOW</span>
+                            </button>
+                        </div>
+                        <span class="error-message" id="confirmPasswordError"></span>
+                    </div>
+
+                    <button type="submit" class="profile-btn">
+                        <span class="btn-text">CHANGE PASSWORD</span>
+                        <div class="btn-loader">
+                            <div class="loader-bar"></div>
+                            <div class="loader-bar"></div>
+                            <div class="loader-bar"></div>
+                        </div>
+                    </button>
+                </form>
+
+                <div class="success-message" id="successMessage" style="display: none;">
+                    <div class="success-icon">✓</div>
+                    <p>Password changed successfully! Logging out...</p>
+                </div>
+
+                <div class="error-message" id="errorMessage" style="display: none;">
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <a href="/pages/index.html" class="back-link">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Password toggle functionality
+        const toggles = [
+            { toggle: 'currentPasswordToggle', input: 'currentPassword' },
+            { toggle: 'newPasswordToggle', input: 'newPassword' },
+            { toggle: 'confirmPasswordToggle', input: 'confirmPassword' }
+        ];
+
+        toggles.forEach(({ toggle, input }) => {
+            const toggleBtn = document.getElementById(toggle);
+            const inputEl = document.getElementById(input);
+            if (toggleBtn && inputEl) {
+                toggleBtn.addEventListener('click', () => {
+                    inputEl.type = inputEl.type === 'password' ? 'text' : 'password';
+                    const t = toggleBtn.querySelector('.toggle-text');
+                    if (t) t.textContent = inputEl.type === 'password' ? 'SHOW' : 'HIDE';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+

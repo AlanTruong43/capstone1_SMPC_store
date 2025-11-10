@@ -16,7 +16,12 @@ import {
   onAuthStateChanged,
   signOut,
   setPersistence,
-  browserLocalPersistence
+  browserLocalPersistence,
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  confirmPasswordReset,
+  applyActionCode,
+  reload
 } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
 
 // Firebase configuration
@@ -472,6 +477,120 @@ export function protectActionButtons(buttonSelector = '.btn-add, .buy-now-btn', 
     
     console.log(`[Auth] Protected ${buttons.length} action buttons with selector: ${buttonSelector}`);
   });
+}
+
+/**
+ * Send email verification to current user
+ * @returns {Promise<void>}
+ */
+export async function sendEmailVerificationToUser() {
+  if (!auth) {
+    throw new Error('Auth not initialized');
+  }
+  
+  if (!currentUser) {
+    throw new Error('No user logged in');
+  }
+
+  try {
+    await sendEmailVerification(currentUser);
+    console.log('[Auth] Verification email sent');
+  } catch (error) {
+    console.error('[Auth] Failed to send verification email:', error);
+    throw error;
+  }
+}
+
+/**
+ * Check if current user's email is verified
+ * @returns {boolean}
+ */
+export function isEmailVerified() {
+  return currentUser?.emailVerified === true;
+}
+
+/**
+ * Reload current user data (to refresh emailVerified status)
+ * @returns {Promise<void>}
+ */
+export async function reloadUser() {
+  if (!currentUser) {
+    throw new Error('No user logged in');
+  }
+
+  try {
+    await reload(currentUser);
+    // Update currentUser reference
+    currentUser = auth.currentUser;
+    console.log('[Auth] User data reloaded');
+  } catch (error) {
+    console.error('[Auth] Failed to reload user:', error);
+    throw error;
+  }
+}
+
+/**
+ * Send password reset email
+ * @param {string} email - User email
+ * @returns {Promise<void>}
+ */
+export async function sendPasswordResetEmailToUser(email) {
+  if (!auth) {
+    throw new Error('Auth not initialized');
+  }
+
+  try {
+    await sendPasswordResetEmail(auth, email);
+    console.log('[Auth] Password reset email sent');
+  } catch (error) {
+    console.error('[Auth] Failed to send password reset email:', error);
+    throw error;
+  }
+}
+
+/**
+ * Confirm password reset with action code
+ * @param {string} actionCode - Action code from email link
+ * @param {string} newPassword - New password
+ * @returns {Promise<void>}
+ */
+export async function confirmPasswordResetWithCode(actionCode, newPassword) {
+  if (!auth) {
+    throw new Error('Auth not initialized');
+  }
+
+  try {
+    await confirmPasswordReset(auth, actionCode, newPassword);
+    console.log('[Auth] Password reset confirmed');
+  } catch (error) {
+    console.error('[Auth] Failed to confirm password reset:', error);
+    throw error;
+  }
+}
+
+/**
+ * Apply action code (for email verification)
+ * @param {string} actionCode - Action code from email link
+ * @returns {Promise<void>}
+ */
+export async function applyEmailVerificationCode(actionCode) {
+  if (!auth) {
+    throw new Error('Auth not initialized');
+  }
+
+  try {
+    await applyActionCode(auth, actionCode);
+    console.log('[Auth] Email verification applied');
+    
+    // Reload user to update emailVerified status
+    if (currentUser) {
+      await reload(currentUser);
+      currentUser = auth.currentUser;
+    }
+  } catch (error) {
+    console.error('[Auth] Failed to apply verification code:', error);
+    throw error;
+  }
 }
 
 // Auto-initialize if this script is loaded
