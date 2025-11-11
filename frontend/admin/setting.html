@@ -7,7 +7,7 @@
   <title>Settings - Admin</title>
   
   <!-- Auth Protection Script -->
-  <!-- <script type="module">
+  <script type="module">
     import { requireAdmin, logout } from '../js/auth_manager.js';
     
     // Protect this page - redirect if not admin
@@ -34,7 +34,7 @@
         });
       }
     });
-  </script> -->
+  </script>
 </head>
 <body>
     <header>
@@ -115,7 +115,7 @@
             <div class="setting_content">
               <div class="setting_1">
                 <div class="setting_1_general active_setting">
-                  <img src="/img/icon/setting/active/icons8-settings-24 (1).png" alt="">
+                  <img src="/img/icon/setting/active/icons8-settings-24.png" alt="">
                   <p>General</p>
                 </div>
                 <div class="setting_1_marketplace">
@@ -139,7 +139,7 @@
                   <p>Integrations</p>
                 </div>
               </div>
-              <div class="setting_2">
+              <div id="General" class="setting_2 active_block_content2">
                 <h2>General Settings</h2>
                 <div class="setting_2_1">
                   <div class="setting_2_1_1">
@@ -161,7 +161,7 @@
                 </div>
               </div>
 
-              <div class="setting_2" style="display: none;">
+              <div id="Marketplace" class="setting_2">
                 <h2>Marketplace Settings</h2>
                 <div class="setting_2_1">
                   <div class="setting_2_1_1">
@@ -179,7 +179,7 @@
                 </div>
               </div>
 
-              <div class="setting_2_noti" style="display: none;">
+              <div id="Notifications" class="setting_2">
                 <h2>Notification Settings</h2>
                 <div class="setting_2_1_noti">
                   <div class="setting_2_1_1_noti">
@@ -189,36 +189,134 @@
                     </div>
                     <input type="checkbox" id="email_notifications" name="email_notifications" checked>
                   </div>
-              </div>
-              <div class="setting_2_1_noti">
+                </div>
+                <div class="setting_2_1_noti">
                   <div class="setting_2_1_1_noti">
                     <div class="setting_2_1_1_1_noti">
                       <p>SMS Notifications</p>
                       <p>Receive notifications via SMS</p>
                     </div>
-                    <input type="checkbox" id="email_notifications" name="email_notifications" checked>
+                    <input type="checkbox" id="sms_notifications" name="sms_notifications" checked>
                   </div>
-              </div>
-              <div class="setting_2_1_noti">
+                </div>
+                <div class="setting_2_1_noti">
                   <div class="setting_2_1_1_noti">
                     <div class="setting_2_1_1_1_noti">
                       <p>Push Notifications</p>
                       <p>Receive browser push notifications</p>
                     </div>
-                    <input type="checkbox" id="email_notifications" name="email_notifications" checked>
+                    <input type="checkbox" id="push_notifications" name="push_notifications" checked>
                   </div>
-              </div>
-              <div class="setting_2_1_noti">
+                </div>
+                <div class="setting_2_1_noti">
                   <div class="setting_2_1_1_noti">
                     <div class="setting_2_1_1_1_noti">
                       <p>Marketing Emails</p>
                       <p>Receive promotional and marketing emails</p>
                     </div>
-                    <input type="checkbox" id="email_notifications" name="email_notifications" checked>
+                    <input type="checkbox" id="marketing_emails" name="marketing_emails" checked>
                   </div>
+                </div>
+              </div>
+
+              <div id="Localization" class="setting_2">
+                <h2>Localization Settings</h2>
+                <div class="setting_2_1">
+                  <div class="setting_2_1_1">
+                    <label for="site_name">Currency</label>
+                    <select name="" id="">
+                      <option value="vn">Vietnamese Dong (₫)</option>
+                      <option value="us">US Dollar ($)</option>
+                      <option value="er">Euro (€)</option>
+                    </select>
+                  </div>
+                  <div class="setting_2_1_2">
+                    <label for="site_name">Language</label>
+                    <select name="" id="">
+                      <option value="vi">Vietnamese</option>
+                      <option value="en">English ($)</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="setting_2_1">
+                  <div class="setting_2_1_1">
+                    <label for="site_name">Timezone</label>
+                    <select name="" id="">
+                      <option value="hcm">Ho Chi Minh (GMT+7)</option>
+                      <option value="Bangkok">Bangkok (GMT+7)</option>
+                      <option value="Singapore">Singapore (GMT+8)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div id="Security" class="setting_2">
+                <h2>Security Settings</h2>
+
+                <h4>Password Policy</h4>
+                <div class="psp">
+                  <div class="psp_content">
+                    <input type="checkbox" name="" id="">
+                    <p>Minimum 8 characters</p>
+                  </div>
+                  <div class="psp_content">
+                    <input type="checkbox" name="" id="">
+                    <p>Require uppercase and lowercase letters</p>
+                  </div>
+                  <div class="psp_content">
+                    <input type="checkbox" name="" id="">
+                    <p>Require numbers</p>
+                  </div>
+                  <div class="psp_content">
+                    <input type="checkbox" name="" id="">
+                    <p>Require special characters</p>
+                  </div>
+                </div>
+
+                <h4>Session Management</h4>
+                <div class="setting_2_1" style="margin-top: 0;">
+                  <div class="setting_2_1_1">
+                    <label for="site_name">Session Timeout (minutes)</label>
+                    <input type="text" id="site_name" name="site_name" value="60">
+                  </div>
+                  <div class="setting_2_1_2">
+                    <label for="site_name">Max Login Attempts</label>
+                    <input type="text" id="site_mail" name="site_mail" value="5">
+                  </div>
+                </div>
+              </div>
+
+              <div id="Integrations" class="setting_2">
+                <h2>Integrations Settings</h2>
+                <div class="setting_2_1">
+                  <div class="setting_2_1_1">
+                    <label for="site_name">Ngân hàng thanh toán</label>
+                    <select name="" id="">
+                      <option value="TPB">Tien Phong Bank (TPB)</option>
+                      <option value="VCB">Vietcom Bank (VCB)</option>
+                      <option value="TCB">Techcom Bank (TCB)</option>
+                    </select>
+                  </div>
+                  <div class="setting_2_1_2">
+                    <label for="site_name">Tên chủ tài khoản</label>
+                    <input type="text" id="site_mail" name="site_mail" value="Trần Văn A">
+                  </div>
+                </div>
+                <div class="setting_2_1">
+                  <div class="setting_2_1_1">
+                    <label for="site_name">Số tài khoản</label>
+                    <input type="text" id="site_mail" name="site_mail" value="0123456789">
+                  </div>
+                  <div class="setting_2_1_2">
+                    <label for="site_name">Mật khẩu</label>
+                    <input type="password" id="site_mail" name="site_mail" value="Trần Văn A">
+                  </div>
+                </div>
               </div>
         </section>
     </section>
+
+    <script src="/frontend/js/admin_setting.js"></script>
 </body>
 </html>
 

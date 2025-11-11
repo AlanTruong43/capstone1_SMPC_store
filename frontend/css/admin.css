@@ -741,6 +741,11 @@ tr:hover {
     border: 2px solid #D1D5DB;
     border-radius: 8px;
     padding: 20px;
+    display: none;
+}
+
+.active_block_content2{
+    display: block;
 }
 
 .active_setting{
@@ -775,6 +780,13 @@ tr:hover {
 }
 
 .setting_2_1 div input{
+    margin-top: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #D1D5DB;
+}
+
+.setting_2_1 div select{
     margin-top: 10px;
     padding: 8px 10px;
     border-radius: 8px;
@@ -848,4 +860,20 @@ tr:hover {
 
 .setting_2_1_1_1_noti p:last-child{
     padding-bottom: 15px;
+}
+
+.psp_content{
+    display: flex;
+}
+
+.psp_content input{
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+#Security h4{
+margin-top: 20px;
+margin-bottom: 10px;
 }
