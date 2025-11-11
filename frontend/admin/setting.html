@@ -7,7 +7,7 @@
   <title>Settings - Admin</title>
   
   <!-- Auth Protection Script -->
-  <script type="module">
+  <!-- <script type="module">
     import { requireAdmin, logout } from '../js/auth_manager.js';
     
     // Protect this page - redirect if not admin
@@ -34,7 +34,7 @@
         });
       }
     });
-  </script>
+  </script> -->
 </head>
 <body>
     <header>
@@ -59,9 +59,107 @@
     </header>
 
     <section class="body">
+        <section class="menu">
+            <a href="/admin/dashboard.html">
+                <div class="dashboard">
+                    <img src="/img/icon/icons8-dashboard-48.png" alt="">
+                    <p>Dashboard</p>
+                </div>
+            </a>
+            <a href="/admin/user_management.html">
+                <div class="user_management">
+                    <img src="/img/icon/icons8-users-settings-32 (1).png" alt="">
+                    <p>User Management</p>
+                </div>
+            </a>
+            <a href="/admin/order_management.html">
+                <div class="order_management">
+                    <img src="/img/icon/icons8-order-management-66.png" alt="">
+                    <p>Order Management</p>
+                </div>
+            </a>
+            <a href="/admin/commission.html">
+                <div class="commission">
+                    <img src="/img/icon/icons8-commission-64.png" alt="">
+                    <p>Commission</p>
+                </div>
+            </a>
+            <a href="/admin/demo_product_management.html">
+                <div class="products">
+                    <img src="/img/icon/icons8-product-50.png" alt="">
+                    <p>Products</p>
+                </div>
+            </a>
+            <a href="/admin/analytics.html">
+                <div class="analytics">
+                    <img src="/img/icon/icons8-analytic-64.png" alt="">
+                    <p>Analytics</p>
+                </div>
+            </a>
+            <a href="/admin/setting.html">
+                <div class="setting active_menu">
+                    <img src="/img/icon/active icon admin menu/icons8-setting-50.png" alt="">
+                    <p>Setting</p>
+                </div>
+            </a>
+        </section>
+
         <section class="content">
-            <h1>Settings</h1>
-            <p>Admin settings page - Under construction</p>
+            <div class="user_management_1">
+                <div class="user_management_1_1">
+                    <h3>Commission Management</h3>
+                    <p>View commissions from completed and paid orders</p>
+                </div>
+                <button class="export_menu" style="background-color: #2563EB;">Save Changes</button>
+            </div>
+            <div class="setting_content">
+              <div class="setting_1">
+                <div class="setting_1_general active_setting">
+                  <img src="/img/icon/setting/active/icons8-settings-24 (1).png" alt="">
+                  <p>General</p>
+                </div>
+                <div class="setting_1_marketplace">
+                  <img src="/img/icon/setting/nonactive/icons8-marketplace-48.png" alt="">
+                  <p>Marketplace</p>
+                </div>
+                <div class="setting_1_notifications">
+                  <img src="/img/icon/setting/nonactive/icons8-notification-24.png" alt="">
+                  <p>Notifications</p>
+                </div>
+                <div class="setting_1_localization">
+                  <img src="/img/icon/setting/nonactive/icons8-earth-24.png" alt="">
+                  <p>Localization</p>
+                </div>
+                <div class="setting_1_security">
+                  <img src="/img/icon/setting/nonactive/icons8-shield-50.png" alt="">
+                  <p>Security</p>
+                </div>
+                <div class="setting_1_integrations">
+                  <img src="/img/icon/setting/nonactive/icons8-light-50.png" alt="">
+                  <p>Integrations</p>
+                </div>
+              </div>
+              <div class="setting_2">
+                <h2>General Settings</h2>
+                <div class="setting_2_1">
+                  <div class="setting_2_1_1">
+                    <label for="site_name">Site Name:</label>
+                    <input type="text" id="site_name" name="site_name" value="SMPC Marketplace">
+                  </div>
+                  <div class="setting_2_1_2">
+                    <label for="site_name">Contact Email:</label>
+                    <input type="text" id="site_mail" name="site_mail" value="admin@smpc.com">
+                  </div>
+                </div>
+                <div class="setting_2_2">
+                    <label for="site_name">Site Description</label>
+                    <textarea name="" id="">Second-hand Marketplace & AI-Powered Product Consultationhe</textarea>
+                </div>
+                <div class="setting_2_3">
+                    <label for="site_name">Support Email</label>
+                    <input type="text" id="site_support_mail" name="site_support_mail" value="support@smpc.com">
+                </div>
+            </div>
         </section>
     </section>
 </body>
