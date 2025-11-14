@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet"/>
-  <title>user Management</title>
+  <title>Category Management</title>
   
   <!-- Auth Protection Script -->
   <script type="module">
@@ -70,8 +70,8 @@
                 </div>
             </a>
             <a href="/admin/user_management.html">
-                <div class="user_management active_menu">
-                    <img src="/img/icon/active icon admin menu/icons8-users-settings-32.png" alt="">
+                <div class="user_management">
+                    <img src="/img/icon/icons8-users-settings-32.png" alt="">
                     <p>User Management</p>
                 </div>
             </a>
@@ -94,7 +94,7 @@
                 </div>
             </a>
             <a href="/admin/category_management.html">
-                <div class="products">
+                <div class="products active_menu">
                     <img src="/img/icon/icons8-product-50.png" alt="">
                     <p>Categories</p>
                 </div>
@@ -116,29 +116,17 @@
         <section class="content">
             <div class="user_management_1">
                 <div class="user_management_1_1">
-                    <h3>User Management</h3>
-                    <p>Manage all users and their account status</p>
+                    <h3>Category Management</h3>
+                    <p>Manage all product categories</p>
                 </div>
-                <button class="add_user" id="addUserBtn">+ Add User</button>
+                <button class="add_user" id="addCategoryBtn">+ Add Category</button>
             </div>
             <div class="user_management_2">
-                <input type="search" placeholder="Search user by name or email" class="search_user">
-                <select name="" id="" class="roles">
-                    <option value="role">Roles</option>
-                    <option value="admin">Admin</option>
-                    <option value="user">User</option>
-                    <option value="seller">Seller</option>
-                </select>
-                <select name="" id="" class="status_user">
-                    <option value="status">Status</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                    <option value="suspensed">Suspensed</option>
-                </select>
+                <input type="search" placeholder="Search category by name or slug" class="search_user" id="searchInput">
             </div>
             <div class="user_management_3">
                 <div class="user_management_3_1">
-                    <p class="user_management_3_1_1"><span>5</span> Users</p>
+                    <p class="user_management_3_1_1"><span id="categoryCount">0</span> Categories</p>
                     <div class="user_management_3_1_2">
                         <button class="user_management_3_1_2_filter"><img src="/img/icon/icons8-filter-24.png" alt="">Filters</button>
                         <button class="user_management_3_1_2_export"><img src="/img/icon/icons8-download-32.png" alt="">Exports</button>
@@ -147,50 +135,23 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>User</th>
-                            <th>Role</th>
-                            <th>Status</th>
-                            <th>Join Date</th>
-                            <th>Orders</th>
-                            <th>Revenue</th>
+                            <th>Name</th>
+                            <th>Slug</th>
+                            <th>Description</th>
+                            <th>Products</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="usersTableBody">
-                        <!-- Users will be dynamically loaded here by user_management.js -->
-                        <!-- Example structure (kept for reference):
-                        <tr>
-                            <td>
-                                <div class="user-info">
-                                    <img src="/img/icon/user.png" alt="">
-                                    <div class="user-info-2">
-                                        <div class="user-name">Nguyen Van A</div>
-                                        <div class="user-email">nguyenvan@gmail.com</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="form_table seller"><p>Seller</p></td>
-                            <td class="form_table active"><p>Active</p></td>
-                            <td>2024-01-15</td>
-                            <td>23</td>
-                            <td>42,450,000</td>
-                            <td class="table_action">
-                                <img src="/img/icon/icons8-edit-50.png" alt="">
-                                <img src="/img/icon/icons8-view-24.png" alt="">
-                                <img src="/img/icon/icons8-delete-user-male-24.png" alt="">
-                            </td>
-                        </tr>
-                        -->
+                    <tbody id="categoriesTableBody">
+                        <!-- Categories will be dynamically loaded here -->
                     </tbody>
                 </table>
                 <div class="user_management_4">
-                    <p>Showing 1 to 5 of <span>5</span> results</p>
+                    <p>Showing <span id="showingStart">0</span> to <span id="showingEnd">0</span> of <span id="totalCategories">0</span> results</p>
                     <div class="user_management_4_page">
-                        <button class="user_management_4_page_prev">Previous</button>
-                        <!-- trang nào được hiển thị sẽ thêm class active_page -->
-                        <button class="user_management_4_page_number active_page">1</button>
-                        <button class="user_management_4_page_number">2</button>
-                        <button class="user_management_4_page_next">Next</button>
+                        <button class="user_management_4_page_prev" id="prevPageBtn">Previous</button>
+                        <span id="currentPage">1</span>
+                        <button class="user_management_4_page_next" id="nextPageBtn">Next</button>
                     </div>
                 </div>
             </div>
@@ -201,133 +162,108 @@
     <div id="deleteModal" class="modal" style="display: none;">
         <div class="modal-overlay" onclick="closeDeleteModal()"></div>
         <div class="modal-content">
-            <h3>Delete User</h3>
-            <p id="deleteMessage">Are you sure you want to delete this user?</p>
-            <p style="font-weight: 500; margin: 10px 0;" id="deleteUserEmail"></p>
+            <h3>Delete Category</h3>
+            <p id="deleteMessage">Are you sure you want to delete this category?</p>
+            <p style="font-weight: 500; margin: 10px 0;" id="deleteCategoryName"></p>
             
             <div class="checkbox-wrapper" style="margin: 20px 0;">
                 <label style="display: flex; align-items: center; gap: 10px;">
                     <input type="checkbox" id="deleteConfirmCheckbox">
-                    <span>Yes, I want to permanently delete this user</span>
+                    <span>Yes, I want to permanently delete this category</span>
                 </label>
             </div>
             
             <div class="modal-actions">
                 <button class="btn-secondary" onclick="closeDeleteModal()">Cancel</button>
-                <button class="btn-danger" id="confirmDeleteBtn" onclick="confirmDelete()" disabled>Delete User</button>
+                <button class="btn-danger" id="confirmDeleteBtn" onclick="confirmDelete()" disabled>Delete Category</button>
             </div>
         </div>
     </div>
 
-    <!-- Add User Modal -->
-    <div id="addUserModal" class="modal" style="display: none;">
-        <div class="modal-overlay" onclick="closeAddUserModal()"></div>
+    <!-- Add Category Modal -->
+    <div id="addCategoryModal" class="modal" style="display: none;">
+        <div class="modal-overlay" onclick="closeAddCategoryModal()"></div>
         <div class="modal-content">
-            <h3>Add New User</h3>
-            <form id="addUserForm" onsubmit="return false;">
+            <h3>Add New Category</h3>
+            <form id="addCategoryForm" onsubmit="return false;">
                 <div class="form-group">
-                    <label>Email *</label>
-                    <input type="email" id="addEmail" required>
+                    <label>Name *</label>
+                    <input type="text" id="addName" required>
                 </div>
                 <div class="form-group">
-                    <label>Password *</label>
-                    <input type="password" id="addPassword" required minlength="6">
+                    <label>Slug *</label>
+                    <input type="text" id="addSlug" required placeholder="e.g., smartphones">
+                    <small style="color: #6B7280; font-size: 12px;">Lowercase letters, numbers, hyphens, and underscores only</small>
                 </div>
                 <div class="form-group">
-                    <label>Display Name</label>
-                    <input type="text" id="addDisplayName">
-                </div>
-                <div class="form-group">
-                    <label>Role *</label>
-                    <select id="addRole" required>
-                        <option value="customer">Customer</option>
-                        <option value="seller">Seller</option>
-                        <option value="admin">Admin</option>
-                    </select>
+                    <label>Description</label>
+                    <textarea id="addDescription" rows="3" style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 14px; box-sizing: border-box; font-family: inherit;"></textarea>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn-secondary" onclick="closeAddUserModal()">Cancel</button>
-                    <button type="submit" class="btn-primary" onclick="submitAddUser()">Create User</button>
+                    <button type="button" class="btn-secondary" onclick="closeAddCategoryModal()">Cancel</button>
+                    <button type="submit" class="btn-primary" onclick="submitAddCategory()">Create Category</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Edit User Modal -->
-    <div id="editUserModal" class="modal" style="display: none;">
-        <div class="modal-overlay" onclick="closeEditUserModal()"></div>
+    <!-- Edit Category Modal -->
+    <div id="editCategoryModal" class="modal" style="display: none;">
+        <div class="modal-overlay" onclick="closeEditCategoryModal()"></div>
         <div class="modal-content">
-            <h3>Edit User</h3>
-            <form id="editUserForm" onsubmit="return false;">
-                <input type="hidden" id="editUid">
+            <h3>Edit Category</h3>
+            <form id="editCategoryForm" onsubmit="return false;">
+                <input type="hidden" id="editCategoryId">
                 <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="editEmail" disabled style="background: #f3f4f6;">
+                    <label>Name *</label>
+                    <input type="text" id="editName" required>
                 </div>
                 <div class="form-group">
-                    <label>Display Name</label>
-                    <input type="text" id="editDisplayName">
+                    <label>Slug *</label>
+                    <input type="text" id="editSlug" required>
+                    <small style="color: #6B7280; font-size: 12px;">Lowercase letters, numbers, hyphens, and underscores only</small>
                 </div>
                 <div class="form-group">
-                    <label>Role</label>
-                    <select id="editRole">
-                        <option value="customer">Customer</option>
-                        <option value="seller">Seller</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Status</label>
-                    <select id="editStatus">
-                        <option value="true">Active</option>
-                        <option value="false">Inactive</option>
-                    </select>
+                    <label>Description</label>
+                    <textarea id="editDescription" rows="3" style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 14px; box-sizing: border-box; font-family: inherit;"></textarea>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn-secondary" onclick="closeEditUserModal()">Cancel</button>
-                    <button type="submit" class="btn-primary" onclick="submitEditUser()">Save Changes</button>
+                    <button type="button" class="btn-secondary" onclick="closeEditCategoryModal()">Cancel</button>
+                    <button type="submit" class="btn-primary" onclick="submitEditCategory()">Save Changes</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- View User Modal -->
-    <div id="viewUserModal" class="modal" style="display: none;">
-        <div class="modal-overlay" onclick="closeViewUserModal()"></div>
+    <!-- View Category Modal -->
+    <div id="viewCategoryModal" class="modal" style="display: none;">
+        <div class="modal-overlay" onclick="closeViewCategoryModal()"></div>
         <div class="modal-content">
-            <h3>User Details</h3>
+            <h3>Category Details</h3>
             <div class="user-details">
                 <div class="detail-row">
-                    <strong>Email:</strong>
-                    <span id="viewEmail"></span>
+                    <strong>Name:</strong>
+                    <span id="viewName"></span>
                 </div>
                 <div class="detail-row">
-                    <strong>Display Name:</strong>
-                    <span id="viewDisplayName"></span>
+                    <strong>Slug:</strong>
+                    <span id="viewSlug" style="font-family: monospace;"></span>
                 </div>
                 <div class="detail-row">
-                    <strong>Role:</strong>
-                    <span id="viewRole"></span>
+                    <strong>Description:</strong>
+                    <span id="viewDescription"></span>
                 </div>
                 <div class="detail-row">
-                    <strong>Status:</strong>
-                    <span id="viewStatus"></span>
+                    <strong>Products Count:</strong>
+                    <span id="viewProductCount"></span>
                 </div>
                 <div class="detail-row">
-                    <strong>Registered:</strong>
-                    <span id="viewRegistrationDate"></span>
-                </div>
-                <div class="detail-row">
-                    <strong>Last Login:</strong>
-                    <span id="viewLastLogin"></span>
-                </div>
-                <div class="detail-row">
-                    <strong>User ID:</strong>
-                    <span id="viewUid" style="font-family: monospace; font-size: 0.9em;"></span>
+                    <strong>Category ID:</strong>
+                    <span id="viewCategoryId" style="font-family: monospace; font-size: 0.9em;"></span>
                 </div>
             </div>
             <div class="modal-actions">
-                <button class="btn-primary" onclick="closeViewUserModal()">Close</button>
+                <button class="btn-primary" onclick="closeViewCategoryModal()">Close</button>
             </div>
         </div>
     </div>
@@ -474,6 +410,7 @@
         }
     </style>
     
-    <script src="/js/user_management.js"></script>
+    <script src="/js/category_management.js"></script>
 </body>
 </html>
+
