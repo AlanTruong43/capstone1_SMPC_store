@@ -411,12 +411,14 @@ function hideLoading() {
 function showNotification(message, type = 'info') {
   let toast = document.getElementById('toastNotification');
   let toastMessage = document.getElementById('toastMessage');
+  let toastIcon = document.getElementById('toastIcon');
 
   // If toast doesn't exist, create it dynamically
   if (!toast) {
     const toastHTML = `
       <div id="toastNotification" class="toast-notification">
         <div class="toast-content">
+          <span id="toastIcon" class="toast-icon"></span>
           <span id="toastMessage"></span>
         </div>
       </div>
@@ -425,13 +427,33 @@ function showNotification(message, type = 'info') {
     
     toast = document.getElementById('toastNotification');
     toastMessage = document.getElementById('toastMessage');
+    toastIcon = document.getElementById('toastIcon');
+  }
+
+  // Set icon based on type
+  if (toastIcon) {
+    if (type === 'success') {
+      // Joyful checkmark with cart emoji
+      toastIcon.innerHTML = '<span style="font-size: 20px;">🛒</span>';
+    } else if (type === 'error') {
+      toastIcon.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
+    } else {
+      toastIcon.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
+    }
   }
 
   toastMessage.textContent = message;
   toast.className = `toast-notification ${type} show`;
 
+  // Auto-hide after 3 seconds
   setTimeout(() => {
     toast.classList.remove('show');
+    // Remove from DOM after animation completes
+    setTimeout(() => {
+      if (toast && !toast.classList.contains('show')) {
+        toast.remove();
+      }
+    }, 400);
   }, 3000);
 }
 

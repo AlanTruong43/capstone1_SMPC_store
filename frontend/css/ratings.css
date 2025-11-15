@@ -1,0 +1,691 @@
+/* Ratings and Reviews Styles */
+
+.ratings-section {
+    margin: 40px 0;
+    padding: 30px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ratings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.ratings-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.rating-summary {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.rating-average {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.rating-average-value {
+    font-size: 48px;
+    font-weight: 700;
+    color: #2563eb;
+    line-height: 1;
+}
+
+.rating-average-stars {
+    display: flex;
+    gap: 4px;
+}
+
+.rating-average-count {
+    font-size: 14px;
+    color: #6b7280;
+    margin-top: 5px;
+}
+
+.rating-distribution {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.rating-distribution-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rating-distribution-label {
+    font-size: 14px;
+    color: #374151;
+    min-width: 60px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.rating-distribution-bar {
+    flex: 1;
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.rating-distribution-fill {
+    height: 100%;
+    background: #2563eb;
+    transition: width 0.3s ease;
+}
+
+.rating-distribution-count {
+    font-size: 14px;
+    color: #6b7280;
+    min-width: 30px;
+    text-align: right;
+}
+
+.ratings-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.ratings-sort-filter {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.sort-select,
+.filter-select {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.sort-select:hover,
+.filter-select:hover {
+    border-color: #2563eb;
+}
+
+.write-review-btn {
+    padding: 10px 20px;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.write-review-btn:hover {
+    background: #1d4ed8;
+}
+
+.write-review-btn:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
+.ratings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.rating-item {
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.rating-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.rating-user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.rating-user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.rating-user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.rating-user-name {
+    font-weight: 600;
+    color: #111827;
+    font-size: 14px;
+}
+
+.rating-verified-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #059669;
+    font-weight: 500;
+}
+
+.rating-stars-display {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 8px;
+}
+
+.star-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.star-filled {
+    fill: #fbbf24;
+    stroke: #f59e0b;
+}
+
+.star-empty {
+    fill: #e5e7eb;
+    stroke: #d1d5db;
+}
+
+.rating-date {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.rating-comment {
+    color: #374151;
+    line-height: 1.6;
+    margin: 12px 0;
+    white-space: pre-wrap;
+}
+
+.rating-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.rating-action-btn {
+    padding: 6px 12px;
+    border: 1px solid #d1d5db;
+    background: #fff;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.rating-action-btn:hover {
+    background: #f9fafb;
+    border-color: #9ca3af;
+}
+
+.rating-action-btn.report {
+    color: #dc2626;
+    border-color: #fca5a5;
+}
+
+.rating-action-btn.report:hover {
+    background: #fef2f2;
+}
+
+.seller-reply {
+    margin-top: 16px;
+    padding: 16px;
+    background: #f9fafb;
+    border-left: 3px solid #2563eb;
+    border-radius: 4px;
+}
+
+.seller-reply-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.seller-reply-label {
+    font-weight: 600;
+    color: #2563eb;
+    font-size: 14px;
+}
+
+.seller-reply-date {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.seller-reply-comment {
+    color: #374151;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.seller-reply-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.ratings-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+.pagination-btn {
+    padding: 8px 16px;
+    border: 1px solid #d1d5db;
+    background: #fff;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: #f9fafb;
+    border-color: #2563eb;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* Review Modal */
+.review-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.review-modal.active {
+    display: flex;
+}
+
+.review-modal-content {
+    background: #fff;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.review-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.review-modal-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.review-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.review-modal-close:hover {
+    background: #f3f4f6;
+}
+
+.review-form-group {
+    margin-bottom: 20px;
+}
+
+.review-form-label {
+    display: block;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.star-rating-input {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.star-input-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    transition: transform 0.2s;
+}
+
+.star-input-btn:hover {
+    transform: scale(1.1);
+}
+
+.star-input-icon {
+    width: 32px;
+    height: 32px;
+    fill: #d1d5db;
+    stroke: #9ca3af;
+    stroke-width: 0.5;
+    transition: all 0.2s ease;
+}
+
+/* Default: all stars gray */
+.star-input-btn .star-input-icon {
+    fill: #d1d5db;
+    stroke: #9ca3af;
+}
+
+/* When a star is selected, make it and all previous stars yellow */
+.star-input-btn.selected .star-input-icon,
+.star-input-btn.selected ~ .star-input-btn .star-input-icon {
+    fill: #fbbf24;
+    stroke: #f59e0b;
+    stroke-width: 1;
+}
+
+/* Reset stars after selected one */
+.star-input-btn.selected ~ .star-input-btn:not(.selected) .star-input-icon {
+    fill: #d1d5db;
+    stroke: #9ca3af;
+}
+
+/* Hover effect: make hovered star and all previous stars yellow */
+.star-rating-input:hover .star-input-btn:hover .star-input-icon,
+.star-rating-input:hover .star-input-btn:hover ~ .star-input-btn .star-input-icon {
+    fill: #fbbf24;
+    stroke: #f59e0b;
+    stroke-width: 1;
+}
+
+/* Reset stars after hovered one when hovering */
+.star-rating-input:hover .star-input-btn:hover ~ .star-input-btn:not(:hover) .star-input-icon {
+    fill: #d1d5db;
+    stroke: #9ca3af;
+}
+
+/* When hovering, make all stars before the hovered one yellow */
+.star-rating-input:hover .star-input-btn:not(:hover):has(~ .star-input-btn:hover) .star-input-icon {
+    fill: #fbbf24;
+    stroke: #f59e0b;
+}
+
+/* Better approach: use JavaScript to handle this, but keep CSS for selected state */
+
+.review-form-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    transition: border-color 0.2s;
+}
+
+.review-form-textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+.review-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.review-form-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.review-form-btn.cancel {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.review-form-btn.cancel:hover {
+    background: #e5e7eb;
+}
+
+.review-form-btn.submit {
+    background: #2563eb;
+    color: #fff;
+}
+
+.review-form-btn.submit:hover {
+    background: #1d4ed8;
+}
+
+.review-form-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Report Modal */
+.report-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.report-modal.active {
+    display: flex;
+}
+
+.report-modal-content {
+    background: #fff;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.report-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.report-modal-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.report-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.report-modal-close:hover {
+    background: #f3f4f6;
+}
+
+.report-reason-select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #fff;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+.report-reason-select:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+.empty-ratings {
+    text-align: center;
+    padding: 40px;
+    color: #6b7280;
+}
+
+.empty-ratings-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.empty-ratings-text {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.empty-ratings-subtext {
+    font-size: 14px;
+    color: #9ca3af;
+}
+
+/* Loading state */
+.ratings-loading {
+    text-align: center;
+    padding: 40px;
+    color: #6b7280;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .ratings-section {
+        padding: 20px;
+    }
+
+    .ratings-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .rating-summary {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .rating-distribution {
+        width: 100%;
+    }
+
+    .ratings-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .ratings-sort-filter {
+        flex-direction: column;
+    }
+
+    .sort-select,
+    .filter-select {
+        width: 100%;
+    }
+
+    .review-modal-content,
+    .report-modal-content {
+        padding: 20px;
+    }
+}
+

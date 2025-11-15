@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="../css/style.css" />
     <link rel="stylesheet" href="../css/product_details.css" />
+    <link rel="stylesheet" href="../css/ratings.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@300;400;500;700&display=swap"
@@ -95,10 +96,10 @@
                     <img src="../img/icon/user.png" alt="" class="avt_info_product_detail">
                     <div class="info_product_detail_1_2">
                         <p id="sellerName" class="name_seller" style="font-weight: 500;"></p>
-                        <div class="rate">
-                            <p>5</p>
+                        <div class="rate" id="productRatingDisplay">
+                            <p id="productRatingValue">-</p>
                             <img src="../img/icon/star.png" alt="">
-                            <p class="review_product_detail">(124 review)</p>
+                            <p class="review_product_detail" id="productRatingCount">(0 reviews)</p>
                         </div>
                     </div>
                 </div>
@@ -172,6 +173,113 @@
             </div>
         </div>
     </section>
+
+    <!-- Ratings and Reviews Section -->
+    <section class="ratings-section" id="ratingsSection">
+        <div class="ratings-header">
+            <h2 class="ratings-title">Customer Reviews</h2>
+        </div>
+        
+        <div class="rating-summary" id="ratingSummary">
+            <!-- Rating summary will be loaded here -->
+        </div>
+        
+        <div class="ratings-controls">
+            <div class="ratings-sort-filter">
+                <select class="sort-select" id="sortSelect" onchange="changeSort(this.value)">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="highest">Highest Rating</option>
+                    <option value="lowest">Lowest Rating</option>
+                </select>
+                <select class="filter-select" id="filterSelect" onchange="changeFilter(this.value)">
+                    <option value="all">All Ratings</option>
+                    <option value="5">5 Stars</option>
+                    <option value="4">4 Stars</option>
+                    <option value="3">3 Stars</option>
+                    <option value="2">2 Stars</option>
+                    <option value="1">1 Star</option>
+                </select>
+            </div>
+            <button class="write-review-btn" id="writeReviewBtn" style="display: none;">Write a Review</button>
+        </div>
+        
+        <div class="ratings-list" id="ratingsList">
+            <!-- Ratings will be loaded here -->
+        </div>
+        
+        <div class="ratings-pagination" id="paginationContainer">
+            <!-- Pagination will be loaded here -->
+        </div>
+    </section>
+
+    <!-- Review Modal -->
+    <div class="review-modal" id="reviewModal">
+        <div class="review-modal-content">
+            <div class="review-modal-header">
+                <h3 class="review-modal-title">Write a Review</h3>
+                <button class="review-modal-close" onclick="closeReviewModal()">&times;</button>
+            </div>
+            <form id="reviewForm" class="review-form">
+                <input type="hidden" name="star" value="">
+                <div class="review-form-group">
+                    <label class="review-form-label">Rating</label>
+                    <div class="star-rating-input" onmouseleave="handleStarLeave()">
+                        <button type="button" class="star-input-btn" onclick="setStarRating(1)" onmouseenter="handleStarHover(1)">
+                            <svg class="star-input-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        </button>
+                        <button type="button" class="star-input-btn" onclick="setStarRating(2)" onmouseenter="handleStarHover(2)">
+                            <svg class="star-input-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        </button>
+                        <button type="button" class="star-input-btn" onclick="setStarRating(3)" onmouseenter="handleStarHover(3)">
+                            <svg class="star-input-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        </button>
+                        <button type="button" class="star-input-btn" onclick="setStarRating(4)" onmouseenter="handleStarHover(4)">
+                            <svg class="star-input-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        </button>
+                        <button type="button" class="star-input-btn" onclick="setStarRating(5)" onmouseenter="handleStarHover(5)">
+                            <svg class="star-input-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="review-form-group">
+                    <label class="review-form-label" for="reviewComment">Your Review</label>
+                    <textarea id="reviewComment" name="comment" class="review-form-textarea" placeholder="Share your experience with this product..." maxlength="1000"></textarea>
+                </div>
+                <div class="review-form-actions">
+                    <button type="button" class="review-form-btn cancel" onclick="closeReviewModal()">Cancel</button>
+                    <button type="button" class="review-form-btn submit" onclick="submitReview()">Submit Review</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div class="report-modal" id="reportModal">
+        <div class="report-modal-content">
+            <div class="report-modal-header">
+                <h3 class="report-modal-title">Report Review</h3>
+                <button class="report-modal-close" onclick="closeReportModal()">&times;</button>
+            </div>
+            <form id="reportForm" class="report-form">
+                <div class="review-form-group">
+                    <label class="review-form-label" for="reportReason">Reason for Reporting</label>
+                    <select id="reportReason" name="reason" class="report-reason-select" required>
+                        <option value="">Select a reason</option>
+                        <option value="spam">Spam</option>
+                        <option value="inappropriate">Inappropriate Content</option>
+                        <option value="fake">Fake Review</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="review-form-actions">
+                    <button type="button" class="review-form-btn cancel" onclick="closeReportModal()">Cancel</button>
+                    <button type="button" class="review-form-btn submit" onclick="submitReport()">Submit Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <section class="related_product">
         <h3>Related Products</h3>
         <div id="relatedProducts" class="related_product_list"></div>
@@ -191,14 +299,41 @@
     <!-- Load product_detail.js first, then protect buttons AFTER handlers are attached -->
     <script src="../js/product_detail.js"></script>
     
-    <!-- Protect Buy Now buttons AFTER product_detail.js attaches its handler -->
+    <!-- Load ratings module -->
     <script type="module">
+        import { initRatings } from '../js/ratings.js';
         import { protectActionButtons } from '../js/auth_manager.js';
         
-        // Wait for product_detail.js to attach its handlers first
-        setTimeout(() => {
-            protectActionButtons('.product_detail_btn_buynow', 'You need to log in to buy this product');
-        }, 100);
+        // Initialize ratings after DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get product ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+            
+            if (productId) {
+                // Initialize ratings module
+                initRatings(productId);
+                
+                // Set up DOM element references for ratings module
+                setTimeout(() => {
+                    // These will be accessed by ratings.js
+                    window.ratingsSection = document.getElementById('ratingsSection');
+                    window.ratingSummary = document.getElementById('ratingSummary');
+                    window.ratingsList = document.getElementById('ratingsList');
+                    window.writeReviewBtn = document.getElementById('writeReviewBtn');
+                    window.sortSelect = document.getElementById('sortSelect');
+                    window.filterSelect = document.getElementById('filterSelect');
+                    window.paginationContainer = document.getElementById('paginationContainer');
+                    window.reviewModal = document.getElementById('reviewModal');
+                    window.reportModal = document.getElementById('reportModal');
+                }, 100);
+            }
+            
+            // Wait for product_detail.js to attach its handlers first
+            setTimeout(() => {
+                protectActionButtons('.product_detail_btn_buynow', 'You need to log in to buy this product');
+            }, 100);
+        });
     </script>
 </body>
 

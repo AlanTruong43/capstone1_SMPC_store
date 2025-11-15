@@ -98,6 +98,20 @@ function renderProduct(p){
     // seller name (requires backend /users/:id; fallback to sellerId)
     const sellerEl = qs('#sellerName');
     if(sellerEl){ sellerEl.textContent = p.seller?.displayName || p.sellerId || 'Unknown seller'; }
+    
+    // Update rating display in seller info section
+    const ratingValueEl = qs('#productRatingValue');
+    const ratingCountEl = qs('#productRatingCount');
+    if(ratingValueEl && p.averageRating !== undefined){
+        ratingValueEl.textContent = p.averageRating.toFixed(1);
+    } else if(ratingValueEl) {
+        ratingValueEl.textContent = '-';
+    }
+    if(ratingCountEl && p.ratingCount !== undefined){
+        ratingCountEl.textContent = `(${p.ratingCount} ${p.ratingCount === 1 ? 'review' : 'reviews'})`;
+    } else if(ratingCountEl) {
+        ratingCountEl.textContent = '(0 reviews)';
+    }
 }
 
 function renderRelated(list, currentId){

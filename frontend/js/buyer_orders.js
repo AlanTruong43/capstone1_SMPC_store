@@ -174,6 +174,11 @@ function createOrderCard(order) {
             <button class="btn btn-primary" onclick="openConfirmDeliveryModal('${order.id}')">Confirm Receipt</button>
             <button class="btn btn-outline" onclick="openOrderDetail('${order.id}')">View Details</button>
         `;
+    } else if (order.orderStatus === 'completed') {
+        actions = `
+            <button class="btn btn-primary" onclick="rateProduct('${order.productId}', '${order.id}')">Rate Product</button>
+            <button class="btn btn-outline" onclick="openOrderDetail('${order.id}')">View Details</button>
+        `;
     } else {
         actions = `
             <button class="btn btn-outline" onclick="openOrderDetail('${order.id}')">View Details</button>
@@ -513,6 +518,15 @@ function formatDate(timestamp) {
 /**
  * Format status
  */
+/**
+ * Rate Product - Redirect to product page to write review
+ */
+window.rateProduct = function(productId, orderId) {
+    // Redirect to product details page
+    // The product page will check eligibility and show review form if user hasn't rated yet
+    window.location.href = `/pages/product_details.html?id=${productId}`;
+};
+
 function formatStatus(status) {
     const statusMap = {
         'pending': 'Pending Payment',

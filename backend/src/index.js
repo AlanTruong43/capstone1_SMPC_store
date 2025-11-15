@@ -96,6 +96,10 @@ app.use('/api/payments/payos', payosRoutes);
 const cartRoutes = require('./modules/cart/cart_routes');
 app.use('/api/cart', cartRoutes);
 
+// routes ratings
+const ratingsRoutes = require('./modules/ratings/ratings_routes');
+app.use('/api/ratings', ratingsRoutes);
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, async () => {
   console.log(`API listening on http://localhost:${PORT}`);
