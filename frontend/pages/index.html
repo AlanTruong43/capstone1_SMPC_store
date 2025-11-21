@@ -51,10 +51,10 @@
         </form>
       </div>
 
-      <div class="cta-row">
+      <!-- <div class="cta-row">
         <a href="#" class="btn btn-primary"><span class="btn-icon">🛍️</span> Start Shopping</a>
         <a href="#" class="btn btn-success"><span class="btn-icon">➕</span> Sell Your Items</a>
-      </div>
+      </div> -->
 
       <!-- Dark translucent panel with badges below the CTAs -->
       <div class="cta-panel">
@@ -145,125 +145,7 @@
       <p class="section-sub">Handpicked quality items from trusted sellers with great ratings</p>
 
       <div class="products-grid">
-        <!-- card 1 -->
-        <article class="product-card">
-          <div class="product-media" style="background-image:url('/img/body/ip13.png');">
-            <div class="card-badge">Like New</div>
-            <button class="fav-btn">♡</button>
-          </div>
-          <div class="product-body">
-            <h4 class="product-title">iPhone 13 Pro Max 256GB</h4>
-            <div class="product-price">18,500,000 ₫</div>
-            <div class="meta-row">
-              <div class="seller">TechStore_VN</div>
-              <div class="rating">★ 4.8 (124)</div>
-            </div>
-            <div class="meta-row small">📍 Ho Chi Minh City</div>
-          </div>
-          <div class="product-footer">
-            <button class="btn btn-primary btn-add">Add to Cart</button>
-          </div>
-        </article>
-
-        <!-- card 2 -->
-        <article class="product-card">
-          <div class="product-media" style="background-image:url('/img/body/macbook.png');">
-            <div class="card-badge badge-blue">Excellent</div>
-            <button class="fav-btn">♡</button>
-          </div>
-          <div class="product-body">
-            <h4 class="product-title">MacBook Air M2 2022</h4>
-            <div class="product-price">24,000,000 ₫</div>
-            <div class="meta-row">
-              <div class="seller">LaptopPro_HN</div>
-              <div class="rating">★ 4.9 (89)</div>
-            </div>
-            <div class="meta-row small">📍 Hanoi</div>
-          </div>
-          <div class="product-footer">
-            <button class="btn btn-primary btn-add">Add to Cart</button>
-          </div>
-        </article>
-
-        <!-- card 3 -->
-        <article class="product-card">
-          <div class="product-media" style="background-image:url('/img/body/jordan.png');">
-            <div class="card-badge badge-amber">Good</div>
-            <button class="fav-btn">♡</button>
-          </div>
-          <div class="product-body">
-            <h4 class="product-title">Nike Air Jordan 1 Size 42</h4>
-            <div class="product-price">3,200,000 ₫</div>
-            <div class="meta-row">
-              <div class="seller">SneakerHub</div>
-              <div class="rating">★ 4.7 (156)</div>
-            </div>
-            <div class="meta-row small">📍 Da Nang</div>
-          </div>
-          <div class="product-footer">
-            <button class="btn btn-primary btn-add">Add to Cart</button>
-          </div>
-        </article>
-
-        <!-- card 4 -->
-        <article class="product-card">
-          <div class="product-media" style="background-image:url('/img/body/canon.png');">
-            <div class="card-badge">Like New</div>
-            <button class="fav-btn">♡</button>
-          </div>
-          <div class="product-body">
-            <h4 class="product-title">Canon EOS R6 Camera Body</h4>
-            <div class="product-price">32,000,000 ₫</div>
-            <div class="meta-row">
-              <div class="seller">PhotoWorld</div>
-              <div class="rating">★ 4.6 (78)</div>
-            </div>
-            <div class="meta-row small">📍 Ha Noi</div>
-          </div>
-          <div class="product-footer">
-            <button class="btn btn-primary btn-add">Add to Cart</button>
-          </div>
-        </article>
-
-        <!-- card 5 -->
-        <article class="product-card">
-          <div class="product-media" style="background-image:url('/img/body/sony.png');">
-            <div class="card-badge badge-yellow">Very Good</div>
-            <button class="fav-btn">♡</button>
-          </div>
-          <div class="product-body">
-            <h4 class="product-title">Sony WH-1000XM4 Headphones</h4>
-            <div class="product-price">4,800,000 ₫</div>
-            <div class="meta-row">
-              <div class="seller">AudioCenter</div>
-              <div class="rating">★ 4.5 (64)</div>
-            </div>
-            <div class="meta-row small">📍 Ho Chi Minh City</div>
-          </div>
-          <div class="product-footer">
-            <button class="btn btn-primary btn-add">Add to Cart</button>
-          </div>
-        </article>
-
-        <!-- card 6 -->
-        <article class="product-card">
-          <div class="product-media" style="background-image:url('/img/body/chair.png');">
-            <div class="card-badge badge-amber">Good</div>
-            <button class="fav-btn">♡</button>
-          </div>
-          <div class="product-body">
-            <h4 class="product-title">Herman Miller Aeron Chair</h4>
-            <div class="product-price">12,500,000 ₫</div>
-            <div class="meta-row">
-              <div class="seller">OfficeGear</div>
-              <div class="rating">★ 4.4 (52)</div>
-            </div>
-            <div class="meta-row small">📍 Da Nang</div>
-          </div>
-          <div class="product-footer">
-            <button class="btn btn-primary btn-add">Add to Cart</button>
-          </div>
-        </article>
+        <!-- Products will be loaded dynamically from Firebase -->
       </div>
     </div>
   </section>
@@ -319,17 +201,17 @@
     onAuthReady((user, claims) => {
       // Protect "Buy Now" buttons after auth state is ready
       protectActionButtons('.btn-add', 'You need to log in to buy this product');
-      
+
       const userIcon = document.querySelector('.info_shop li:nth-child(2)');
-      
+
       if (user) {
         // User is logged in
         console.log('[Index] User logged in:', user.email);
-        
+
         // Check if admin - redirect to dashboard
         if (claims?.admin === true) {
           console.log('[Index] Admin detected, showing dashboard access');
-          
+
           // Add "Go to Dashboard" button to nav if admin
           if (userIcon && !document.getElementById('adminDashboardBtn')) {
             const dashboardBtn = document.createElement('li');
@@ -358,7 +240,7 @@
             // Add click handler for logout
             img.style.cursor = 'pointer';
             img.title = `Logged in as ${user.email}\nClick to logout`;
-            
+
             img.addEventListener('click', async () => {
               if (confirm('Are you sure you want to logout?')) {
                 const { logout } = await import('../js/auth_manager.js');
@@ -371,14 +253,14 @@
       } else {
         // User is logged out
         console.log('[Index] User not logged in');
-        
+
         // Update user icon to link to login page
         if (userIcon) {
           const img = userIcon.querySelector('img');
           if (img) {
             img.style.cursor = 'pointer';
             img.title = 'Click to login';
-            
+
             img.addEventListener('click', () => {
               window.location.href = '/login';
             });
@@ -387,7 +269,7 @@
       }
     });
   </script>
-  
+
   <!-- Quick Access Buttons for Orders (non-intrusive addition) -->
   <script type="module">
     import { onAuthReady } from '../js/auth_manager.js';
@@ -458,6 +340,7 @@
 </body>
 <script src="../js/index_search.js"></script>
 <script src="../js/index_categories.js"></script>
+<script src="../js/index_products.js"></script>
 <script src="../js/header_sticky.js"></script>
 
 </html>

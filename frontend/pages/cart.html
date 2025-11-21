@@ -4,14 +4,13 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="../css/style.css" />
     <link rel="stylesheet" href="../css/cart_demo.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@300;400;500;700&display=swap"
         rel="stylesheet" />
     <title>Shopping Cart - SMPC</title>
-    
+
     <!-- Initialize auth before other scripts -->
     <script type="module">
         import { initAuth } from '../js/auth_manager.js';
@@ -19,7 +18,7 @@
     </script>
 </head>
 
-<body style="background-color: #DBEAFE;">
+<body class="cart-page-body">
     <header>
         <nav>
             <a href="/pages/index.html" class="home_icon">
@@ -61,7 +60,7 @@
                     <input type="checkbox" id="selectAllCheckbox">
                     <p>Select All (<span id="selectAllCount">0</span> items)</p>
                 </div>
-                
+
                 <!-- Cart Items Container -->
                 <div class="cart_2_left_2" id="cartItemsContainer">
                     <!-- Items will be dynamically inserted here -->
@@ -69,7 +68,8 @@
 
                 <!-- Empty Cart State -->
                 <div id="emptyCartState" class="empty-cart-state" style="display: none;">
-                    <img src="/img/icon/cart.png" alt="Empty Cart" style="width: 120px; opacity: 0.3; margin-bottom: 20px;">
+                    <img src="/img/icon/cart.png" alt="Empty Cart"
+                        style="width: 120px; opacity: 0.3; margin-bottom: 20px;">
                     <h3>Your cart is empty</h3>
                     <p>Add some products to get started!</p>
                     <a href="/pages/product_list.html" class="continue-shopping-link">
@@ -93,9 +93,10 @@
                     <h3>Total:</h3>
                     <p class="product_price"><span id="summaryTotal">5,000</span> ₫</p>
                 </div>
-                <button class="seller_3_btn_1" id="checkoutBtn">Proceed to Checkout <span id="checkoutCount">(0)</span></button>
+                <button class="seller_3_btn_1" id="checkoutBtn">Proceed to Checkout <span
+                        id="checkoutCount">(0)</span></button>
                 <a href="/pages/product_list.html">
-                    <button class="seller_3_btn_2" style="color: #2563EB;">Continue Shopping</button>
+                    <button class="seller_3_btn_2 continue-shopping-btn">Continue Shopping</button>
                 </a>
                 <div class="cart_2_right_policy_1">
                     <img src="/img/icon/tick yellow.png" alt="">
